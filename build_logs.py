@@ -36,6 +36,39 @@ def load(seasons):
     return pd.concat(frames, ignore_index=True)
 
 
+def load_player_meta():
+    """gsis_id -> {'hs': NFL.com headshot URL, 'es': ESPN player id} from the nflverse players table."""
+    try:
+        try:
+            import nflreadpy as nfl
+            pl = nfl.load_players().to_pandas()
+        except Exception:
+            pl = pd.read_csv("https://github.com/nflverse/nflverse-data/releases/download/players/players.csv", low_memory=False)
+        idc = next(c for c in ("gsis_id", "player_id") if c in pl.columns)
+        hc = next((c for c in ("headshot", "headshot_url") if c in pl.columns), None)
+        ec = "espn_id" if "espn_id" in pl.columns else None
+        pl = pl.dropna(subset=[idc])
+        hs = pl[hc] if hc else [None] * len(pl)
+        es = pl[ec] if ec else [None] * len(pl)
+        meta = {}
+        for pid, h, e in zip(pl[idc], hs, es):
+            m = {}
+            if isinstance(h, str) and h.startswith("http"):
+                m["hs"] = h
+            if e is not None and pd.notna(e):
+                try:
+                    m["es"] = str(int(float(e)))
+                except (ValueError, TypeError):
+                    pass
+            if m:
+                meta[pid] = m
+        print(f"player meta: {len(meta)} players ({sum('hs' in v for v in meta.values())} NFL.com photos, {sum('es' in v for v in meta.values())} ESPN ids)")
+        return meta
+    except Exception as e:
+        print(f"no players table for photos ({e})")
+        return {}
+
+
 def col(df, *names):
     for n in names:
         if n in df.columns:
@@ -70,6 +103,10 @@ def main():
         "rey":  col(df, "receiving_yards"),
         "retd": col(df, "receiving_tds"),
     })
+    hs_col = next((c for c in ("headshot_url", "headshot") if c in df.columns), None)
+    out["hs"] = df[hs_col] if hs_col else None
+    meta = load_player_meta()
+
     num = ["s", "w", "pa", "py", "ptd", "ca", "ry", "rtd", "tgt", "rec", "rey", "retd"]
     out[num] = out[num].fillna(0).round().astype(int)
     out = out.sort_values(["id", "s", "w"])
@@ -80,8 +117,15 @@ def main():
         logs = g[["s", "w", "o"] + num[2:]].to_dict("records")
         if len(logs) < 3:          # skip players with barely any games
             continue
-        players.append({"id": pid, "name": last["name"], "pos": last["pos"],
-                        "team": last["team"], "logs": logs})
+        m = meta.get(pid, {})
+        hs = g["hs"].dropna()
+        hs = hs.iloc[-1] if len(hs) else m.get("hs")
+        player = {"id": pid, "name": last["name"], "pos": last["pos"], "team": last["team"], "logs": logs}
+        if isinstance(hs, str) and hs.startswith("http"):
+            player["hs"] = hs
+        if m.get("es"):
+            player["es"] = m["es"]
+        players.append(player)
 
     players.sort(key=lambda p: p["name"])
     latest = out[out["s"] == out["s"].max()]
