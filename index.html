@@ -104,6 +104,17 @@ button{cursor:pointer;-webkit-user-select:none;user-select:none;border:0;backgro
 .hc .cells{margin-top:10px}
 .hc .cell{flex:1;min-width:0}
 
+.hc .why{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;min-height:0}
+.hc .why .tag{font-size:11px;padding:2px 7px;white-space:nowrap}
+.fxl{margin-top:10px}
+.fx{display:grid;grid-template-columns:112px 1fr;column-gap:10px;row-gap:3px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.fxn{grid-row:1/3;font:600 16px var(--cond)}
+.fxb{position:relative;height:6px;border-radius:3px;background:var(--surface2);overflow:hidden}
+.fxb::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--line)}
+.fxb i{position:absolute;top:0;bottom:0;border-radius:3px}
+.fxb i.g{background:var(--over)} .fxb i.r{background:var(--under)}
+.fxt{font-size:12.5px;color:var(--muted);line-height:1.3}
+
 /* rows */
 .list{display:flex;flex-direction:column;gap:8px}
 .row{background:var(--surface);border-radius:16px;padding:10px 12px}
@@ -372,12 +383,15 @@ td.o{color:var(--over);font-weight:600} td.u{color:var(--under);font-weight:600}
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
   <div class="grab"></div>
   <h3 id="sheetTitle">How Prop Score works</h3>
-  <p>The score (1–99) ranks how mispriced a prop looks, not how often it hits. For both the over and the under, the model:</p>
+  <p>The score (1–99) ranks how strong a play looks from several angles at once, not just how mispriced it is. For both the over and the under, the model starts from recent form (last 10, last 5, season) pulled toward what the market says, then adjusts for:</p>
   <ul>
-    <li>Blends the hit rate over the <b>last 10, last 5, and season</b> at that side's best line. Small samples are pulled toward what the market already says, so a hot streak alone can't fool it.</li>
-    <li>Nudges it for the <b>opponent's defense</b> against that position and stat.</li>
-    <li>Compares the result to the <b>chance the price implies</b>. The bigger the gap, the higher the score.</li>
+    <li><b>Projection</b>: recent average and consistency against the line.</li>
+    <li><b>Streaks and usage</b>: hot or cold runs, and whether touches or targets are rising.</li>
+    <li><b>Matchup</b>: how the opponent's defense treats that position and stat, plus past games against them.</li>
+    <li><b>Team style and weather</b>: pass-heavy or run-heavy offense, wind, rain, and cold. Indoor games get no weather effect.</li>
+    <li><b>Price</b>: the estimated hit chance versus the chance the price implies.</li>
   </ul>
+  <p>Value counts most, but plays where several of these agree score higher. Open any player to see the full breakdown.</p>
   <p>Props are hidden unless the player has played 7 of the last 10 weeks, has a real role (targets, carries, or attempts), the line isn't tiny, and the price isn't juiced worse than about −255. Tap Show under the list to see them.</p>
   <p>It's a research shortcut, not a prediction. The books see most of this too, so check the chart and matchup before you bet.</p>
 </div>
@@ -594,46 +608,138 @@ function buildWeeks(){
   RECENT_WEEKS = [...set].sort((a,b)=>a-b).slice(-10);
 }
 function availability(pl){ const w = new Set(pl.logs.map(g=>g.s*100+g.w)); return RECENT_WEEKS.filter(x=>w.has(x)).length; }
+/* ---------- multi-factor model ----------
+   Each side (over/under) starts from recent form shrunk toward the market, then a set of independent
+   factors nudge it in log-odds space: projection, streak, usage trend, matchup, history vs opponent,
+   team style, and weather. The result is compared with the price. The score blends value (edge),
+   probability, and how many factors agree (confluence). */
+const normCdf = x => { const t=1/(1+.2316419*Math.abs(x)), d=.3989423*Math.exp(-x*x/2);
+  const q = d*t*(.3193815+t*(-.3565638+t*(1.781478+t*(-1.821256+t*1.330274)))); return x>0 ? 1-q : q; };
+const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
+const mean = a => a.length ? a.reduce((x,y)=>x+y,0)/a.length : 0;
+const r1 = v => Math.round(v*10)/10;
+const PASS_MK = new Set(["pass_yds","pass_td","pass_att","rec","rec_yds"]), RUSH_MK = new Set(["rush_yds","carries"]);
+const FACTOR_LABEL = {form:"Recent form", proj:"Projection", streak:"Streak", usage:"Usage trend", matchup:"Matchup", h2h:"Vs this team", team:"Team style", weather:"Weather", price:"Price"};
+let CTX = null, TENV = {}, LGPR = .5;
+function buildTeamEnv(){
+  const wk = new Set(RECENT_WEEKS.slice(-6)), agg = {};
+  DATA.players.forEach(pl=>{ if(!pl.team) return;
+    pl.logs.forEach(g=>{ const k = g.s*100+g.w; if(!wk.has(k)) return;
+      const a = (agg[pl.team] ??= {pa:0, ca:0, w:new Set()}); a.pa += g.pa||0; a.ca += g.ca||0; a.w.add(k); }); });
+  TENV = {}; const prs = [];
+  for(const t in agg){ const a = agg[t]; if(a.w.size < 4 || a.pa+a.ca < 50) continue; TENV[t] = {pr:a.pa/(a.pa+a.ca)}; prs.push(TENV[t].pr); }
+  LGPR = prs.length ? mean(prs) : .5;
+}
+function project(pl, mk, line, side){
+  if(MARKETS[mk].fixed!=null) return null;
+  const v = pl.logs.slice(-10).map(MARKETS[mk].get); if(v.length < 5) return null;
+  const w = v.map((_,i)=>1 + i/Math.max(1,v.length-1)), ws = w.reduce((x,y)=>x+y,0);
+  const mu = v.reduce((x,y,i)=>x+w[i]*y,0)/ws, va = v.reduce((x,y,i)=>x+w[i]*(y-mu)**2,0)/ws;
+  const sd = Math.max(Math.sqrt(va), .2*mu, .6), po = 1 - normCdf((line-mu)/sd);
+  return {mu, sd, p: side==="over" ? po : 1-po};
+}
+function missRun(logs, get, line, side){
+  let n = 0; for(let i=logs.length-1;i>=0;i--){ const v=get(logs[i]), hit = side==="over" ? v>line : v<line; if(hit) break; n++; } return n;
+}
+function weatherFx(c, mk){
+  if(!c || c.dome) return null;
+  const pass = PASS_MK.has(mk), rush = RUSH_MK.has(mk); if(!pass && !rush) return null;
+  const wind = Math.max(c.wind||0, (c.gust||0)*.7), w = Math.max(0, wind-11);
+  const rain = (c.precip||0) >= 1.5 || ((c.pop||0) >= 70 && (c.precip||0) >= .5), cold = c.temp!=null && c.temp <= 25;
+  let d = 0; const bits = [];
+  if(w > 0){ d += pass ? -Math.min(.35, .03*w) : Math.min(.08, .008*w); bits.push(`Wind ${Math.round(wind)} mph`); }
+  if(rain){ d += pass ? -.10 : .05; bits.push("Rain likely"); }
+  if(cold && pass){ d -= .08; bits.push(`${Math.round(c.temp)}°F`); }
+  return bits.length ? {d, txt:bits.join(", ")} : null;
+}
+function wxLine(label){
+  const c = CTX?.games?.[label]; if(!c) return "";
+  if(c.dome) return "Indoors";
+  const b = []; if(c.temp!=null) b.push(`${Math.round(c.temp)}°`);
+  if(c.wind!=null) b.push(`${Math.round(c.wind)} mph wind`);
+  if((c.precip||0) >= 1.5 || ((c.pop||0) >= 70 && (c.precip||0) >= .5)) b.push("rain");
+  return b.join(", ");
+}
 function evaluate(p){
-  const pl = p.pl, mk = p.market, vol = VOL[pl.pos];
+  const pl = p.pl, mk = p.market, vol = VOL[pl.pos], get = MARKETS[mk].get;
   p.avail = availability(pl);
   const role = vol ? median(pl.logs.slice(-10).map(vol[1])) : 99;
   const roleBad = p.avail < 7 || (vol && role < (MIN_VOL[pl.pos]||0));
-  const M = 8, cands = [];
+  const M = 8, cands = [], ctx = CTX?.games?.[p.game] || null, tenv = TENV[p.team];
   for(const side of ["over","under"]){
     const pk = side==="over" ? p.bestOver : p.bestUnder;
     if(!pk || pk.price==null) continue;
     const st = hitStats(pl, mk, pk.line, p.opp, side);
-    const pImpl = impl(pk.price);
+    const pImpl = impl(pk.price), sgn = side==="over" ? 1 : -1;
     const prior = (p.fair!=null && pk.line===p.line) ? (side==="over" ? p.fair : 1-p.fair) : pImpl;
     const sh = h => (h.o + M*prior)/(h.n + M);
     const base = .45*sh(st.l10) + .30*sh(st.l5) + .25*sh(st.szn.n>=3 ? st.szn : st.l20);
-    let z = logit(Math.min(.9, Math.max(.05, base)));
-    if(p.dvp){ const r = (p.dvp.rank-1)/Math.max(1,p.dvp.n-1); z += (side==="over" ? .5-r : r-.5)*.6; }
+    const z0 = logit(Math.min(.9, Math.max(.05, base)));
+    const fx = [], add = (k,d,txt) => { fx.push({k, d:Math.round(d*1000)/1000, txt}); };
+    let z = z0;
+    add("form", z0 - logit(clamp(prior,.05,.95)), `Cashed ${st.l10.o} of last ${st.l10.n}`);
+    const pj = project(pl, mk, pk.line, side);
+    if(pj){ const d = clamp(.45*(logit(clamp(pj.p,.05,.95)) - z0), -.5, .5); z += d; add("proj", d, `Averaging ${fmt(r1(pj.mu))} vs ${fmt(pk.line)} line`); }
+    if(st.streak >= 3){ const d = .03*Math.min(st.streak,7); z += d; add("streak", d, `Cashed ${st.streak} straight`); }
+    else { const ms = missRun(pl.logs, get, pk.line, side); if(ms >= 3){ const d = -.03*Math.min(ms,5); z += d; add("streak", d, `Missed ${ms} straight`); } }
+    if(vol && pl.logs.length >= 6){
+      const v = pl.logs.slice(-10).map(vol[1]), avg = mean(v), l3 = mean(v.slice(-3));
+      if(avg > 0){ const rel = (l3-avg)/avg; let d = clamp(rel*.6, -.25, .25)*(mk==="atd" ? .5 : 1)*sgn;
+        if(Math.abs(d) >= .02){ z += d; add("usage", d, `${vol[0]} ${rel>0?"up":"down"} ${Math.abs(Math.round(rel*100))}% last 3`); } }
+    }
+    if(p.dvp){ const r = (p.dvp.rank-1)/Math.max(1,p.dvp.n-1), d = (side==="over" ? .5-r : r-.5)*.6;
+      z += d; add("matchup", d, p.dvp.rank <= p.dvp.n/2 ? `${p.opp} allows ${ord(p.dvp.rank)}-most ${MARKETS[mk].short}` : `${p.opp} allows ${ord(p.dvp.n-p.dvp.rank+1)}-fewest ${MARKETS[mk].short}`); }
+    if(st.h2h.n >= 2 && st.h2h.o/st.h2h.n !== .5){ const d = (st.h2h.o/st.h2h.n - .5)*.3*Math.min(st.h2h.n,4)/4; z += d; add("h2h", d, `${st.h2h.o} of ${st.h2h.n} against ${p.opp}`); }
+    if(tenv && (PASS_MK.has(mk) || RUSH_MK.has(mk))){
+      const diff = tenv.pr - LGPR; let d = clamp(diff*2.5, -.15, .15)*(PASS_MK.has(mk) ? 1 : -1)*sgn;
+      if(Math.abs(d) >= .03){ z += d; add("team", d, `${diff>0?"Pass-heavy":"Run-heavy"} offense (${Math.round(tenv.pr*100)}% pass)`); }
+    }
+    const wf = weatherFx(ctx, mk);
+    if(wf){ const d = wf.d*sgn; z += d; add("weather", d, wf.txt); }
+    z = clamp(z, -3.2, 3.2);
     const pm = sig(z), edge = pm - pImpl, ev = pm*(dec(pk.price)-1) - (1-pm);
+    if(Math.abs(edge) >= .02) add("price", edge*3, edge>0 ? `${Math.round(edge*100)} pts of value at ${am(pk.price)}` : `Priced ${Math.round(-edge*100)} pts too short`);
+    const conf = fx.filter(f=>f.d>=.06).length - fx.filter(f=>f.d<=-.06).length;
+    const score = clamp(Math.round(50 + 110*edge + 45*(pm-.5) + 2.5*clamp(conf,-3,5)), 1, 99);
     let flag = null;
     if(roleBad) flag = "role";
     else if(pImpl > .72 || pImpl < .15) flag = "juice";
     else if(pk.line < (MIN_LINE[mk]||0)) flag = "line";
     else if(st.l10.n < 6) flag = "sample";
-    cands.push({side, pk, st, pImpl, pm, edge, ev, flag});
+    cands.push({side, pk, st, pImpl, pm, edge, ev, flag, fx, conf, score});
   }
   if(!cands.length){ p.ok = false; p.score = null; return; }
   const okc = cands.filter(c=>!c.flag).sort((a,b)=>b.ev-a.ev);
   const c = okc[0] || cands.sort((a,b)=>b.edge-a.edge)[0];
-  Object.assign(p, {lean:c.side, pick:c.pk, st:c.st, pImpl:c.pImpl, pModel:c.pm, edge:c.edge, ev:c.ev, flag:c.flag, ok:!c.flag});
-  p.score = p.ok ? Math.max(1, Math.min(99, Math.round(50 + c.edge*180))) : null;
+  Object.assign(p, {lean:c.side, pick:c.pk, st:c.st, pImpl:c.pImpl, pModel:c.pm, edge:c.edge, ev:c.ev, flag:c.flag, ok:!c.flag, fx:c.fx, conf:c.conf});
+  p.score = p.ok ? c.score : null;
+}
+function whyTags(p, n=3){
+  if(!p.fx) return "";
+  const good = p.fx.filter(f=>f.d>=.05).sort((a,b)=>b.d-a.d).slice(0,n), bad = p.fx.filter(f=>f.d<=-.07).sort((a,b)=>a.d-b.d).slice(0,1);
+  return good.map(f=>`<span class="tag g">${esc(f.txt)}</span>`).join("") + bad.map(f=>`<span class="tag r">${esc(f.txt)}</span>`).join("");
+}
+function topPlays(list){
+  const pool = list.filter(p=>p.ok).sort((a,b)=>b.score-a.score), seen = new Set(), gc = {};
+  const pick = f => { const out = [];
+    for(const p of pool){ const id = p.pid||p.name;
+      if(out.length >= 8) break; if(seen.has(id) || (gc[p.game]||0) >= 3 || !f(p)) continue;
+      seen.add(id); gc[p.game] = (gc[p.game]||0)+1; out.push(p); }
+    return out; };
+  let top = pick(p=>p.edge >= 0 && p.pModel >= .55 && p.conf >= 2);
+  if(top.length < 4) top = top.concat(pick(p=>p.edge > 0 && p.score >= 58)).slice(0,8);
+  return top.sort((a,b)=>b.score-a.score);
 }
 function oppOf(p){ const [a,h] = (p.game||"").split(" @ "); return p.team===a ? h : p.team===h ? a : null; }
 
 /* ---------- load ---------- */
 async function getJSON(url){ const r = await fetch(url,{cache:"no-cache"}); if(!r.ok) throw 0; return r.json(); }
 async function load(){
-  const [d, pr] = await Promise.all([getJSON("player_logs.json").catch(()=>null), getJSON("props.json").catch(()=>null)]);
-  DATA = d || demoData(); PROPS = pr;
+  const [d, pr, cx] = await Promise.all([getJSON("player_logs.json").catch(()=>null), getJSON("props.json").catch(()=>null), getJSON("context.json").catch(()=>null)]);
+  DATA = d || demoData(); PROPS = pr; CTX = cx;
   DATA.players.forEach(p=>{ p.logs.sort((a,b)=>a.s-b.s||a.w-b.w); byId.set(p.id,p); });
   CUR = Math.max(...DATA.players.flatMap(p=>p.logs.map(g=>g.s)));
-  buildDvp(); buildWeeks();
+  buildDvp(); buildWeeks(); buildTeamEnv();
   if(PROPS){
     PROPS.props.forEach(p=>{
       p.key = (p.pid||p.name)+"|"+p.market;
@@ -781,12 +887,7 @@ function tagsFor(p){
     t.push(`<span class="tag ${good?"y":""}">Est. ${Math.round(p.pModel*100)}% hit vs ${Math.round(p.pImpl*100)}% priced${good?`, +${Math.round(p.edge*100)} pts`:""}</span>`);
   }
   if(!p.ok && p.flag) t.push(`<span class="tag r">${FLAG_TXT[p.flag]}</span>`);
-  if(s && s.streak>=3) t.push(`<span class="tag g">Hit ${s.streak} straight</span>`);
-  if(p.dvp && p.pos){
-    const {rank, n} = p.dvp, fav = side => p.lean===side ? "g" : "r";
-    if(rank<=8) t.push(`<span class="tag ${fav("over")}">${esc(p.opp)} allows ${ord(rank)}-most ${MARKETS[p.market].short} to ${POS_PLURAL[p.pos]||p.pos}</span>`);
-    else if(rank>n-8) t.push(`<span class="tag ${fav("under")}">${esc(p.opp)} allows ${ord(n-rank+1)}-fewest ${MARKETS[p.market].short}</span>`);
-  }
+  const wy = whyTags(p,4); if(wy) t.push(wy);
   if(p.gap>=1) t.push(`<span class="tag">Books differ by ${fmt(p.gap)}</span>`);
   return t.length ? `<div class="tags">${t.join("")}</div>` : "";
 }
@@ -803,7 +904,7 @@ function rowHTML(p){
   </div>`;
 }
 function heroHTML(list){
-  const top = list.filter(p=>p.ok && p.edge>=.03).sort((a,b)=>b.score-a.score).slice(0,8);
+  const top = topPlays(list);
   if(!top.length) return "";
   return `<div class="sec-t"><h2>Top plays</h2><small>Swipe for more</small></div><div class="carousel">` + top.map(p=>{
     const s = p.st, pk = p.pick;
@@ -814,6 +915,7 @@ function heroHTML(list){
       <span class="mk">${MARKETS[p.market].label}${p.opp?` vs ${esc(p.opp)}`:""}</span>
       <span class="lean ${p.lean}">${sideTxt(p.market,p.lean,pk?.line ?? p.line).toUpperCase()}${pk?` <small style="font:600 12px var(--body);opacity:.8">${am(pk.price)}</small>`:""}</span>
       <span class="cells">${cell("L5",s.l5)+cell("L10",s.l10)+cell("SZN",s.szn)}</span>
+      <span class="why">${whyTags(p,3)}</span>
     </button>`; }).join("") + `</div>`;
 }
 function renderBoard(animate){
@@ -859,7 +961,7 @@ function renderGames(animate){
     return `<div class="game${closed?" closed":""}" data-g="${esc(g.label)}">
       <button class="game-h" data-game="${esc(g.label)}" aria-expanded="${!closed}">
         <span class="mu">${logoImg(away,"tl")}${esc(away)}<span>@</span>${logoImg(home,"tl")}${esc(home)}</span>
-        <small><b>${until(g.kick)}</b><br>${props.length} props${best.score!=null?`, top ${best.score}`:""}</small><span class="chev"></span>
+        <small><b>${until(g.kick)}</b><br>${props.length} props${best.score!=null?`, top ${best.score}`:""}${wxLine(g.label)?`<br>${esc(wxLine(g.label))}`:""}</small><span class="chev"></span>
       </button>
       <div class="game-b"><div>${closed ? "" : gameBody(props)}</div></div>
     </div>`;
@@ -1070,7 +1172,10 @@ function renderModel(prop){
   el.innerHTML = `<h3>Model view</h3>
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span class="lean ${prop.lean}" style="margin:0">${sideTxt(m,prop.lean,pk.line).toUpperCase()} ${am(pk.price)}</span>
     <span style="font:600 17px var(--cond)">${Math.round(prop.pModel*100)}% estimated vs ${Math.round(prop.pImpl*100)}% priced</span></div>
-    <div class="m" style="font-size:13px;margin-top:8px;line-height:1.45">${msg}</div>`;
+    <div class="m" style="font-size:13px;margin-top:8px;line-height:1.45">${msg}</div>
+    <div class="fxl">${[...(prop.fx||[])].sort((a,b)=>Math.abs(b.d)-Math.abs(a.d)).map(f=>`<div class="fx"><span class="fxn">${FACTOR_LABEL[f.k]}</span>
+      <span class="fxb"><i class="${f.d>=0?"g":"r"}" style="width:${Math.min(50,Math.abs(f.d)/.5*50).toFixed(1)}%;${f.d>=0?"left:50%":"right:50%"}"></i></span>
+      <span class="fxt">${esc(f.txt)}</span></div>`).join("")}</div>`;
 }
 function renderMatchup(opp){
   const d = opp && dvpFor(P.pl.pos, P.market, opp), m = MARKETS[P.market];
