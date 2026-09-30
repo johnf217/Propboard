@@ -140,6 +140,49 @@ button{cursor:pointer;-webkit-user-select:none;user-select:none;border:0;backgro
 .more{display:block;width:100%;margin-top:12px;padding:12px;border-radius:14px;background:var(--surface);color:var(--muted);font-weight:600}
 .empty{padding:48px 20px;text-align:center;color:var(--muted)}
 
+/* compact prop rows with mini charts */
+.seg.bw{margin-top:2px}
+.ctl{display:flex;gap:8px;align-items:center;margin-top:8px}
+.fbtn{position:relative;width:40px;height:40px;border-radius:999px;color:var(--text)}
+.fbtn.on::after{content:"";position:absolute;top:7px;right:7px;width:8px;height:8px;border-radius:50%;background:var(--post);box-shadow:0 0 0 2px var(--surface)}
+.chips.seg2{flex:1;min-width:0;margin:0;padding:4px;gap:2px;background:var(--surface);border-radius:999px}
+.seg2 .chip{border:0;padding:7px 13px;font-weight:600;color:var(--muted)}
+.seg2 .chip[aria-pressed="true"]{background:var(--surface3);color:var(--text)}
+.list.flat{gap:0}
+.prow{background:none;border-radius:0;padding:12px 0;border-bottom:1px solid var(--line)}
+.prow .row-main{gap:9px}
+.avw{position:relative;flex:none;display:flex}
+.prow .av{width:50px;height:50px}
+.avw .star{position:absolute;left:-4px;bottom:-4px;width:19px;height:19px;border-radius:50%;background:var(--bg);color:var(--over);font:normal 700 13px/19px var(--body);text-align:center}
+.prow .who b{font:700 19px/1.1 var(--cond)}
+.prow .who b small{font:600 12px var(--body);color:var(--muted);margin-left:6px;letter-spacing:.2px}
+.prow .who .l2{font-size:14px;color:var(--text);margin-top:4px}
+.sd{font-style:normal;font-weight:700}
+.sd.over{color:var(--over)} .sd.under{color:var(--under)}
+.px{color:var(--muted);margin-left:6px;font-size:13px}
+.kv{flex:none;width:50px;text-align:center}
+.kv small{display:block;font:600 10px/1 var(--body);letter-spacing:.7px;color:var(--faint)}
+.kv b{display:block;font:700 20px/1 var(--cond);margin-top:5px;white-space:nowrap}
+.spark{position:relative;flex:none;width:86px;height:44px;display:flex;align-items:flex-end;justify-content:flex-end;gap:2px}
+.spark i{flex:1;max-width:13px;border-radius:2px 2px 0 0;transform-origin:bottom}
+.spark i.h{background:var(--over)} .spark i.m{background:var(--under)} .spark i.p{background:var(--faint)}
+.spark b{position:absolute;left:0;right:0;height:0;border-top:1px dashed rgba(238,242,247,.4);pointer-events:none}
+.spark.none{align-items:center;justify-content:center;font-size:11px;color:var(--faint)}
+.anim .list>.prow:nth-child(-n+10) .spark i{animation:grow .45s var(--ease) both;animation-delay:var(--d)}
+.sortlbl{color:var(--post);font-weight:600;font-size:13px}
+.game-b .list.flat{padding:0 0 4px}
+.game-b .prow{background:none;padding:10px 14px;border-bottom-color:var(--surface2)}
+.game-b .prow:last-child{border-bottom:0}
+.game-b .prow .av{width:44px;height:44px}
+.game-b .spark{width:76px}
+.fsheet .fl{font-size:12px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--faint);margin:14px 0 8px}
+.fsheet .seg{background:var(--surface2)}
+.fsheet .seg .pill{background:var(--surface3)}
+.fsheet .chips{flex-wrap:wrap;margin:0;padding:0;overflow:visible}
+.fbtns{display:flex;justify-content:space-between;align-items:center;margin-top:20px}
+.linkbtn{color:var(--muted);font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.done{background:var(--text);color:var(--bg);border-radius:999px;padding:10px 26px;font-weight:700}
+
 /* games */
 .game{background:var(--surface);border-radius:18px;margin-top:12px;overflow:hidden}
 .game-h{display:flex;align-items:center;gap:10px;width:100%;padding:14px 16px;text-align:left}
@@ -297,13 +340,12 @@ td.o{color:var(--over);font-weight:600} td.u{color:var(--under);font-weight:600}
   <section id="v-board" hidden>
     <div class="top">
       <div class="title"><h1>Prop Board</h1><small id="updated"></small></div>
-      <div class="chips" id="mkChips" role="group" aria-label="Market"></div>
-      <div class="chips" id="qChips" role="group" aria-label="Quick filters"></div>
-      <div class="sortrow">
-        <div class="seg" id="sortSeg" role="group" aria-label="Sort by">
-          <button data-v="score">Score</button><button data-v="edge">Value</button><button data-v="trend">Hit rate</button><button data-v="gap">Line gap</button>
-        </div>
-        <button class="iconbtn press" id="infoBtn" aria-label="How the score works">?</button>
+      <div class="seg bw" id="bwSeg" role="group" aria-label="Games in chart">
+        <button data-v="szn">Season</button><button data-v="h2h">H2H</button><button data-v="l5">L5</button><button data-v="l10">L10</button><button data-v="l20">L20</button>
+      </div>
+      <div class="ctl">
+        <button class="iconbtn fbtn press" id="filterBtn" aria-label="Sort and filters"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
+        <div class="chips seg2" id="mkChips" role="group" aria-label="Market"></div>
       </div>
     </div>
     <div id="heroWrap"></div>
@@ -313,7 +355,7 @@ td.o{color:var(--over);font-weight:600} td.u{color:var(--under);font-weight:600}
   <!-- GAMES -->
   <section id="v-games" hidden>
     <div class="top"><div class="title"><h1>Games</h1><small id="gamesSub"></small></div>
-      <div class="chips" id="mkChips2" role="group" aria-label="Market"></div></div>
+      <div class="chips seg2" id="mkChips2" role="group" aria-label="Market"></div></div>
     <div id="gamesList"></div>
   </section>
 
@@ -380,6 +422,17 @@ td.o{color:var(--over);font-weight:600} td.u{color:var(--under);font-weight:600}
 
 <div class="toast" id="toast" role="status"></div>
 <div class="scrim" id="scrim"></div>
+<div class="sheet fsheet" id="fsheet" role="dialog" aria-modal="true" aria-labelledby="fTitle">
+  <div class="grab"></div>
+  <h3 id="fTitle">Sort and filter</h3>
+  <p class="fl">Sort by</p>
+  <div class="seg" id="sortSeg" role="group" aria-label="Sort by">
+    <button data-v="score">Score</button><button data-v="edge">Value</button><button data-v="trend">Hit rate</button><button data-v="gap">Line gap</button>
+  </div>
+  <p class="fl">Show only</p>
+  <div class="chips" id="qChips" role="group" aria-label="Quick filters"></div>
+  <div class="fbtns"><button class="linkbtn" id="infoBtn">How the score works</button><button class="done press" id="fDone">Done</button></div>
+</div>
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
   <div class="grab"></div>
   <h3 id="sheetTitle">How Prop Score works</h3>
@@ -405,15 +458,15 @@ addEventListener("unhandledrejection", e => showErr(String(e.reason?.message || 
 
 /* ---------- constants ---------- */
 const MARKETS = {
-  pass_yds:{label:"Pass yds",   short:"pass yds", get:g=>g.py},
-  pass_td: {label:"Pass TDs",   short:"pass TDs", get:g=>g.ptd},
-  pass_att:{label:"Pass att",   short:"pass att", get:g=>g.pa},
-  rush_yds:{label:"Rush yds",   short:"rush yds", get:g=>g.ry},
-  carries: {label:"Carries",    short:"carries",  get:g=>g.ca},
-  rec:     {label:"Receptions", short:"catches",  get:g=>g.rec},
-  rec_yds: {label:"Rec yds",    short:"rec yds",  get:g=>g.rey},
-  rr_yds:  {label:"Rush + rec", short:"rush+rec yds", get:g=>g.ry+g.rey},
-  atd:     {label:"Anytime TD", short:"TDs", get:g=>g.rtd+g.retd, fixed:0.5},
+  pass_yds:{ab:"Pass yds", label:"Pass yds",   short:"pass yds", get:g=>g.py},
+  pass_td: {ab:"Pass TD", label:"Pass TDs",   short:"pass TDs", get:g=>g.ptd},
+  pass_att:{ab:"Pass att", label:"Pass att",   short:"pass att", get:g=>g.pa},
+  rush_yds:{ab:"Rush yds", label:"Rush yds",   short:"rush yds", get:g=>g.ry},
+  carries: {ab:"Carries", label:"Carries",    short:"carries",  get:g=>g.ca},
+  rec:     {ab:"Rec", label:"Receptions", short:"catches",  get:g=>g.rec},
+  rec_yds: {ab:"Rec yds", label:"Rec yds",    short:"rec yds",  get:g=>g.rey},
+  rr_yds:  {ab:"Rush+rec", label:"Rush + rec", short:"rush+rec yds", get:g=>g.ry+g.rey},
+  atd:     {ab:"Anytime TD", label:"Anytime TD", short:"TDs", get:g=>g.rtd+g.retd, fixed:0.5},
 };
 const BY_POS = {
   QB:["pass_yds","pass_td","pass_att","rush_yds","atd"],
@@ -436,13 +489,13 @@ const store = {
   get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},
   set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 };
-const S = Object.assign({tab:"board", market:"", quick:"", sort:"score", open:[]}, store.get("pb2_state")||{});
+const S = Object.assign({tab:"board", market:"", quick:"", sort:"score", bw:"l10", open:[]}, store.get("pb2_state")||{});
 S.open = new Set(S.open||[]);
 let SLIP = store.get("pb2_slip") || [];
 const WATCH = new Set(store.get("pb2_watch") || []);
 const P = {pl:null, market:null, line:null, win:"l10", from:"board"};
 let shown = 25, stake = store.get("pb2_stake") || 10;
-const saveState = () => store.set("pb2_state", {tab:S.tab, market:S.market, quick:S.quick, sort:S.sort, open:[...S.open], showAll:!!S.showAll});
+const saveState = () => store.set("pb2_state", {tab:S.tab, market:S.market, quick:S.quick, sort:S.sort, bw:S.bw, open:[...S.open], showAll:!!S.showAll});
 const $ = id => document.getElementById(id);
 
 /* ---------- demo data (fictional) ---------- */
@@ -788,7 +841,7 @@ function go(tab, dir){
     if(tab==="slip") renderSlip();
     if(tab==="players") renderPlayers();
     scrollTo(0, scrollMem[tab] || 0);
-    requestAnimationFrame(()=>setSeg($("sortSeg"), S.sort));
+    requestAnimationFrame(()=>{ setSeg($("sortSeg"), S.sort); setSeg($("bwSeg"), S.bw); });
   });
 }
 function openPlayer(pl, market){
@@ -813,7 +866,7 @@ $("backBtn").onclick = () => transition("back", ()=>{
   if(tab==="slip") renderSlip();
   if(tab==="players") renderPlayers();
   scrollTo(0, scrollMem[tab] || 0);
-  requestAnimationFrame(()=>setSeg($("sortSeg"), S.sort));
+  requestAnimationFrame(()=>{ setSeg($("sortSeg"), S.sort); setSeg($("bwSeg"), S.bw); });
 });
 $("tabs").onclick = e => {
   const b = e.target.closest("[data-tab]"); if(!b) return;
@@ -848,7 +901,7 @@ function sortVal(p){
   if(!p.ok) return -99;
   if(S.sort==="score") return p.score;
   if(S.sort==="edge")  return p.edge;
-  if(S.sort==="trend") return p.st.l10.n ? p.st.l10.o/p.st.l10.n + p.st.l10.n/1000 : -1;
+  if(S.sort==="trend"){ const h = winHit(p); return h && h.n ? h.o/h.n + h.n/1000 : -1; }
   return p.gap + p.edge/10;
 }
 function passQuick(p){
@@ -891,16 +944,50 @@ function tagsFor(p){
   if(p.gap>=1) t.push(`<span class="tag">Books differ by ${fmt(p.gap)}</span>`);
   return t.length ? `<div class="tags">${t.join("")}</div>` : "";
 }
+const SORT_LBL = {score:"Score", edge:"Value", trend:"Hit rate", gap:"Line gap"};
+const BW_LBL = {szn:"SZN", h2h:"H2H", l5:"L5", l10:"L10", l20:"L20"};
+const shortName = n => { const a = (n||"").trim().split(/\s+/); return a.length > 1 ? a[0][0] + ". " + a.slice(1).join(" ") : (n||""); };
+const winHit = p => p.st ? p.st[S.bw] : null;
+function winLogs(p){
+  const L = p.pl.logs, n = {l5:5, l10:10, l20:20}[S.bw];
+  if(S.bw==="h2h") return p.opp ? L.filter(g=>g.o===p.opp).slice(-10) : [];
+  if(S.bw==="szn") return L.filter(g=>g.s===CUR).slice(-17);
+  return L.slice(-n);
+}
+function sparkHTML(p){
+  if(!p.pl || !MARKETS[p.market]) return `<span class="spark none">No log</span>`;
+  const side = p.lean || "over", pk = p.pick || pickFor(p, side), line = pk?.line ?? p.line, get = MARKETS[p.market].get;
+  const L = winLogs(p);
+  if(!L.length) return `<span class="spark none">${S.bw==="h2h" ? "No H2H" : "No games"}</span>`;
+  const v = L.map(get), mx = (Math.max(line, ...v) || 1) * 1.12;
+  const bars = v.map((x,i)=>{ const r = result(x, line), c = r==="p" ? "p" : (r==="o")===(side==="over") ? "h" : "m";
+    return `<i class="${c}" style="height:${Math.max(7, x/mx*100).toFixed(0)}%;--d:${i*16}ms"></i>`; }).join("");
+  const hits = v.filter(x=>result(x,line)===(side==="over"?"o":"u")).length;
+  return `<span class="spark" role="img" aria-label="Hit ${hits} of ${v.length}">${bars}<b style="bottom:${(line/mx*100).toFixed(0)}%"></b></span>`;
+}
+function statHTML(p){
+  let k, v, c = "";
+  if(S.sort==="edge"){ k = "EDGE"; if(p.edge==null) v = "—"; else { const e = Math.round(p.edge*100); v = (e>0?"+":"") + e + "%"; c = e>=5 ? "g" : e<0 ? "r" : ""; } }
+  else if(S.sort==="trend"){ k = BW_LBL[S.bw]; const x = pct(winHit(p)); v = x==null ? "—" : x + "%"; c = x==null ? "" : x>=60 ? "g" : x<=40 ? "r" : ""; }
+  else if(S.sort==="gap"){ k = "GAP"; v = fmt(p.gap ?? 0); c = (p.gap||0) >= 1 ? "y" : ""; }
+  else { k = "SCORE"; v = p.score ?? "—"; c = p.score==null ? "" : p.score>=70 ? "g" : p.score>=55 ? "y" : ""; }
+  return `<span class="kv"><small>${k}</small><b class="${c}">${v}</b></span>`;
+}
+function pickTxt(p){
+  const side = p.lean || "over", pk = p.pick || pickFor(p, side), mk = MARKETS[p.market], lab = mk?.ab || mk?.label || p.market;
+  if(!pk) return `${lab} <em>${fmt(p.line)}</em>`;
+  const sd = p.market==="atd" ? (side==="over" ? "Yes" : "No") : (side==="over" ? "O" : "U");
+  return `<i class="sd ${side}">${sd}</i> ${p.market==="atd" ? "" : fmt(pk.line) + " "}${lab}<span class="px">${am(pk.price)}</span>`;
+}
 function rowHTML(p){
-  const s = p.st;
-  return `<div class="row" data-key="${esc(p.key)}">
+  const star = p.pid && WATCH.has(p.pid) ? `<i class="star" aria-label="On watchlist">★</i>` : "";
+  return `<div class="row prow" data-key="${esc(p.key)}">
     <button class="row-main press" data-open="${esc(p.key)}" ${p.pl?"":"disabled"}>
-      ${avatar(p.team, p.pid)}
-      <span class="who"><b>${esc(p.name)}</b><span class="l2">${MARKETS[p.market]?.label||p.market} <em>${fmt(p.line)}</em>${p.opp?` vs ${logoImg(p.opp,"tlog")}${esc(p.opp)}`:""}</span></span>
-      ${ring(p.score)}
+      <span class="avw">${avatar(p.team, p.pid)}${star}</span>
+      <span class="who"><b>${esc(shortName(p.name))}${p.opp?`<small>vs ${esc(p.opp)}</small>`:""}</b><span class="l2">${pickTxt(p)}</span></span>
+      ${statHTML(p)}
+      ${sparkHTML(p)}
     </button>
-    <div class="row-b"><div class="cells">${s ? cell("L5",s.l5)+cell("L10",s.l10)+cell("SZN",s.szn)+cell("H2H",s.h2h) : `<span class="m" style="font-size:13px">No game log match</span>`}</div>${addBtn(p)}</div>
-    ${tagsFor(p)}
   </div>`;
 }
 function heroHTML(list){
@@ -925,11 +1012,12 @@ function renderBoard(animate){
     const heroSrc = PROPS.props.filter(p=>!S.market || p.market===S.market);
     $("heroWrap").innerHTML = S.quick ? "" : heroHTML(heroSrc);
     $("boardList").innerHTML = (list.length
-      ? `<div class="sec-t"><h2>${S.quick ? QUICK.find(q=>q[0]===S.quick)[1] : "All props"}</h2><small>${list.length} props</small></div>${thinNote()}<div class="list">${list.slice(0,shown).map(rowHTML).join("")}</div>`
+      ? `<div class="sec-t"><h2>${S.quick ? QUICK.find(q=>q[0]===S.quick)[1] : "All props"}</h2><small>${list.length} props · <button class="sortlbl" data-fs="1">${SORT_LBL[S.sort]} ▾</button></small></div>${thinNote()}<div class="list flat">${list.slice(0,shown).map(rowHTML).join("")}</div>`
         + (list.length>shown ? `<button class="more press" id="moreBtn">Show ${Math.min(25,list.length-shown)} more</button>` : "")
       : `<div class="empty">Nothing matches these filters right now.</div>${thinNote()}`);
   };
   $("v-board").classList.toggle("anim", animate && !RM);
+  $("filterBtn").classList.toggle("on", !!S.quick || S.sort!=="score");
   animate ? flip($("boardList"), draw) : draw();
   const mb = $("moreBtn"); if(mb && moreObs) moreObs.observe(mb);
 }
@@ -943,6 +1031,7 @@ function loadMore(){
 const moreObs = "IntersectionObserver" in window ? new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) loadMore(); }), {rootMargin:"400px"}) : null;
 document.addEventListener("click", e => {
   if(e.target.id==="moreBtn") loadMore();
+  if(e.target.closest("[data-fs]")) openSheet("fsheet");
   if(e.target.closest("[data-thin]")){ S.showAll = !S.showAll; saveState(); shown = 25; S.tab==="games" ? renderGames(false) : renderBoard(false); }
 });
 
@@ -970,7 +1059,7 @@ function renderGames(animate){
 function gameProps(label){ return PROPS.props.filter(p=>p.game===label && visible(p) && (!S.market || p.market===S.market)).sort((a,b)=>(b.score??-1)-(a.score??-1)); }
 function gameBody(props, all){
   const n = all ? props.length : 10;
-  return `<div class="list">${props.slice(0,n).map(rowHTML).join("")}</div>` + (props.length>n ? `<button class="more press" data-all="1" style="margin:0 8px 8px;width:calc(100% - 16px)">Show all ${props.length}</button>` : "");
+  return `<div class="list flat">${props.slice(0,n).map(rowHTML).join("")}</div>` + (props.length>n ? `<button class="more press" data-all="1" style="margin:0 8px 8px;width:calc(100% - 16px)">Show all ${props.length}</button>` : "");
 }
 $("gamesList").addEventListener("click", e => {
   const all = e.target.closest("[data-all]");
@@ -1254,15 +1343,18 @@ document.addEventListener("click", e => {
   const pl = e.target.closest("[data-player]");
   if(pl){ openPlayer(byId.get(pl.dataset.player)); }
 });
-function openSheet(){ $("scrim").classList.add("open"); $("sheet").classList.add("open"); }
-function closeSheet(){ $("scrim").classList.remove("open"); $("sheet").classList.remove("open"); }
-$("infoBtn").onclick = openSheet; $("scrim").onclick = closeSheet; $("sheet").onclick = closeSheet;
+function openSheet(id="sheet"){ closeSheet(); $("scrim").classList.add("open"); $(id).classList.add("open"); if(id==="fsheet") requestAnimationFrame(()=>setSeg($("sortSeg"), S.sort)); }
+function closeSheet(){ $("scrim").classList.remove("open"); document.querySelectorAll(".sheet.open").forEach(x=>x.classList.remove("open")); }
+$("infoBtn").onclick = () => openSheet("sheet"); $("scrim").onclick = closeSheet; $("sheet").onclick = closeSheet;
+$("filterBtn").onclick = () => openSheet("fsheet"); $("fDone").onclick = closeSheet;
+$("bwSeg").onclick = e => { const b=e.target.closest("[data-v]"); if(!b||b.dataset.v===S.bw) return;
+  S.bw=b.dataset.v; setSeg($("bwSeg"),S.bw); saveState(); renderBoard(true); };
 
 let scrollTick = false;
 addEventListener("scroll", () => { if(scrollTick) return; scrollTick = true; requestAnimationFrame(()=>{ scrollTick = false;
   const sec = [...document.querySelectorAll("main>section")].find(x=>!x.hidden); sec?.querySelector(".top")?.classList.toggle("scrolled", scrollY>4); }); }, {passive:true});
-addEventListener("resize", () => { setSeg($("sortSeg"),S.sort); setSeg($("winSeg"),P.win); });
-document.fonts?.ready.then(()=>{ setSeg($("sortSeg"),S.sort); setSeg($("winSeg"),P.win); });
+addEventListener("resize", () => { setSeg($("sortSeg"),S.sort); setSeg($("bwSeg"),S.bw); setSeg($("winSeg"),P.win); });
+document.fonts?.ready.then(()=>{ setSeg($("sortSeg"),S.sort); setSeg($("bwSeg"),S.bw); setSeg($("winSeg"),P.win); });
 
 load();
 </script>
