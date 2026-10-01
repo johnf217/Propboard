@@ -435,7 +435,7 @@ td.o{color:var(--over);font-weight:600} td.u{color:var(--under);font-weight:600}
   <p>The score (1–99) ranks how strong a play looks from several angles at once, not just how mispriced it is. For both the over and the under, the model starts from recent form (last 10, last 5, season) pulled toward what the market says, then adjusts for:</p>
   <ul>
     <li><b>Projection</b>: the shape of his recent games against the line, using the middle game (median) so one huge game doesn't inflate it.</li>
-    <li><b>Streaks and usage</b>: hot or cold runs, and whether touches or targets are rising.</li>
+    <li><b>Streaks and usage</b>: hot or cold runs, his share of the team's targets or carries (rising or falling), and how many snaps he's playing.</li>
     <li><b>Matchup</b>: how the opponent's defense treats that position and stat, plus past games against them.</li>
     <li><b>Game script</b>: the spread and total. Big implied team totals lift everything; underdogs throw more and favorites run more.</li>
     <li><b>Team style and weather</b>: pass-heavy or run-heavy offense, wind, rain, and cold. Indoor games get no weather effect.</li>
@@ -670,8 +670,17 @@ const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
 const mean = a => a.length ? a.reduce((x,y)=>x+y,0)/a.length : 0;
 const r1 = v => Math.round(v*10)/10;
 const PASS_MK = new Set(["pass_yds","pass_td","pass_att","rec","rec_yds"]), RUSH_MK = new Set(["rush_yds","carries"]);
-const FACTOR_LABEL = {form:"Recent form", proj:"Projection", streak:"Streak", usage:"Usage trend", matchup:"Matchup", h2h:"Vs this team", team:"Team style", script:"Game script", lean:"Under lean", weather:"Weather", price:"Price"};
-let CTX = null, TENV = {}, LGPR = .5;
+const FACTOR_LABEL = {form:"Recent form", proj:"Projection", streak:"Streak", usage:"Usage trend", matchup:"Matchup", h2h:"Vs this team", team:"Team style", script:"Game script", lean:"Under lean", snaps:"Snap share", weather:"Weather", price:"Price"};
+let CTX = null, USAGE = null, TENV = {}, LGPR = .5;
+const TGT_MK = new Set(["rec","rec_yds"]), CAR_MK = new Set(["rush_yds","carries"]);
+const pctTxt = x => Math.round(x*100) + "%";
+// share trend from usage.json rows [season, week, tgtShare, carryShare, snapShare]
+function shareTrend(rows, idx){
+  const a = rows.slice(-10).map(r=>r[idx]).filter(x=>x!=null);
+  if(a.length < 5) return null;
+  const l10 = mean(a), l3 = mean(a.slice(-3));
+  return l10 > .02 ? {l10, l3} : null;
+}
 function buildTeamEnv(){
   const wk = new Set(RECENT_WEEKS.slice(-6)), agg = {};
   DATA.players.forEach(pl=>{ if(!pl.team) return;
@@ -754,10 +763,24 @@ function evaluate(p){
     if(pj){ const d = clamp(.45*(logit(clamp(pj.p,.05,.95)) - z0), -.5, .5); z += d; add("proj", d, `Median ${fmt(r1(pj.med))} vs ${fmt(pk.line)} line`); }
     if(st.streak >= 3){ const d = .03*Math.min(st.streak,7); z += d; add("streak", d, `Cashed ${st.streak} straight`); }
     else { const ms = missRun(pl.logs, get, pk.line, side); if(ms >= 3){ const d = -.03*Math.min(ms,5); z += d; add("streak", d, `Missed ${ms} straight`); } }
-    if(vol && pl.logs.length >= 6){
+    const us = USAGE?.players?.[pl.id];
+    // share of the team's targets/carries is steadier than raw counts (it ignores how many plays the team ran)
+    const shIdx = pl.pos==="QB" ? null : TGT_MK.has(mk) ? 2 : CAR_MK.has(mk) ? 3 : (mk==="rr_yds" || mk==="atd") ? (pl.pos==="RB" ? 3 : 2) : null;
+    const shr = us && shIdx ? shareTrend(us, shIdx) : null;
+    if(shr){
+      const rel = (shr.l3-shr.l10)/shr.l10, d = clamp(rel*.5, -.2, .2)*(mk==="atd" ? .6 : 1)*sgn;
+      if(Math.abs(d) >= .02){ z += d; add("usage", d, `${shIdx===2?"Target":"Carry"} share ${pctTxt(shr.l3)} last 3 (L10 ${pctTxt(shr.l10)})`); }
+    } else if(vol && pl.logs.length >= 6){
       const v = pl.logs.slice(-10).map(vol[1]), avg = mean(v), l3 = mean(v.slice(-3));
       if(avg > 0){ const rel = (l3-avg)/avg; let d = clamp(rel*.6, -.25, .25)*(mk==="atd" ? .5 : 1)*sgn;
         if(Math.abs(d) >= .02){ z += d; add("usage", d, `${vol[0]} ${rel>0?"up":"down"} ${Math.abs(Math.round(rel*100))}% last 3`); } }
+    }
+    const sn = us && pl.pos!=="QB" ? shareTrend(us, 4) : null;
+    if(sn){
+      let d = clamp((sn.l3-sn.l10)*1.2, -.15, .15), txt = `Snaps ${pctTxt(sn.l3)} last 3 (L10 ${pctTxt(sn.l10)})`;
+      if(sn.l3 < .5){ d -= .08; txt = `Part-time role, ${pctTxt(sn.l3)} of snaps last 3`; }
+      d *= sgn;
+      if(Math.abs(d) >= .02){ z += d; add("snaps", d, txt); }
     }
     if(p.dvp){ const r = (p.dvp.rank-1)/Math.max(1,p.dvp.n-1), d = (side==="over" ? .5-r : r-.5)*.6;
       z += d; add("matchup", d, p.dvp.rank <= p.dvp.n/2 ? `${p.opp} allows ${ord(p.dvp.rank)}-most ${MARKETS[mk].short}` : `${p.opp} allows ${ord(p.dvp.n-p.dvp.rank+1)}-fewest ${MARKETS[mk].short}`); }
@@ -810,8 +833,8 @@ function oppOf(p){ const [a,h] = (p.game||"").split(" @ "); return p.team===a ? 
 /* ---------- load ---------- */
 async function getJSON(url){ const r = await fetch(url,{cache:"no-cache"}); if(!r.ok) throw 0; return r.json(); }
 async function load(){
-  const [d, pr, cx] = await Promise.all([getJSON("player_logs.json").catch(()=>null), getJSON("props.json").catch(()=>null), getJSON("context.json").catch(()=>null)]);
-  DATA = d || demoData(); PROPS = pr; CTX = cx;
+  const [d, pr, cx, us] = await Promise.all([getJSON("player_logs.json").catch(()=>null), getJSON("props.json").catch(()=>null), getJSON("context.json").catch(()=>null), getJSON("usage.json").catch(()=>null)]);
+  DATA = d || demoData(); PROPS = pr; CTX = cx; USAGE = us;
   DATA.players.forEach(p=>{ p.logs.sort((a,b)=>a.s-b.s||a.w-b.w); byId.set(p.id,p); });
   CUR = Math.max(...DATA.players.flatMap(p=>p.logs.map(g=>g.s)));
   buildDvp(); buildWeeks(); buildTeamEnv();
