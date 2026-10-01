@@ -7,23 +7,20 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0F1B2D">
 <title>Prop Board</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#0F1B2D; --surface:#17263D; --surface2:#1F3150; --surface3:#273B5E; --line:#2A3F62;
   --text:#EEF2F7; --muted:#8FA3BF; --faint:#5E7394;
   --over:#3DDC97; --under:#FF6B6B; --push:#8FA3BF; --post:#FFD166;
-  --cond:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
-  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --cond:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif;
+  --body:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif;
   --ease:cubic-bezier(.2,.8,.2,1);
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
 }
 *,*::before,*::after{box-sizing:inherit}
 html{-webkit-text-size-adjust:100%;background:var(--bg)}
-body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 var(--body);-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 var(--body);-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
 button,input,select{font:inherit;color:inherit}
 button{cursor:pointer;-webkit-user-select:none;user-select:none;border:0;background:none;padding:0}
 :focus-visible{outline:2px solid var(--post);outline-offset:2px}
@@ -37,7 +34,7 @@ button{cursor:pointer;-webkit-user-select:none;user-select:none;border:0;backgro
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;margin:0 -16px;padding:10px 16px;background:#0F1B2D;border-bottom:1px solid transparent;transition:border-color .2s}
 .top.scrolled{border-bottom-color:var(--line)}
 .title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:4px 0 10px}
-.title h1{font:700 28px/1 var(--cond);margin:0;white-space:nowrap}
+.title h1{font:700 28px/1 var(--cond);letter-spacing:-.6px;margin:0;white-space:nowrap}
 .title small{font-size:12px;color:var(--muted);text-align:right;line-height:1.25}
 .chips{display:flex;gap:8px;overflow-x:auto;margin:0 -16px;padding:0 16px 2px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
@@ -108,7 +105,7 @@ button{cursor:pointer;-webkit-user-select:none;user-select:none;border:0;backgro
 .hc .why .tag{font-size:11px;padding:2px 7px;white-space:nowrap}
 .fxl{margin-top:10px}
 .fx{display:grid;grid-template-columns:112px 1fr;column-gap:10px;row-gap:3px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
-.fxn{grid-row:1/3;font:600 16px var(--cond)}
+.fxn{grid-row:1/3;font:600 14.5px var(--cond)}
 .fxb{position:relative;height:6px;border-radius:3px;background:var(--surface2);overflow:hidden}
 .fxb::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--line)}
 .fxb i{position:absolute;top:0;bottom:0;border-radius:3px}
@@ -154,27 +151,26 @@ button{cursor:pointer;-webkit-user-select:none;user-select:none;border:0;backgro
 .avw{position:relative;flex:none;display:flex}
 .prow .av{width:50px;height:50px}
 .avw .star{position:absolute;left:-4px;bottom:-4px;width:19px;height:19px;border-radius:50%;background:var(--bg);color:var(--over);font:normal 700 13px/19px var(--body);text-align:center}
-.prow .who b{font:700 19px/1.1 var(--cond)}
-.prow .who b small{font:600 12px var(--body);color:var(--muted);margin-left:6px;letter-spacing:.2px}
-.prow .who .l2{font-size:14px;color:var(--text);margin-top:4px}
+.prow .who b{font:600 16.5px/1.15 var(--cond);letter-spacing:-.2px}
+.prow .who b small{font:500 12px var(--body);color:var(--muted);margin-left:6px;letter-spacing:.2px}
+.prow .who .l2{font-size:13.5px;color:var(--text);margin-top:4px}
 .sd{font-style:normal;font-weight:700}
 .sd.over{color:var(--over)} .sd.under{color:var(--under)}
 .px{color:var(--muted);margin-left:6px;font-size:13px}
 .kv{flex:none;width:50px;text-align:center}
-.kv small{display:block;font:600 10px/1 var(--body);letter-spacing:.7px;color:var(--faint)}
-.kv b{display:block;font:700 20px/1 var(--cond);margin-top:5px;white-space:nowrap}
-.spark{position:relative;flex:none;width:86px;height:44px;display:flex;align-items:flex-end;justify-content:flex-end;gap:2px}
-.spark i{flex:1;max-width:13px;border-radius:2px 2px 0 0;transform-origin:bottom}
-.spark i.h{background:var(--over)} .spark i.m{background:var(--under)} .spark i.p{background:var(--faint)}
-.spark b{position:absolute;left:0;right:0;height:0;border-top:1px dashed rgba(238,242,247,.4);pointer-events:none}
-.spark.none{align-items:center;justify-content:center;font-size:11px;color:var(--faint)}
-.anim .list>.prow:nth-child(-n+10) .spark i{animation:grow .45s var(--ease) both;animation-delay:var(--d)}
+.kv small{display:block;font:600 9.5px/1 var(--body);letter-spacing:.6px;color:var(--faint)}
+.kv b{display:block;font:700 18px/1 var(--cond);letter-spacing:-.3px;margin-top:5px;white-space:nowrap}
+.spark{flex:none;display:block;width:100px;height:44px;overflow:visible}
+.spark rect{transform-box:fill-box;transform-origin:bottom}
+.spark .h{fill:var(--over)} .spark .m{fill:var(--under)} .spark .p{fill:var(--faint)}
+.spark line{stroke:rgba(238,242,247,.45);stroke-width:1;stroke-dasharray:3 2;shape-rendering:crispEdges}
+span.spark{display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--faint)}
+.anim .list>.prow:nth-child(-n+10) .spark rect{animation:grow .45s var(--ease) both;animation-delay:var(--d)}
 .sortlbl{color:var(--post);font-weight:600;font-size:13px}
 .game-b .list.flat{padding:0 0 4px}
 .game-b .prow{background:none;padding:10px 14px;border-bottom-color:var(--surface2)}
 .game-b .prow:last-child{border-bottom:0}
 .game-b .prow .av{width:44px;height:44px}
-.game-b .spark{width:76px}
 .fsheet .fl{font-size:12px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--faint);margin:14px 0 8px}
 .fsheet .seg{background:var(--surface2)}
 .fsheet .seg .pill{background:var(--surface3)}
@@ -438,10 +434,12 @@ td.o{color:var(--over);font-weight:600} td.u{color:var(--under);font-weight:600}
   <h3 id="sheetTitle">How Prop Score works</h3>
   <p>The score (1–99) ranks how strong a play looks from several angles at once, not just how mispriced it is. For both the over and the under, the model starts from recent form (last 10, last 5, season) pulled toward what the market says, then adjusts for:</p>
   <ul>
-    <li><b>Projection</b>: recent average and consistency against the line.</li>
+    <li><b>Projection</b>: the shape of his recent games against the line, using the middle game (median) so one huge game doesn't inflate it.</li>
     <li><b>Streaks and usage</b>: hot or cold runs, and whether touches or targets are rising.</li>
     <li><b>Matchup</b>: how the opponent's defense treats that position and stat, plus past games against them.</li>
+    <li><b>Game script</b>: the spread and total. Big implied team totals lift everything; underdogs throw more and favorites run more.</li>
     <li><b>Team style and weather</b>: pass-heavy or run-heavy offense, wind, rain, and cold. Indoor games get no weather effect.</li>
+    <li><b>Under lean</b>: unders have historically cashed more often because the public bets overs, so unders get a small nudge.</li>
     <li><b>Price</b>: the estimated hit chance versus the chance the price implies.</li>
   </ul>
   <p>Value counts most, but plays where several of these agree score higher. Open any player to see the full breakdown.</p>
@@ -672,7 +670,7 @@ const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
 const mean = a => a.length ? a.reduce((x,y)=>x+y,0)/a.length : 0;
 const r1 = v => Math.round(v*10)/10;
 const PASS_MK = new Set(["pass_yds","pass_td","pass_att","rec","rec_yds"]), RUSH_MK = new Set(["rush_yds","carries"]);
-const FACTOR_LABEL = {form:"Recent form", proj:"Projection", streak:"Streak", usage:"Usage trend", matchup:"Matchup", h2h:"Vs this team", team:"Team style", weather:"Weather", price:"Price"};
+const FACTOR_LABEL = {form:"Recent form", proj:"Projection", streak:"Streak", usage:"Usage trend", matchup:"Matchup", h2h:"Vs this team", team:"Team style", script:"Game script", lean:"Under lean", weather:"Weather", price:"Price"};
 let CTX = null, TENV = {}, LGPR = .5;
 function buildTeamEnv(){
   const wk = new Set(RECENT_WEEKS.slice(-6)), agg = {};
@@ -685,11 +683,32 @@ function buildTeamEnv(){
 }
 function project(pl, mk, line, side){
   if(MARKETS[mk].fixed!=null) return null;
-  const v = pl.logs.slice(-10).map(MARKETS[mk].get); if(v.length < 5) return null;
-  const w = v.map((_,i)=>1 + i/Math.max(1,v.length-1)), ws = w.reduce((x,y)=>x+y,0);
-  const mu = v.reduce((x,y,i)=>x+w[i]*y,0)/ws, va = v.reduce((x,y,i)=>x+w[i]*(y-mu)**2,0)/ws;
-  const sd = Math.max(Math.sqrt(va), .2*mu, .6), po = 1 - normCdf((line-mu)/sd);
-  return {mu, sd, p: side==="over" ? po : 1-po};
+  const v = pl.logs.slice(-10).map(MARKETS[mk].get), n = v.length; if(n < 5) return null;
+  const w = v.map((_,i)=>1 + i/Math.max(1,n-1)), ws = w.reduce((x,y)=>x+y,0);
+  const mu = v.reduce((x,y,i)=>x+w[i]*y,0)/ws, sd = Math.sqrt(v.reduce((x,y,i)=>x+w[i]*(y-mu)**2,0)/ws);
+  const srt = [...v].sort((x,y)=>x-y), q = f => { const i=(n-1)*f, lo=Math.floor(i), hi=Math.min(n-1,lo+1); return srt[lo]+(srt[hi]-srt[lo])*(i-lo); };
+  const iqr = q(.75)-q(.25), spr = iqr>0 ? Math.min(sd, iqr/1.34) : sd, med = q(.5);
+  const h = Math.max(.9*spr*Math.pow(n,-.2), .5, .08*Math.abs(med));
+  // each recent game is a small bell curve; summing them keeps the real shape (a few huge games no longer drag the estimate up)
+  const po = v.reduce((a,x,i)=>a + w[i]*(1 - normCdf((line-x)/h)), 0)/ws;
+  return {med, mu, p: side==="over" ? po : 1-po};
+}
+function scriptFx(p, mk){
+  const c = CTX?.games?.[p.game]; if(!c || c.total==null || c.spread_home==null || !p.game) return null;
+  const [aw, hm] = p.game.split(" @ "), home = p.team===hm; if(!home && p.team!==aw) return null;
+  const sp = home ? c.spread_home : -c.spread_home;
+  const tt = home ? (c.tt_home ?? (c.total - c.spread_home)/2) : (c.tt_away ?? (c.total + c.spread_home)/2);
+  const k = {pass_yds:.15, pass_att:.10, pass_td:.30, rec:.12, rec_yds:.15, rush_yds:.12, carries:.08, rr_yds:.15, atd:.30}[mk] ?? .1;
+  let d = clamp((tt-22.5)/7*k, -.25, .25);
+  if(PASS_MK.has(mk)) d += clamp(sp*.012, -.12, .12);
+  else if(RUSH_MK.has(mk)) d += clamp(-sp*.015, -.15, .15);
+  const role = sp <= -1 ? `${fmt(-sp)}-pt favorite` : sp >= 1 ? `${fmt(sp)}-pt underdog` : "Close game";
+  return {d, txt:`${role}, ${fmt(r1(tt))} implied pts`};
+}
+function gameLineTxt(label){
+  const c = CTX?.games?.[label]; if(!c || c.total==null || c.spread_home==null) return "";
+  const [aw, hm] = label.split(" @ "), fav = c.spread_home <= 0 ? hm : aw;
+  return `${fav} −${fmt(Math.abs(c.spread_home))} · O/U ${fmt(c.total)}`;
 }
 function missRun(logs, get, line, side){
   let n = 0; for(let i=logs.length-1;i>=0;i--){ const v=get(logs[i]), hit = side==="over" ? v>line : v<line; if(hit) break; n++; } return n;
@@ -732,7 +751,7 @@ function evaluate(p){
     let z = z0;
     add("form", z0 - logit(clamp(prior,.05,.95)), `Cashed ${st.l10.o} of last ${st.l10.n}`);
     const pj = project(pl, mk, pk.line, side);
-    if(pj){ const d = clamp(.45*(logit(clamp(pj.p,.05,.95)) - z0), -.5, .5); z += d; add("proj", d, `Averaging ${fmt(r1(pj.mu))} vs ${fmt(pk.line)} line`); }
+    if(pj){ const d = clamp(.45*(logit(clamp(pj.p,.05,.95)) - z0), -.5, .5); z += d; add("proj", d, `Median ${fmt(r1(pj.med))} vs ${fmt(pk.line)} line`); }
     if(st.streak >= 3){ const d = .03*Math.min(st.streak,7); z += d; add("streak", d, `Cashed ${st.streak} straight`); }
     else { const ms = missRun(pl.logs, get, pk.line, side); if(ms >= 3){ const d = -.03*Math.min(ms,5); z += d; add("streak", d, `Missed ${ms} straight`); } }
     if(vol && pl.logs.length >= 6){
@@ -747,6 +766,9 @@ function evaluate(p){
       const diff = tenv.pr - LGPR; let d = clamp(diff*2.5, -.15, .15)*(PASS_MK.has(mk) ? 1 : -1)*sgn;
       if(Math.abs(d) >= .03){ z += d; add("team", d, `${diff>0?"Pass-heavy":"Run-heavy"} offense (${Math.round(tenv.pr*100)}% pass)`); }
     }
+    const gs = scriptFx(p, mk);
+    if(gs && Math.abs(gs.d) >= .02){ const d = gs.d*sgn; z += d; add("script", d, gs.txt); }
+    if(side==="under" && mk!=="atd"){ const d = mk==="pass_yds" ? .07 : .04; z += d; add("lean", d, "Unders cash more often league-wide"); }
     const wf = weatherFx(ctx, mk);
     if(wf){ const d = wf.d*sgn; z += d; add("weather", d, wf.txt); }
     z = clamp(z, -3.2, 3.2);
@@ -959,11 +981,14 @@ function sparkHTML(p){
   const side = p.lean || "over", pk = p.pick || pickFor(p, side), line = pk?.line ?? p.line, get = MARKETS[p.market].get;
   const L = winLogs(p);
   if(!L.length) return `<span class="spark none">${S.bw==="h2h" ? "No H2H" : "No games"}</span>`;
-  const v = L.map(get), mx = (Math.max(line, ...v) || 1) * 1.12;
-  const bars = v.map((x,i)=>{ const r = result(x, line), c = r==="p" ? "p" : (r==="o")===(side==="over") ? "h" : "m";
-    return `<i class="${c}" style="height:${Math.max(7, x/mx*100).toFixed(0)}%;--d:${i*16}ms"></i>`; }).join("");
-  const hits = v.filter(x=>result(x,line)===(side==="over"?"o":"u")).length;
-  return `<span class="spark" role="img" aria-label="Hit ${hits} of ${v.length}">${bars}<b style="bottom:${(line/mx*100).toFixed(0)}%"></b></span>`;
+  const W = 100, H = 44, v = L.map(get), n = v.length, mx = (Math.max(line, ...v) || 1) * 1.1;
+  const gap = 2, bw = Math.min(13, Math.floor((W - gap*(n-1)) / n)), x0 = W - (n*bw + (n-1)*gap);
+  let hits = 0, r = "";
+  v.forEach((x,i)=>{ const res = result(x, line), c = res==="p" ? "p" : (res==="o")===(side==="over") ? "h" : "m"; if(c==="h") hits++;
+    const h = Math.max(3, Math.round(x/mx*H)), rx = Math.min(2, bw/4);
+    r += `<rect class="${c}" x="${x0 + i*(bw+gap)}" y="${H-h}" width="${bw}" height="${h}" rx="${rx}" style="--d:${i*16}ms"/>`; });
+  const ly = Math.round(H - line/mx*H) + .5;
+  return `<svg class="spark" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Hit ${hits} of ${n}">${r}<line x1="0" x2="${W}" y1="${ly}" y2="${ly}"/></svg>`;
 }
 function statHTML(p){
   let k, v, c = "";
@@ -1050,7 +1075,7 @@ function renderGames(animate){
     return `<div class="game${closed?" closed":""}" data-g="${esc(g.label)}">
       <button class="game-h" data-game="${esc(g.label)}" aria-expanded="${!closed}">
         <span class="mu">${logoImg(away,"tl")}${esc(away)}<span>@</span>${logoImg(home,"tl")}${esc(home)}</span>
-        <small><b>${until(g.kick)}</b><br>${props.length} props${best.score!=null?`, top ${best.score}`:""}${wxLine(g.label)?`<br>${esc(wxLine(g.label))}`:""}</small><span class="chev"></span>
+        <small><b>${until(g.kick)}</b><br>${props.length} props${best.score!=null?`, top ${best.score}`:""}${gameLineTxt(g.label)?`<br>${esc(gameLineTxt(g.label))}`:""}${wxLine(g.label)?`<br>${esc(wxLine(g.label))}`:""}</small><span class="chev"></span>
       </button>
       <div class="game-b"><div>${closed ? "" : gameBody(props)}</div></div>
     </div>`;
@@ -1223,23 +1248,23 @@ function renderPlayer(full){
 let chartState = null;
 function drawChart(g, vals){
   const H=220, top=24, bottom=42, pad=14, avail=$("chartScroll").clientWidth || 320;
-  const bw = Math.max(20, Math.min(34, (avail-pad*2)/g.length*0.72)), gap = Math.max(8, bw*0.38);
+  const bw = Math.round(Math.max(20, Math.min(34, (avail-pad*2)/g.length*0.72))), gap = Math.round(Math.max(8, bw*0.38));
   const W = Math.max(avail, pad*2 + g.length*(bw+gap) - gap);
-  const step = g.length>1 ? Math.min(bw+gap, (W-pad*2-bw)/(g.length-1)) : 0;
-  const x0 = g.length>1 ? pad : W/2 - bw/2;
+  const step = g.length>1 ? Math.floor(Math.min(bw+gap, (W-pad*2-bw)/(g.length-1))) : 0;
+  const x0 = g.length>1 ? pad : Math.round(W/2 - bw/2);
   const max = Math.max(...vals, P.line, 1) * 1.12;
-  const y = v => top + (H-top-bottom) * (1 - v/max), base = H-bottom;
+  const y = v => Math.round(top + (H-top-bottom) * (1 - v/max)), base = H-bottom;
   chartState = {max, y};
-  let s = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Game log chart">`;
+  let s = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Game log chart"><line x1="${pad/2}" x2="${W-pad/2}" y1="${base+.5}" y2="${base+.5}" stroke="var(--line)" stroke-width="1"/>`;
   g.forEach((gm,i)=>{
     const v = vals[i], x = x0 + i*step, r = result(v,P.line), h = Math.max(2, base-y(v));
-    s += `<rect class="bar" x="${x}" y="${base-h}" width="${bw}" height="${h}" rx="5" fill="var(--${r==="o"?"over":r==="u"?"under":"push"})" style="animation-delay:${i*28}ms"/>`;
-    s += `<text x="${x+bw/2}" y="${base-h-7}" text-anchor="middle" fill="var(--text)" font-family="Barlow Condensed,Arial Narrow,sans-serif" font-weight="600" font-size="14">${v}</text>`;
+    s += `<rect class="bar" x="${x}" y="${base-h}" width="${bw}" height="${h}" rx="4" fill="var(--${r==="o"?"over":r==="u"?"under":"push"})" style="animation-delay:${i*28}ms"/>`;
+    s += `<text x="${x+bw/2}" y="${base-h-7}" text-anchor="middle" fill="var(--text)" style="font:600 12.5px var(--body)">${fmt(v)}</text>`;
     s += `<image href="${LOGO(gm.o)}" x="${x+bw/2-9}" y="${base+5}" width="18" height="18" onerror="this.nextElementSibling.style.display='inline';this.remove()"><title>${gm.o}</title></image>`;
     s += `<text x="${x+bw/2}" y="${base+18}" text-anchor="middle" fill="var(--muted)" font-size="11" style="display:none">${gm.o}</text>`;
-    s += `<text x="${x+bw/2}" y="${base+36}" text-anchor="middle" fill="var(--faint)" font-size="10">W${gm.w}</text>`;
+    s += `<text x="${x+bw/2}" y="${base+36}" text-anchor="middle" fill="var(--faint)" style="font:500 10px var(--body)">W${gm.w}</text>`;
   });
-  s += `<g class="pline" id="pline" style="transform:translateY(${y(P.line)}px)"><line x1="${pad/2}" x2="${W-pad/2}" y1="0" y2="0" stroke="var(--post)" stroke-width="2" stroke-dasharray="6 4"/></g></svg>`;
+  s += `<g class="pline" id="pline" style="transform:translateY(${y(P.line)}px)"><line x1="${pad/2}" x2="${W-pad/2}" y1="0" y2="0" stroke="var(--post)" stroke-width="1.5" stroke-dasharray="5 4"/></g></svg>`;
   $("chart").classList.toggle("anim", !RM);
   $("chart").innerHTML = s;
   $("chartScroll").scrollLeft = 1e6;
