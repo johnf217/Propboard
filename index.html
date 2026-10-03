@@ -167,6 +167,21 @@ button{cursor:pointer;-webkit-user-select:none;user-select:none;border:0;backgro
 span.spark{display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--faint)}
 .anim .list>.prow:nth-child(-n+10) .spark rect{animation:grow .45s var(--ease) both;animation-delay:var(--d)}
 .sortlbl{color:var(--post);font-weight:600;font-size:13px}
+.stale{background:rgba(255,209,102,.12);border:1px solid rgba(255,209,102,.35);color:var(--text);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.4;margin:10px 0 0}
+.stale b{color:var(--post);font-weight:700}
+#updated.old{color:var(--post)}
+#splitCard h4{font:700 15px/1.2 var(--cond);margin:14px 0 8px}
+.spnote{font-size:12.5px;color:var(--muted);line-height:1.4;margin:0 0 8px}
+.sprow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.spc{position:relative;background:var(--surface2);border-radius:12px;padding:8px 10px;border:1.5px solid transparent}
+.spc.now{border-color:var(--post)}
+.spc small{display:block;font-size:12px;font-weight:600;color:var(--muted)}
+.spc b{display:block;font:700 20px/1.15 var(--cond);letter-spacing:-.3px;margin-top:2px}
+.spc em{display:block;font-style:normal;font-size:12px;font-weight:600;color:var(--muted)}
+.spc em.g{color:var(--over)} .spc em.r{color:var(--under)}
+.spc i{position:absolute;top:7px;right:8px;font-style:normal;font-size:10px;font-weight:700;color:var(--post);letter-spacing:.3px;text-transform:uppercase}
+.chips.mates{flex-wrap:wrap;margin:0 0 8px;padding:0;overflow:visible}
+.chips.mates .chip small{color:var(--faint);font-weight:600;margin-left:3px}
 .seg.gv{margin:4px 0 8px}
 .seg.dpos{margin:4px 0 8px}
 #defMk{margin-bottom:6px}
@@ -415,6 +430,7 @@ td.o{color:var(--over);font-weight:600} td.u{color:var(--under);font-weight:600}
         <div class="chips seg2" id="mkChips" role="group" aria-label="Market"></div>
       </div>
     </div>
+    <div class="stale" id="stale" hidden></div>
     <div id="heroWrap"></div>
     <div id="boardList"></div>
   </section>
@@ -489,6 +505,7 @@ td.o{color:var(--over);font-weight:600} td.u{color:var(--under);font-weight:600}
       <div><div class="k">High</div><div class="v" id="hi">—</div></div>
       <div><div class="k">Low</div><div class="v" id="lo">—</div></div>
     </div>
+    <div class="card" id="splitCard" hidden></div>
     <div class="card" id="matchCard"></div>
     <div class="card" id="volCard"></div>
     <div id="books"></div>
@@ -996,6 +1013,91 @@ $("defBody").onclick = e => {
   if(t.closest("#defDir")){ DEF.dir = DEF.dir==="easy" ? "tough" : "easy"; saveDef(); renderDefense(); return; }
   const r = t.closest("[data-def]"); if(r){ DEF.open = DEF.open===r.dataset.def ? null : r.dataset.def; renderDefense(); }
 };
+/* ---------- splits (player page) ---------- */
+let SCHED = null, SCHED_MAP = null;
+const TOT_SPLIT = 45;
+function schedInfo(s, w, opp){
+  if(!SCHED?.games) return null;
+  if(!SCHED_MAP){
+    SCHED_MAP = new Map();
+    SCHED.games.forEach(([gs,gw,h,a,sp,tot,res,ind])=>{
+      // keyed by the opponent: facing the home team means the player was away
+      SCHED_MAP.set(`${gs}|${gw}|${h}`, {home:0, fav: sp==null||sp===0 ? null : sp<0, tot, win: res==null||res===0 ? null : res<0, ind:!!ind});
+      SCHED_MAP.set(`${gs}|${gw}|${a}`, {home:1, fav: sp==null||sp===0 ? null : sp>0, tot, win: res==null||res===0 ? null : res>0, ind:!!ind});
+    });
+  }
+  return SCHED_MAP.get(`${s}|${w}|${opp}`) || null;
+}
+function thisWeekCtx(){
+  const prop = curProp() || BY_PID.get(P.pl.id)?.[0], opp = currentOpp(), t = {};
+  if(prop?.game){ const [a,h] = prop.game.split(" @ "); if(P.pl.team===h || P.pl.team===a) t.home = P.pl.team===h ? "a" : "b";
+    const c = CTX?.games?.[prop.game];
+    if(c){ if(c.spread_home!=null && c.spread_home!==0 && t.home){ const favHome = c.spread_home < 0; t.fav = (t.home==="a") === favHome ? "a" : "b"; }
+      if(c.total!=null) t.tot = c.total >= TOT_SPLIT ? "a" : "b";
+      if(c.dome) t.ind = "a"; else if(c.temp!=null || c.wind!=null) t.ind = "b"; } }
+  const d = opp && dvpFor(P.pl.pos, P.market, opp);
+  if(d){ const k = Math.ceil(d.n/3); if(d.rank > d.n-k) t.def = "a"; else if(d.rank <= k) t.def = "b"; }
+  return t;
+}
+function splitCell(label, list, line, now){
+  if(!list.length) return `<div class="spc${now?" now":""}"><small>${label}</small><b>—</b><em>no games</em>${now?`<i>This week</i>`:""}</div>`;
+  const v = list.map(x=>x.v), o = v.filter(x=>x>line).length, pc = o/v.length, c = pc>=.6 ? "g" : pc<=.4 ? "r" : "";
+  return `<div class="spc${now?" now":""}"><small>${label}</small><b>${fmt(r1(mean(v)))}</b><em class="${c}">${o} of ${v.length} over</em>${now?`<i>This week</i>`:""}</div>`;
+}
+function renderSplits(){
+  const card = $("splitCard"), m = MARKETS[P.market], pl = P.pl, line = P.line;
+  const L = pl.logs.filter(g=>g.s >= CUR-1).map(g=>({g, v:m.get(g), i:schedInfo(g.s, g.w, g.o), d:dvpFor(pl.pos, P.market, g.o)}));
+  if(!L.length){ card.hidden = true; return; }
+  card.hidden = false;
+  const tw = thisWeekCtx(), hasSched = L.some(x=>x.i);
+  const rows = [
+    ...(hasSched ? [
+      ["home", "Home", "Away", x=>x.i?.home===1, x=>x.i?.home===0],
+      ["fav", "Favorite", "Underdog", x=>x.i?.fav===true, x=>x.i?.fav===false],
+      ["win", "Team won", "Team lost", x=>x.i?.win===true, x=>x.i?.win===false],
+      ["tot", `Total ${TOT_SPLIT}+`, `Total under ${TOT_SPLIT}`, x=>x.i?.tot!=null && x.i.tot>=TOT_SPLIT, x=>x.i?.tot!=null && x.i.tot<TOT_SPLIT],
+      ["ind", "Indoors", "Outdoors", x=>x.i?.ind===true, x=>x.i && x.i.ind===false]] : []),
+    ["def", "Vs tough D", "Vs soft D", x=>x.d && x.d.rank > x.d.n-Math.ceil(x.d.n/3), x=>x.d && x.d.rank <= Math.ceil(x.d.n/3)],
+  ];
+  // teammates: most-used offensive teammates; preselect one who's ruled out this week
+  const mates = (BY_TEAM.get(pl.team) || []).filter(t=>t!==pl && VOL[t.pos] && t.logs.some(g=>g.s>=CUR-1))
+    .map(t=>({t, vol: mean(t.logs.slice(-5).map(VOL[t.pos][1]))})).sort((a,b)=>b.vol-a.vol).slice(0,6).map(x=>x.t);
+  if(P.mateFor !== pl.id){ P.mateFor = pl.id; const hurt = mates.find(t=>{ const j = injOf(t.id); return j && j.st!=="Questionable"; }); P.mate = hurt?.id || null; }
+  const mate = mates.find(t=>t.id===P.mate);
+  let mateHTML = "";
+  if(mates.length){
+    let cells = `<p class="spnote">Pick a teammate to see this player's games with and without him.</p>`;
+    if(mate){
+      const played = new Set(mate.logs.map(g=>`${g.s}|${g.w}|${g.o}`)), j = injOf(mate.id);
+      const w = L.filter(x=>played.has(`${x.g.s}|${x.g.w}|${x.g.o}`)), wo = L.filter(x=>!played.has(`${x.g.s}|${x.g.w}|${x.g.o}`));
+      const out = j && j.st!=="Questionable";
+      cells = `<div class="sprow">${splitCell("With "+esc(shortName(mate.name)), w, line, !out)}${splitCell("Without", wo, line, out)}</div>
+        ${j ? `<p class="spnote">${esc(mate.name)} is listed as ${j.st==="IR" ? "on injured reserve" : j.st.toLowerCase()} this week.</p>` : ""}`;
+    }
+    mateHTML = `<h4>With or without a teammate</h4>
+      <div class="chips mates">${mates.map(t=>{ const j = injOf(t.id); return `<button class="chip" data-mate="${esc(t.id)}" aria-pressed="${t.id===P.mate}">${esc(shortName(t.name))} <small>${t.pos}</small>${j?`<em class="ij">${INJ_SHORT[j.st]}</em>`:""}</button>`; }).join("")}</div>${cells}`;
+  }
+  card.innerHTML = `<h3>Splits</h3>
+    <p class="spnote">${m.label} over ${fmt(line)} since ${CUR-1}. The highlighted side is this week's situation. Tough and soft D are the bottom and top third for this stat.</p>
+    ${rows.map(([k,a,b,fa,fb])=>`<div class="sprow">${splitCell(a, L.filter(fa), line, tw[k]==="a")}${splitCell(b, L.filter(fb), line, tw[k]==="b")}</div>`).join("")}
+    ${hasSched ? "" : `<p class="spnote">Home/away, favorite, score and weather splits appear once the schedule file is in.</p>`}
+    ${mateHTML}`;
+}
+$("splitCard").onclick = e => { const b = e.target.closest("[data-mate]"); if(!b) return; P.mate = P.mate===b.dataset.mate ? null : b.dataset.mate; renderSplits(); };
+
+/* ---------- stale data warning ---------- */
+function ageTxt(ms){ const h = Math.round(ms/36e5); return h >= 48 ? `${Math.round(h/24)} days` : `${h} hours`; }
+function renderStale(){
+  const now = Date.now(), msgs = [];
+  const pa = PROPS?.updated ? now - Date.parse(PROPS.updated) : null;
+  const ca = CTX?.updated ? now - Date.parse(CTX.updated) : null;
+  if(pa!=null && pa > 18*36e5) msgs.push(`Lines are ${ageTxt(pa)} old`);
+  if(ca!=null && ca > 30*36e5) msgs.push(`weather, game lines and injuries are ${ageTxt(ca)} old`);
+  const el = $("stale");
+  el.hidden = !msgs.length;
+  if(msgs.length){ const t = msgs.join(", and "); el.innerHTML = `<b>⚠ ${t.charAt(0).toUpperCase() + t.slice(1)}.</b> An update may have failed. Check the workflows in GitHub Actions.`; }
+  $("updated").classList.toggle("old", pa!=null && pa > 18*36e5);
+}
 function gameLineTxt(label){
   const c = CTX?.games?.[label]; if(!c || c.total==null || c.spread_home==null) return "";
   const [aw, hm] = label.split(" @ "), fav = c.spread_home <= 0 ? hm : aw;
@@ -1125,8 +1227,8 @@ function oppOf(p){ const [a,h] = (p.game||"").split(" @ "); return p.team===a ? 
 /* ---------- load ---------- */
 async function getJSON(url){ const r = await fetch(url,{cache:"no-cache"}); if(!r.ok) throw 0; return r.json(); }
 async function load(){
-  const [d, pr, cx, us, ij, pk, ln] = await Promise.all([getJSON("player_logs.json").catch(()=>null), getJSON("props.json").catch(()=>null), getJSON("context.json").catch(()=>null), getJSON("usage.json").catch(()=>null), getJSON("injuries.json").catch(()=>null), getJSON("picks.json").catch(()=>null), getJSON("lines.json").catch(()=>null)]);
-  DATA = d || demoData(); PROPS = pr; CTX = cx; USAGE = us; INJ = ij; PICKS = pk; LINES = ln;
+  const [d, pr, cx, us, ij, pk, ln, sc] = await Promise.all([getJSON("player_logs.json").catch(()=>null), getJSON("props.json").catch(()=>null), getJSON("context.json").catch(()=>null), getJSON("usage.json").catch(()=>null), getJSON("injuries.json").catch(()=>null), getJSON("picks.json").catch(()=>null), getJSON("lines.json").catch(()=>null), getJSON("schedule.json").catch(()=>null)]);
+  DATA = d || demoData(); PROPS = pr; CTX = cx; USAGE = us; INJ = ij; PICKS = pk; LINES = ln; SCHED = sc;
   DATA.players.forEach(p=>{ p.logs.sort((a,b)=>a.s-b.s||a.w-b.w); byId.set(p.id,p); });
   CUR = Math.max(...DATA.players.flatMap(p=>p.logs.map(g=>g.s)));
   buildDvp(); buildWeeks(); buildTeamEnv(); buildTeams();
@@ -1146,6 +1248,7 @@ async function load(){
     });
     SLIP = SLIP.filter(l=>propByKey.has(l.key));
     $("updated").innerHTML = `Lines ${kickTime(PROPS.updated)}<br>${PROPS.props.length} props`;
+    renderStale();
   } else {
     $("updated").textContent = DATA.demo ? "Demo stats" : "";
     SLIP = [];
@@ -1565,6 +1668,7 @@ function renderPlayer(full){
   renderModel(prop);
   renderBooks(prop);
   renderAlt(prop);
+  renderSplits();
   const mi = prop ? mvInfoHTML(prop) : ""; $("mvInfo").hidden = !mi; $("mvInfo").innerHTML = mi;
 }
 /* ---------- alt line slider: model estimate + fair odds at any line ---------- */
