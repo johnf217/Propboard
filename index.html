@@ -167,6 +167,18 @@ button{cursor:pointer;-webkit-user-select:none;user-select:none;border:0;backgro
 span.spark{display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--faint)}
 .anim .list>.prow:nth-child(-n+10) .spark rect{animation:grow .45s var(--ease) both;animation-delay:var(--d)}
 .sortlbl{color:var(--post);font-weight:600;font-size:13px}
+.fbtn.on{background:var(--surface3)}
+.sbar{display:flex;gap:10px;align-items:center;margin-top:8px}
+.sbar input{flex:1;min-width:0;height:40px;border-radius:12px;border:0;background:var(--surface);color:var(--text);font:16px var(--body);padding:0 14px;-webkit-appearance:none}
+.sbar input::placeholder{color:var(--faint)}
+.sbar button{color:var(--post);font-weight:600;font-size:15px}
+.mini.slots{display:flex;overflow-x:auto;scrollbar-width:none;margin:16px 0 0;width:max-content;max-width:100%}
+.mini.slots::-webkit-scrollbar{display:none}
+.mini.slots button{white-space:nowrap}
+.pacts{display:flex;align-items:center;gap:6px}
+.star.shr{color:var(--muted);display:grid;place-items:center}
+.star.shr:disabled{opacity:.3}
+.shimg{display:block;width:100%;border-radius:14px;-webkit-touch-callout:default;user-select:auto}
 .stale{background:rgba(255,209,102,.12);border:1px solid rgba(255,209,102,.35);color:var(--text);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.4;margin:10px 0 0}
 .stale b{color:var(--post);font-weight:700}
 #updated.old{color:var(--post)}
@@ -426,9 +438,11 @@ td.o{color:var(--over);font-weight:600} td.u{color:var(--under);font-weight:600}
         <button data-v="szn">Season</button><button data-v="h2h">H2H</button><button data-v="l5">L5</button><button data-v="l10">L10</button><button data-v="l20">L20</button>
       </div>
       <div class="ctl">
+        <button class="iconbtn fbtn press" id="searchBtn" aria-label="Search players"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button>
         <button class="iconbtn fbtn press" id="filterBtn" aria-label="Sort and filters"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
         <div class="chips seg2" id="mkChips" role="group" aria-label="Market"></div>
       </div>
+      <div class="sbar" id="sbar" hidden><input id="bq" type="search" placeholder="Search player or team" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="Search the board"><button id="bqX">Cancel</button></div>
     </div>
     <div class="stale" id="stale" hidden></div>
     <div id="heroWrap"></div>
@@ -465,7 +479,7 @@ td.o{color:var(--over);font-weight:600} td.u{color:var(--under);font-weight:600}
 
   <!-- PLAYER DETAIL -->
   <section id="v-player" hidden>
-    <div class="top"><div class="phead"><button class="back press" id="backBtn">Back</button><button class="star" id="starBtn" aria-label="Add to watchlist">★</button></div></div>
+    <div class="top"><div class="phead"><button class="back press" id="backBtn">Back</button><div class="pacts"><button class="star shr" id="shareBtn" aria-label="Share this play"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7.5 7.5L12 3l4.5 4.5"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg></button><button class="star" id="starBtn" aria-label="Add to watchlist">★</button></div></div></div>
     <div class="hero" id="hero"></div>
     <div class="chips" id="pMarkets" role="group" aria-label="Prop market"></div>
     <div class="deck">
@@ -535,6 +549,11 @@ td.o{color:var(--over);font-weight:600} td.u{color:var(--under);font-weight:600}
   <div class="chips" id="qChips" role="group" aria-label="Quick filters"></div>
   <div class="fbtns"><button class="linkbtn" id="infoBtn">How the score works</button><button class="done press" id="fDone">Done</button></div>
 </div>
+<div class="sheet" id="shareSheet" role="dialog" aria-modal="true" aria-label="Share image">
+  <div class="grab"></div>
+  <img id="shareImg" alt="Shareable card for this play" class="shimg">
+  <p class="fl" style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--muted);margin:10px 0 0">Press and hold the image to save or share it.</p>
+</div>
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
   <div class="grab"></div>
   <h3 id="sheetTitle">How Prop Score works</h3>
@@ -600,7 +619,7 @@ let SLIP = store.get("pb2_slip") || [];
 const WATCH = new Set(store.get("pb2_watch") || []);
 const P = {pl:null, market:null, line:null, win:"l10", from:"board"};
 let shown = 25, stake = store.get("pb2_stake") || 10;
-const saveState = () => store.set("pb2_state", {tab:S.tab, market:S.market, quick:S.quick, sort:S.sort, bw:S.bw, gview:S.gview, open:[...S.open], showAll:!!S.showAll});
+const saveState = () => store.set("pb2_state", {tab:S.tab, market:S.market, quick:S.quick, sort:S.sort, bw:S.bw, gview:S.gview, slot:S.slot||"", open:[...S.open], showAll:!!S.showAll});
 const $ = id => document.getElementById(id);
 
 /* ---------- demo data (fictional) ---------- */
@@ -1098,6 +1117,114 @@ function renderStale(){
   if(msgs.length){ const t = msgs.join(", and "); el.innerHTML = `<b>⚠ ${t.charAt(0).toUpperCase() + t.slice(1)}.</b> An update may have failed. Check the workflows in GitHub Actions.`; }
   $("updated").classList.toggle("old", pa!=null && pa > 18*36e5);
 }
+/* ---------- board search + kickoff slots ---------- */
+const SLOT_LBL = {tnf:"Thu", fri:"Fri", sat:"Sat", early:"Early", late:"Late", snf:"SNF", mnf:"MNF", other:"Other"};
+const SLOT_ORDER = ["tnf","fri","sat","early","late","snf","mnf","other"];
+const slotCache = new Map(), ET = new Intl.DateTimeFormat("en-US", {timeZone:"America/New_York", weekday:"short", hour:"numeric", hourCycle:"h23"});
+function slotOf(kick){
+  if(!kick) return "other"; if(slotCache.has(kick)) return slotCache.get(kick);
+  const pt = ET.formatToParts(new Date(kick)), wd = pt.find(x=>x.type==="weekday")?.value, hr = +(pt.find(x=>x.type==="hour")?.value || 0) % 24;
+  const s = wd==="Sun" ? (hr < 15 ? "early" : hr < 19 ? "late" : "snf") : wd==="Mon" ? "mnf" : wd==="Thu" ? "tnf" : wd==="Sat" ? "sat" : wd==="Fri" ? "fri" : "other";
+  slotCache.set(kick, s); return s;
+}
+const slotsThisWeek = () => SLOT_ORDER.filter(s => (PROPS?.games || []).some(g=>slotOf(g.kick)===s));
+const passSlot = p => !S.slot || slotOf(p.kick)===S.slot;
+function passQ(p){
+  const q = (S.q||"").trim().toLowerCase(); if(!q) return true;
+  return [p.name, p.team, p.opp, MARKETS[p.market]?.label].some(x=>x && x.toLowerCase().includes(q));
+}
+function slotBarHTML(){
+  const sl = slotsThisWeek(); if(sl.length < 2) return "";
+  return `<div class="mini slots">${[["","All games"], ...sl.map(s=>[s, SLOT_LBL[s]])].map(([v,l])=>`<button data-slot="${v}" aria-pressed="${(S.slot||"")===v}">${l}</button>`).join("")}</div>`;
+}
+let qTimer = 0;
+$("searchBtn").onclick = () => { const open = $("sbar").hidden; $("sbar").hidden = !open; $("searchBtn").classList.toggle("on", open);
+  if(open) setTimeout(()=>$("bq").focus(), 30); else { $("bq").value = ""; if(S.q){ S.q = ""; shown = 25; renderBoard(false); } } };
+$("bq").addEventListener("input", e => { clearTimeout(qTimer); qTimer = setTimeout(()=>{ S.q = e.target.value; shown = 25; renderBoard(false); }, 120); });
+$("bqX").onclick = () => $("searchBtn").click();
+
+/* ---------- share a play (image card) ---------- */
+const SF = (w, px) => `${w} ${px}px -apple-system, "SF Pro Display", "Helvetica Neue", Arial, sans-serif`;
+function rrect(c, x, y, w, h, r){ c.beginPath(); c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r); c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath(); }
+function fitText(c, txt, w, max, min, weight){ let s = max; c.font = SF(weight, s); while(s > min && c.measureText(txt).width > w){ s -= 2; c.font = SF(weight, s); } return s; }
+function shareData(prop){
+  const m = MARKETS[prop.market], alt = P.line !== prop.line && m.fixed==null;
+  if(alt){ const e = altEstimate(P.line, prop); if(!e) return null;
+    const side = e.po >= .5 ? "over" : "under", pr = side==="over" ? e.po : 1-e.po;
+    return {side, line:P.line, alt:true, prob:pr, sub:`Alt line · model fair price ${am(toAm(1/pr))}`, est:`Model estimate ${Math.round(pr*100)}% at this line`}; }
+  const pk = prop.pick || pickFor(prop, prop.lean||"over"); if(!pk) return null;
+  return {side:prop.lean||"over", line:pk.line, alt:false, prob:prop.pModel, sub:`${am(pk.price)} at ${pk.title}`,
+    est: prop.pModel!=null ? `Model ${Math.round(prop.pModel*100)}% vs ${Math.round(prop.pImpl*100)}% priced` : ""};
+}
+function drawShareCard(prop){
+  const d = shareData(prop); if(!d) return null;
+  const W = 1080, H = 1350, cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+  const c = cv.getContext("2d"), pl = prop.pl, m = MARKETS[prop.market], col = TEAM_COLOR[prop.team] || "#3A4A66";
+  const GREEN = "#3DDC97", RED = "#FF6B6B", YEL = "#FFD166", TXT = "#EEF2F7", MUT = "#8FA0B8", SURF = "#172742", SURF2 = "#1F3152";
+  const sideCol = d.side==="over" ? GREEN : RED;
+  c.fillStyle = "#0F1B2D"; c.fillRect(0,0,W,H);
+  const gr = c.createLinearGradient(0,0,0,520); gr.addColorStop(0, col+"66"); gr.addColorStop(1, "#0F1B2D00"); c.fillStyle = gr; c.fillRect(0,0,W,520);
+  c.textBaseline = "alphabetic";
+  c.fillStyle = MUT; c.font = SF(700, 28); c.fillText("PROP BOARD", 72, 92);
+  c.textAlign = "right"; c.fillText(prop.kick ? kickTime(prop.kick) : "", W-72, 92); c.textAlign = "left";
+  // team badge
+  c.fillStyle = col; c.beginPath(); c.arc(142, 222, 70, 0, Math.PI*2); c.fill();
+  c.fillStyle = "#fff"; c.font = SF(800, 40); c.textAlign = "center"; c.fillText(prop.team || "", 142, 236); c.textAlign = "left";
+  c.fillStyle = TXT; fitText(c, prop.name, W-72-240, 70, 40, 800); c.fillText(prop.name, 240, 214);
+  c.fillStyle = MUT; c.font = SF(500, 34); c.fillText(`${pl.pos} · ${prop.team} vs ${prop.opp || ""}`, 240, 264);
+  // pick
+  const sd = prop.market==="atd" ? (d.side==="over" ? "YES" : "NO") : d.side.toUpperCase();
+  const pickTxt = `${sd} ${prop.market==="atd" ? "" : fmt(d.line)+" "}${(m.label||"").toUpperCase()}`;
+  c.fillStyle = sideCol; fitText(c, pickTxt, prop.score!=null && !d.alt ? 700 : W-144, 80, 44, 800); c.fillText(pickTxt, 72, 420);
+  c.fillStyle = TXT; c.font = SF(600, 36); c.fillText(d.sub, 72, 476);
+  if(prop.score!=null && !d.alt){
+    const sc = prop.score, rc = sc>=70 ? GREEN : sc>=55 ? YEL : MUT;
+    c.lineWidth = 16; c.strokeStyle = SURF2; c.beginPath(); c.arc(W-150, 410, 74, 0, Math.PI*2); c.stroke();
+    c.strokeStyle = rc; c.lineCap = "round"; c.beginPath(); c.arc(W-150, 410, 74, -Math.PI/2, -Math.PI/2 + Math.PI*2*sc/100); c.stroke();
+    c.fillStyle = rc; c.font = SF(800, 58); c.textAlign = "center"; c.fillText(sc, W-150, 430);
+    c.fillStyle = MUT; c.font = SF(700, 20); c.fillText("SCORE", W-150, 520); c.textAlign = "left";
+  }
+  // hit-rate tiles
+  const st = hitStats(pl, prop.market, d.line, prop.opp, d.side);
+  const tiles = [["L5",st.l5],["L10",st.l10],["SEASON",st.szn],["VS "+(prop.opp||"OPP"),st.h2h]];
+  const tw = (W-144-3*20)/4;
+  tiles.forEach(([l,h],i)=>{ const x = 72 + i*(tw+20), y = 560, pc = h.n ? h.o/h.n : null;
+    c.fillStyle = SURF; rrect(c, x, y, tw, 140, 22); c.fill();
+    c.textAlign = "center"; c.fillStyle = MUT; c.font = SF(700, 22); c.fillText(l, x+tw/2, y+40);
+    c.fillStyle = pc==null ? MUT : pc>=.6 ? GREEN : pc<=.4 ? RED : TXT; c.font = SF(800, 48); c.fillText(pc==null ? "—" : Math.round(pc*100)+"%", x+tw/2, y+94);
+    c.fillStyle = MUT; c.font = SF(500, 20); c.fillText(h.n ? `${h.o}/${h.n}` : "no games", x+tw/2, y+124); c.textAlign = "left"; });
+  // last 10 chart
+  const L = pl.logs.slice(-10), v = L.map(m.get), cx0 = 72, cw = W-144, ctop = 772, cbot = 1000;
+  c.fillStyle = SURF; rrect(c, cx0-24, ctop-44, cw+48, cbot-ctop+104, 26); c.fill();
+  c.fillStyle = MUT; c.font = SF(700, 22); c.fillText(`LAST ${v.length} GAMES`, cx0, ctop-6);
+  if(v.length){
+    const mx = Math.max(...v, d.line, 1) * 1.15, y = x => Math.round(cbot - (x/mx)*(cbot-ctop-30)), n = v.length, gap = 18, bw = Math.floor((cw - gap*(n-1))/n);
+    v.forEach((x,i)=>{ const r = result(x, d.line), win = r==="p" ? null : (r==="o")===(d.side==="over"), bx = cx0 + i*(bw+gap), by = y(x);
+      c.fillStyle = win==null ? "#5B6B85" : win ? GREEN : RED; rrect(c, bx, by, bw, Math.max(6, cbot-by), 8); c.fill();
+      c.fillStyle = TXT; c.font = SF(700, 24); c.textAlign = "center"; c.fillText(fmt(x), bx+bw/2, by-10);
+      c.fillStyle = MUT; c.font = SF(600, 20); c.fillText(L[i].o || "", bx+bw/2, cbot+34); c.textAlign = "left"; });
+    const ly = y(d.line) + .5; c.strokeStyle = YEL; c.lineWidth = 3; c.setLineDash([14,10]); c.beginPath(); c.moveTo(cx0-10, ly); c.lineTo(cx0+cw+10, ly); c.stroke(); c.setLineDash([]);
+  }
+  // reasons
+  const why = (prop.fx || []).filter(f=>f.d>=.05).sort((a,b)=>b.d-a.d).slice(0,3).map(f=>f.txt);
+  let ry = 1146;
+  c.font = SF(600, 30);
+  why.forEach(t=>{ c.fillStyle = GREEN; c.fillText("✓", 72, ry); c.fillStyle = TXT; let s = t; while(c.measureText(s).width > W-200 && s.length > 4) s = s.slice(0,-2); c.fillText(s===t ? t : s+"…", 116, ry); ry += 44; });
+  c.fillStyle = MUT; c.font = SF(500, 22); c.fillText(`${d.est}${d.est ? " · " : ""}For research, not betting advice`, 72, H-40);
+  return cv;
+}
+async function sharePlay(){
+  const prop = curProp(); if(!prop) return;
+  const cv = drawShareCard(prop); if(!cv) return;
+  const blob = await new Promise(r=>cv.toBlob(r, "image/png")); if(!blob) return;
+  const name = `${prop.name.replace(/[^a-z0-9]+/gi,"-").toLowerCase()}-${prop.market}.png`;
+  const file = new File([blob], name, {type:"image/png"});
+  try{ if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file], title:"Prop Board"}); return; } }
+  catch(e){ if(e && e.name==="AbortError") return; }
+  const img = $("shareImg"); if(img.dataset.url) URL.revokeObjectURL(img.dataset.url);
+  img.dataset.url = URL.createObjectURL(blob); img.src = img.dataset.url; openSheet("shareSheet");
+}
+$("shareBtn").onclick = sharePlay;
 function gameLineTxt(label){
   const c = CTX?.games?.[label]; if(!c || c.total==null || c.spread_home==null) return "";
   const [aw, hm] = label.split(" @ "), fav = c.spread_home <= 0 ? hm : aw;
@@ -1249,6 +1376,7 @@ async function load(){
     SLIP = SLIP.filter(l=>propByKey.has(l.key));
     $("updated").innerHTML = `Lines ${kickTime(PROPS.updated)}<br>${PROPS.props.length} props`;
     renderStale();
+    if(S.slot && !slotsThisWeek().includes(S.slot)) S.slot = "";
   } else {
     $("updated").textContent = DATA.demo ? "Demo stats" : "";
     SLIP = [];
@@ -1359,7 +1487,7 @@ function passQuick(p){
   return true;
 }
 const visible = p => S.showAll || p.ok;
-function boardProps(){ return PROPS.props.filter(p=>visible(p) && (!S.market || p.market===S.market) && passQuick(p)).sort((a,b)=>sortVal(b)-sortVal(a)); }
+function boardProps(){ return PROPS.props.filter(p=>visible(p) && (!S.market || p.market===S.market) && passQuick(p) && passSlot(p) && passQ(p)).sort((a,b)=>sortVal(b)-sortVal(a)); }
 function thinNote(){
   const n = PROPS.props.filter(p=>!p.ok && (!S.market || p.market===S.market)).length;
   if(!n) return "";
@@ -1455,12 +1583,13 @@ function renderBoard(animate){
   if(!PROPS){ $("heroWrap").innerHTML=""; $("boardList").innerHTML = `<div class="empty">No prop lines yet. Run the Update prop lines workflow in GitHub, then reload.</div>`; return; }
   const list = boardProps();
   const draw = () => {
-    const heroSrc = PROPS.props.filter(p=>!S.market || p.market===S.market);
-    $("heroWrap").innerHTML = S.quick ? "" : heroHTML(heroSrc);
-    $("boardList").innerHTML = (list.length
-      ? `<div class="sec-t"><h2>${S.quick ? QUICK.find(q=>q[0]===S.quick)[1] : "All props"}</h2><small>${list.length} props · <button class="sortlbl" data-fs="1">${SORT_LBL[S.sort]} ▾</button></small></div>${thinNote()}<div class="list flat">${list.slice(0,shown).map(rowHTML).join("")}</div>`
+    const heroSrc = PROPS.props.filter(p=>(!S.market || p.market===S.market) && passSlot(p));
+    const q = (S.q||"").trim();
+    $("heroWrap").innerHTML = S.quick || q ? "" : heroHTML(heroSrc);
+    $("boardList").innerHTML = slotBarHTML() + (list.length
+      ? `<div class="sec-t"><h2>${q ? `Results for “${esc(q)}”` : S.quick ? QUICK.find(q=>q[0]===S.quick)[1] : S.slot ? SLOT_LBL[S.slot]+" games" : "All props"}</h2><small>${list.length} props · <button class="sortlbl" data-fs="1">${SORT_LBL[S.sort]} ▾</button></small></div>${thinNote()}<div class="list flat">${list.slice(0,shown).map(rowHTML).join("")}</div>`
         + (list.length>shown ? `<button class="more press" id="moreBtn">Show ${Math.min(25,list.length-shown)} more</button>` : "")
-      : `<div class="empty">Nothing matches these filters right now.</div>${thinNote()}`);
+      : `<div class="empty">${q ? `No props match “${esc(q)}”.` : "Nothing matches these filters right now."}</div>${thinNote()}`);
   };
   $("v-board").classList.toggle("anim", animate && !RM);
   $("filterBtn").classList.toggle("on", !!S.quick || S.sort!=="score");
@@ -1478,6 +1607,8 @@ const moreObs = "IntersectionObserver" in window ? new IntersectionObserver(es =
 document.addEventListener("click", e => {
   if(e.target.id==="moreBtn") loadMore();
   if(e.target.closest("[data-fs]")) openSheet("fsheet");
+  const sb = e.target.closest("[data-slot]");
+  if(sb){ S.slot = sb.dataset.slot; saveState(); shown = 25; renderBoard(true); }
   if(e.target.closest("[data-thin]")){ S.showAll = !S.showAll; saveState(); shown = 25; S.tab==="games" ? renderGames(false) : renderBoard(false); }
 });
 
@@ -1669,6 +1800,7 @@ function renderPlayer(full){
   renderBooks(prop);
   renderAlt(prop);
   renderSplits();
+  $("shareBtn").disabled = !prop;
   const mi = prop ? mvInfoHTML(prop) : ""; $("mvInfo").hidden = !mi; $("mvInfo").innerHTML = mi;
 }
 /* ---------- alt line slider: model estimate + fair odds at any line ---------- */
