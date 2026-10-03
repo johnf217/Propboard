@@ -1,25 +1,25 @@
 {
- "updated": "2026-10-03T02:14:08+00:00",
+ "updated": "2026-10-03T17:52:33+00:00",
  "games": {
   "IND @ WAS": {
-   "spread_home": 4.25,
+   "spread_home": 4.5,
    "total": 47.5,
    "tt_home": 21.5,
    "tt_away": 26.5,
-   "temp": 61,
-   "wind": 8,
-   "gust": 17,
-   "pop": 80,
-   "precip": 2.1
+   "temp": 62,
+   "wind": 6,
+   "gust": 15,
+   "pop": 21,
+   "precip": 0.0
   },
   "JAX @ CIN": {
    "spread_home": -2.5,
    "total": 51.5,
    "tt_home": 26.5,
    "tt_away": 24.5,
-   "temp": 74,
+   "temp": 75,
    "wind": 5,
-   "gust": 7,
+   "gust": 8,
    "pop": 0,
    "precip": 0.0
   },
@@ -27,11 +27,11 @@
    "spread_home": 3.5,
    "total": 40.5,
    "tt_home": 17.5,
-   "tt_away": 21.5,
-   "temp": 84,
+   "tt_away": 20.5,
+   "temp": 87,
    "wind": 5,
-   "gust": 11,
-   "pop": 42,
+   "gust": 8,
+   "pop": 13,
    "precip": 0.0
   },
   "LA @ PHI": {
@@ -40,30 +40,30 @@
    "tt_home": 19.5,
    "tt_away": 23.5,
    "temp": 60,
-   "wind": 7,
-   "gust": 19,
-   "pop": 71,
-   "precip": 1.4
+   "wind": 8,
+   "gust": 18,
+   "pop": 30,
+   "precip": 0.0
   },
   "TEN @ BAL": {
    "spread_home": -11.5,
    "total": 43.0,
    "tt_home": 27.5,
    "tt_away": 15.5,
-   "temp": 61,
-   "wind": 6,
-   "gust": 15,
-   "pop": 72,
+   "temp": 63,
+   "wind": 7,
+   "gust": 14,
+   "pop": 10,
    "precip": 0.0
   },
   "NYJ @ CHI": {
    "spread_home": -3.5,
    "total": 43.5,
    "tt_home": 23.5,
-   "tt_away": 20.0,
-   "temp": 67,
+   "tt_away": 19.5,
+   "temp": 66,
    "wind": 8,
-   "gust": 16,
+   "gust": 15,
    "pop": 0,
    "precip": 0.0
   },
@@ -72,11 +72,11 @@
    "total": 44.5,
    "tt_home": 21.5,
    "tt_away": 23.5,
-   "temp": 61,
+   "temp": 59,
    "wind": 7,
    "gust": 18,
-   "pop": 57,
-   "precip": 1.1
+   "pop": 31,
+   "precip": 0.4
   },
   "DAL @ HOU": {
    "spread_home": -3.0,
@@ -87,17 +87,17 @@
   },
   "NE @ BUF": {
    "spread_home": -7.0,
-   "total": 50.0,
+   "total": 49.5,
    "tt_home": 28.5,
    "tt_away": 20.5,
-   "temp": 68,
-   "wind": 10,
-   "gust": 17,
-   "pop": 4,
+   "temp": 66,
+   "wind": 12,
+   "gust": 21,
+   "pop": 7,
    "precip": 0.0
   },
   "MIA @ MIN": {
-   "spread_home": -10.5,
+   "spread_home": -10.0,
    "total": 39.5,
    "tt_home": 24.5,
    "tt_away": 14.5,
@@ -108,10 +108,10 @@
    "total": 48.0,
    "tt_home": 24.5,
    "tt_away": 22.5,
-   "temp": 85,
-   "wind": 7,
-   "gust": 15,
-   "pop": 0,
+   "temp": 84,
+   "wind": 8,
+   "gust": 18,
+   "pop": 2,
    "precip": 0.0
   },
   "LAC @ SEA": {
@@ -119,9 +119,9 @@
    "total": 43.5,
    "tt_home": 25.5,
    "tt_away": 17.5,
-   "temp": 71,
+   "temp": 70,
    "wind": 5,
-   "gust": 7,
+   "gust": 9,
    "pop": 0,
    "precip": 0.0
   },
@@ -133,18 +133,18 @@
    "dome": true
   },
   "DET @ CAR": {
-   "spread_home": 3.5,
+   "spread_home": 4.0,
    "total": 51.0,
    "tt_home": 23.5,
    "tt_away": 27.5,
-   "temp": 64,
+   "temp": 68,
    "wind": 2,
-   "gust": 7,
-   "pop": 84,
-   "precip": 6.0
+   "gust": 8,
+   "pop": 27,
+   "precip": 0.0
   },
   "ATL @ NO": {
-   "spread_home": -2.5,
+   "spread_home": -2.25,
    "total": 48.0,
    "tt_home": 24.5,
    "tt_away": 23.5,
@@ -153,8 +153,6 @@
   "TB @ DAL": {
    "spread_home": -9.5,
    "total": 47.5,
-   "tt_home": 45.5,
-   "tt_away": 29.5,
    "dome": true
   }
  }
