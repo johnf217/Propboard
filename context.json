@@ -1,8 +1,8 @@
 {
- "updated": "2026-10-03T00:53:49+00:00",
+ "updated": "2026-10-03T01:45:41+00:00",
  "games": {
   "IND @ WAS": {
-   "spread_home": 4.5,
+   "spread_home": 4.25,
    "total": 47.5,
    "tt_home": 21.5,
    "tt_away": 26.5,
@@ -70,7 +70,7 @@
   "ARI @ NYG": {
    "spread_home": 2.5,
    "total": 44.5,
-   "tt_home": 21.0,
+   "tt_home": 21.5,
    "tt_away": 23.5,
    "temp": 63,
    "wind": 9,
