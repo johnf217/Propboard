@@ -1,11 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="background:#0F1B2D">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0F1B2D">
+<meta name="apple-mobile-web-app-title" content="Prop Board">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="manifest" href="manifest.webmanifest">
 <title>Prop Board</title>
 <style>
 :root{
@@ -167,6 +171,14 @@ button{cursor:pointer;-webkit-user-select:none;user-select:none;border:0;backgro
 span.spark{display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--faint)}
 .anim .list>.prow:nth-child(-n+10) .spark rect{animation:grow .45s var(--ease) both;animation-delay:var(--d)}
 .sortlbl{color:var(--post);font-weight:600;font-size:13px}
+.stale.off{background:var(--surface);border-color:var(--line)}
+.stale.off b{color:var(--text)}
+.ptr{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:70;width:38px;height:38px;border-radius:50%;background:var(--surface3);color:var(--muted);display:grid;place-items:center;opacity:0;transform:translate(-50%,0);pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.35);transition:opacity .2s,transform .25s var(--ease),color .15s}
+.ptr.ready{color:var(--post)}
+.ptr.spin{opacity:1!important;color:var(--post);transform:translate(-50%,48px)!important;animation:ptrspin .7s linear infinite}
+@keyframes ptrspin{to{rotate:360deg}}
+.utoast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 74px);z-index:65;background:var(--post);color:#1B1405;font-weight:700;font-size:14px;border-radius:999px;padding:11px 18px;box-shadow:0 6px 20px rgba(0,0,0,.4);white-space:nowrap}
+.utoast[hidden]{display:none}
 .fbtn.on{background:var(--surface3)}
 .sbar{display:flex;gap:10px;align-items:center;margin-top:8px}
 .sbar input{flex:1;min-width:0;height:40px;border-radius:12px;border:0;background:var(--surface);color:var(--text);font:16px var(--body);padding:0 14px;-webkit-appearance:none}
@@ -528,6 +540,8 @@ td.o{color:var(--over);font-weight:600} td.u{color:var(--under);font-weight:600}
   </section>
 </main>
 
+<div class="ptr" id="ptr" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 11-2.35-5.65"/><path d="M20 4v5h-5"/></svg></div>
+<button class="utoast press" id="updToast" hidden></button>
 <div class="tabbar"><nav id="tabs">
   <button class="tab" data-tab="board"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span>Board</button>
   <button class="tab" data-tab="games"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="12" rx="9" ry="6" transform="rotate(-35 12 12)"/><path d="M9.5 14.5l5-5M10.5 11l2.5 2.5M12 9.5l2.5 2.5" stroke-linecap="round"/></svg></span>Games</button>
@@ -1107,6 +1121,9 @@ $("splitCard").onclick = e => { const b = e.target.closest("[data-mate]"); if(!b
 /* ---------- stale data warning ---------- */
 function ageTxt(ms){ const h = Math.round(ms/36e5); return h >= 48 ? `${Math.round(h/24)} days` : `${h} hours`; }
 function renderStale(){
+  const el0 = $("stale");
+  el0.classList.toggle("off", SAVED_DATA);
+  if(SAVED_DATA){ el0.hidden = false; el0.innerHTML = `<b>Offline.</b> Showing saved data${PROPS?.updated ? `, lines from ${kickTime(PROPS.updated)}` : ""}. Pull down to try again.`; $("updated").classList.remove("old"); return; }
   const now = Date.now(), msgs = [];
   const pa = PROPS?.updated ? now - Date.parse(PROPS.updated) : null;
   const ca = CTX?.updated ? now - Date.parse(CTX.updated) : null;
@@ -1225,6 +1242,52 @@ async function sharePlay(){
   img.dataset.url = URL.createObjectURL(blob); img.src = img.dataset.url; openSheet("shareSheet");
 }
 $("shareBtn").onclick = sharePlay;
+/* ---------- home-screen app: offline support, pull to refresh, update notice ---------- */
+const BUILD = "2026.10.03-1";
+let SAVED_DATA = false, NEW_HTML = null, hiddenAt = 0, lastCheck = 0;
+if("serviceWorker" in navigator && (location.protocol==="https:" || ["localhost","127.0.0.1"].includes(location.hostname))){
+  navigator.serviceWorker.register("sw.js").catch(()=>{});
+}
+function notice(text, onTap){
+  const t = $("updToast"); t.textContent = text; t.hidden = false; t.onclick = () => { t.hidden = true; onTap && onTap(); };
+}
+async function checkUpdate(){
+  if(Date.now() - lastCheck < 5*60e3) return; lastCheck = Date.now();
+  try{
+    const r = await fetch("index.html?check=" + Date.now(), {cache:"no-store"}); if(!r.ok) return;
+    const txt = await r.text(), m = txt.match(/const BUILD = "([^"]+)"/);
+    if(m && m[1] !== BUILD){ NEW_HTML = txt;
+      notice("Update available. Tap to refresh.", async () => {
+        try{ if("caches" in window) await (await caches.open("pb-v1")).put("index.html", new Response(NEW_HTML, {headers:{"Content-Type":"text/html; charset=utf-8"}})); }catch(e){}
+        location.reload(); }); }
+  }catch(e){}
+}
+setTimeout(checkUpdate, 3000);
+document.addEventListener("visibilitychange", () => {
+  if(document.hidden){ hiddenAt = Date.now(); return; }
+  checkUpdate();
+  if(hiddenAt && Date.now() - hiddenAt > 30*60e3 && $("v-player").hidden && $("updToast").hidden) notice("Tap to get the latest lines.", () => location.reload());
+});
+// pull down from the top of Board, Games or Record to reload
+(() => {
+  const el = $("ptr"); let y0 = null, x0 = 0, dist = 0;
+  const can = () => $("v-player").hidden && !document.querySelector(".sheet.open") && scrollY <= 0 && document.activeElement?.tagName !== "INPUT";
+  const reset = () => { el.style.transform = ""; el.style.opacity = 0; el.classList.remove("ready"); };
+  addEventListener("touchstart", e => { if(e.touches.length!==1 || !can()){ y0 = null; return; } y0 = e.touches[0].clientY; x0 = e.touches[0].clientX; dist = 0; }, {passive:true});
+  addEventListener("touchmove", e => {
+    if(y0==null) return;
+    const dy = e.touches[0].clientY - y0, dx = e.touches[0].clientX - x0;
+    if(Math.abs(dx) > Math.abs(dy) || (scrollY > 0 && dy <= 0)){ y0 = null; reset(); return; }
+    dist = dy; if(dy <= 0) return;
+    const d = Math.min(dy, 130);
+    el.style.transform = `translate(-50%, ${(d*.55).toFixed(1)}px) rotate(${(d*2.6).toFixed(0)}deg)`;
+    el.style.opacity = Math.min(1, d/60).toFixed(2); el.classList.toggle("ready", d >= 85);
+  }, {passive:true});
+  addEventListener("touchend", () => {
+    if(y0==null) return; y0 = null;
+    if(dist >= 85){ el.classList.add("spin"); setTimeout(() => location.reload(), 180); } else reset();
+  }, {passive:true});
+})();
 function gameLineTxt(label){
   const c = CTX?.games?.[label]; if(!c || c.total==null || c.spread_home==null) return "";
   const [aw, hm] = label.split(" @ "), fav = c.spread_home <= 0 ? hm : aw;
@@ -1352,7 +1415,7 @@ function topPlays(list){
 function oppOf(p){ const [a,h] = (p.game||"").split(" @ "); return p.team===a ? h : p.team===h ? a : null; }
 
 /* ---------- load ---------- */
-async function getJSON(url){ const r = await fetch(url,{cache:"no-cache"}); if(!r.ok) throw 0; return r.json(); }
+async function getJSON(url){ const r = await fetch(url,{cache:"no-cache"}); if(!r.ok) throw 0; if(r.headers.get("X-PB-Saved")) SAVED_DATA = true; return r.json(); }
 async function load(){
   const [d, pr, cx, us, ij, pk, ln, sc] = await Promise.all([getJSON("player_logs.json").catch(()=>null), getJSON("props.json").catch(()=>null), getJSON("context.json").catch(()=>null), getJSON("usage.json").catch(()=>null), getJSON("injuries.json").catch(()=>null), getJSON("picks.json").catch(()=>null), getJSON("lines.json").catch(()=>null), getJSON("schedule.json").catch(()=>null)]);
   DATA = d || demoData(); PROPS = pr; CTX = cx; USAGE = us; INJ = ij; PICKS = pk; LINES = ln; SCHED = sc;
