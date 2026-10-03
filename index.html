@@ -167,6 +167,34 @@ button{cursor:pointer;-webkit-user-select:none;user-select:none;border:0;backgro
 span.spark{display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--faint)}
 .anim .list>.prow:nth-child(-n+10) .spark rect{animation:grow .45s var(--ease) both;animation-delay:var(--d)}
 .sortlbl{color:var(--post);font-weight:600;font-size:13px}
+.seg.gv{margin:4px 0 8px}
+.seg.dpos{margin:4px 0 8px}
+#defMk{margin-bottom:6px}
+.dctl{display:flex;justify-content:space-between;align-items:center;margin:4px 0 6px}
+.dsort{font-weight:600;font-size:14px;color:var(--post)}
+.mini{display:flex;background:var(--surface);border-radius:999px;padding:3px}
+.mini button{padding:5px 11px;border-radius:999px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.mini button[aria-pressed="true"]{background:var(--surface3);color:var(--text)}
+.dnote{font-size:12.5px;color:var(--muted);line-height:1.4;margin:0 0 10px}
+.dlist{display:flex;flex-direction:column}
+.dcard{border-bottom:1px solid var(--line)}
+.dcard.open{background:var(--surface);border-radius:14px;border-bottom:0;margin:4px 0}
+.drow{display:flex;align-items:center;gap:10px;width:100%;padding:10px 4px;text-align:left}
+.dcard.open .drow{padding:10px 10px}
+.drk{flex:none;width:24px;font:700 15px/1 var(--cond);text-align:center}
+.drk.g{color:var(--over)} .drk.r{color:var(--under)} .drk.y{color:var(--muted)}
+.dlogo{flex:none;width:28px;height:28px;object-fit:contain}
+.dt{flex:none;width:72px}
+.dt b{display:block;font:700 15px/1.1 var(--cond)}
+.dt small{display:block;font-size:11.5px;color:var(--faint);margin-top:2px;white-space:nowrap}
+.dbar{flex:1;min-width:0;height:8px;border-radius:4px;background:var(--surface2);overflow:hidden}
+.dbar i{display:block;height:100%;border-radius:4px}
+.dbar i.g{background:var(--over)} .dbar i.r{background:var(--under)} .dbar i.y{background:var(--faint)}
+.dv{flex:none;width:52px;text-align:right}
+.dv b{display:block;font:700 16px/1.1 var(--cond);letter-spacing:-.2px}
+.dv small{display:block;font-size:11.5px;font-weight:600;margin-top:2px}
+.dexp{padding:0 10px 6px}
+.dexp .prow:last-child{border-bottom:0}
 .mv{font-style:normal;font-weight:700;font-size:11px;margin-right:5px;vertical-align:1px}
 .mv.g{color:var(--over)} .mv.r{color:var(--under)}
 .mvinfo{font-size:13px;color:var(--muted);line-height:1.45;margin:2px 2px 12px}
@@ -394,8 +422,10 @@ td.o{color:var(--over);font-weight:600} td.u{color:var(--under);font-weight:600}
   <!-- GAMES -->
   <section id="v-games" hidden>
     <div class="top"><div class="title"><h1>Games</h1><small id="gamesSub"></small></div>
+      <div class="seg gv" id="gView" role="group" aria-label="View"><button data-v="games">This week</button><button data-v="def">Defense rankings</button></div>
       <div class="chips seg2" id="mkChips2" role="group" aria-label="Market"></div></div>
     <div id="gamesList"></div>
+    <div id="defBody" hidden></div>
   </section>
 
   <!-- SLIP -->
@@ -547,13 +577,13 @@ const store = {
   get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},
   set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 };
-const S = Object.assign({tab:"board", market:"", quick:"", sort:"score", bw:"l10", open:[]}, store.get("pb2_state")||{});
+const S = Object.assign({tab:"board", market:"", quick:"", sort:"score", bw:"l10", gview:"games", open:[]}, store.get("pb2_state")||{});
 S.open = new Set(S.open||[]);
 let SLIP = store.get("pb2_slip") || [];
 const WATCH = new Set(store.get("pb2_watch") || []);
 const P = {pl:null, market:null, line:null, win:"l10", from:"board"};
 let shown = 25, stake = store.get("pb2_stake") || 10;
-const saveState = () => store.set("pb2_state", {tab:S.tab, market:S.market, quick:S.quick, sort:S.sort, bw:S.bw, open:[...S.open], showAll:!!S.showAll});
+const saveState = () => store.set("pb2_state", {tab:S.tab, market:S.market, quick:S.quick, sort:S.sort, bw:S.bw, gview:S.gview, open:[...S.open], showAll:!!S.showAll});
 const $ = id => document.getElementById(id);
 
 /* ---------- demo data (fictional) ---------- */
@@ -902,6 +932,70 @@ function mvInfoHTML(p){
   const what = m.txt ? `Line ${m.dir>0?"up":"down"} ${m.txt}` : `${m.dir>0?"Over":"Under"} getting more expensive`;
   return `${mvArrow(m)} <b>${what}</b> since it opened. Opened ${fmt(m.a[1])} (${px(m.a[2],m.a[3])}), now ${fmt(m.b[1])} (${px(m.b[2],m.b[3])}). ${m.good ? "The market is moving toward the model's pick." : "The market is moving against the model's pick."}`;
 }
+/* ---------- defense rankings ---------- */
+const DEF = Object.assign({pos:"WR", mk:"rec_yds", mode:"szn", dir:"easy", open:null}, store.get("pb2_def")||{});
+const saveDef = () => store.set("pb2_def", {pos:DEF.pos, mk:DEF.mk, mode:DEF.mode, dir:DEF.dir});
+const defCache = new Map();
+function defTable(pos, mk, mode){
+  const ck = pos+"|"+mk+"|"+mode; if(defCache.has(ck)) return defCache.get(ck);
+  const season = DVP.season, agg = {}, get = MARKETS[mk].get;
+  DATA.players.forEach(pl=>{ if(pl.pos!==pos) return;
+    pl.logs.forEach(g=>{ if(g.s!==season || !g.o) return; const w = (agg[g.o] ??= new Map()); w.set(g.w, (w.get(g.w)||0) + get(g)); }); });
+  const rows = Object.entries(agg).map(([t,w])=>{ let ws = [...w.entries()].sort((a,b)=>a[0]-b[0]); if(mode==="l4") ws = ws.slice(-4);
+      return ws.length >= 2 ? {t, avg: mean(ws.map(x=>x[1])), n: ws.length} : null; }).filter(Boolean).sort((a,b)=>b.avg-a.avg);
+  rows.forEach((r,i)=>r.rank = i+1);
+  const res = {rows, lg: mean(rows.map(r=>r.avg)), season};
+  defCache.set(ck, res); return res;
+}
+function weekOpp(){
+  const o = {}; (PROPS?.games || []).forEach(g=>{ const [a,h] = g.label.split(" @ "); o[a] = h; o[h] = a; }); return o;
+}
+function renderDefense(){
+  const el = $("defBody"), pos = DEF.pos;
+  if(!BY_POS[pos].includes(DEF.mk)) DEF.mk = BY_POS[pos][0];
+  const mk = DEF.mk, m = MARKETS[mk], T = defTable(pos, mk, DEF.mode), opp = weekOpp(), n = T.rows.length;
+  $("gamesSub").textContent = `${T.season} season`;
+  if(!n){ el.innerHTML = `<div class="empty">Not enough ${T.season} games yet.</div>`; return; }
+  const rows = DEF.dir==="easy" ? T.rows : [...T.rows].reverse(), mx = Math.max(...T.rows.map(r=>r.avg), 1);
+  const third = Math.ceil(n/3);
+  el.innerHTML = `
+    <div class="seg dpos" id="defPos">${["QB","RB","WR","TE"].map(p=>`<button data-v="${p}">${p}</button>`).join("")}</div>
+    <div class="chips" id="defMk">${BY_POS[pos].map(k=>`<button class="chip" data-dm="${k}" aria-pressed="${k===mk}">${MARKETS[k].ab||MARKETS[k].label}</button>`).join("")}</div>
+    <div class="dctl">
+      <button class="dsort" id="defDir">${DEF.dir==="easy" ? "Easiest first ▾" : "Toughest first ▴"}</button>
+      <div class="mini"><button data-dmode="szn" aria-pressed="${DEF.mode==="szn"}">Season</button><button data-dmode="l4" aria-pressed="${DEF.mode==="l4"}">Last 4</button></div>
+    </div>
+    <p class="dnote">${m.label} allowed to ${POS_PLURAL[pos]} per game (all ${POS_PLURAL[pos]} combined). League average ${fmt(r1(T.lg))}. Tap a defense to see this week's props against it.</p>
+    <div class="dlist">${rows.map(r=>{
+      const c = r.rank <= third ? "g" : r.rank > n - third ? "r" : "y", d = T.lg ? Math.round((r.avg/T.lg-1)*100) : 0, isOpen = DEF.open===r.t;
+      const faces = opp[r.t];
+      let body = "";
+      if(isOpen){
+        const ps = (PROPS?.props || []).filter(p=>p.opp===r.t && p.pos===pos && p.market===mk && visible(p)).sort((a,b)=>(b.score??-1)-(a.score??-1));
+        body = `<div class="dexp">${ps.length ? `<div class="list flat">${ps.map(rowHTML).join("")}</div>` : `<p class="dnote" style="margin:6px 0">${faces ? `No ${m.label.toLowerCase()} props for ${esc(faces)} ${POS_PLURAL[pos]} against them yet.` : "They aren't on this week's slate."}</p>`}</div>`;
+      }
+      return `<div class="dcard${isOpen?" open":""}"><button class="drow press" data-def="${r.t}" aria-expanded="${isOpen}">
+        <span class="drk ${c}">${r.rank}</span>${logoImg(r.t,"dlogo")}
+        <span class="dt"><b>${r.t}</b><small>${faces ? `Faces ${faces}` : "Not playing"}</small></span>
+        <span class="dbar"><i class="${c}" style="width:${(r.avg/mx*100).toFixed(1)}%"></i></span>
+        <span class="dv"><b>${fmt(r1(r.avg))}</b><small class="${d>=0?"g":"r"}">${d>=0?"+":""}${d}%</small></span>
+      </button>${body}</div>`; }).join("")}</div>`;
+  requestAnimationFrame(()=>setSeg($("defPos"), pos));
+}
+function setGView(v){
+  S.gview = v; saveState(); setSeg($("gView"), v);
+  $("mkChips2").hidden = v==="def"; $("gamesList").hidden = v==="def"; $("defBody").hidden = v!=="def";
+}
+$("gView").onclick = e => { const b = e.target.closest("[data-v]"); if(!b || b.dataset.v===S.gview) return; setGView(b.dataset.v); scrollTo(0,0); renderGames(true); };
+$("defBody").onclick = e => {
+  const t = e.target;
+  if(t.closest("[data-open]")) return;   // prop rows open the player page (global handler)
+  const p = t.closest("#defPos [data-v]"); if(p){ DEF.pos = p.dataset.v; DEF.open = null; saveDef(); renderDefense(); return; }
+  const k = t.closest("[data-dm]"); if(k){ DEF.mk = k.dataset.dm; DEF.open = null; saveDef(); renderDefense(); return; }
+  const md = t.closest("[data-dmode]"); if(md){ DEF.mode = md.dataset.dmode; saveDef(); renderDefense(); return; }
+  if(t.closest("#defDir")){ DEF.dir = DEF.dir==="easy" ? "tough" : "easy"; saveDef(); renderDefense(); return; }
+  const r = t.closest("[data-def]"); if(r){ DEF.open = DEF.open===r.dataset.def ? null : r.dataset.def; renderDefense(); }
+};
 function gameLineTxt(label){
   const c = CTX?.games?.[label]; if(!c || c.total==null || c.spread_home==null) return "";
   const [aw, hm] = label.split(" @ "), fav = c.spread_home <= 0 ? hm : aw;
@@ -1286,6 +1380,8 @@ document.addEventListener("click", e => {
 
 /* ---------- games ---------- */
 function renderGames(animate){
+  setGView(S.gview==="def" ? "def" : "games");
+  if(S.gview==="def"){ renderDefense(); return; }
   if(!PROPS){ $("gamesList").innerHTML = `<div class="empty">No games loaded yet.</div>`; return; }
   const games = [...PROPS.games].sort((a,b)=>a.kick.localeCompare(b.kick));
   $("gamesSub").textContent = `${games.length} games`;
@@ -1573,7 +1669,9 @@ function renderMatchup(opp){
     <div style="font:600 18px/1.25 var(--cond)" class="${good?"g":bad?"r":""}">Allows the ${ord(d.rank)}-most ${m.short} to ${posTxt}</div>
     <div class="m" style="font-size:13px;margin-top:2px">${fmt(Math.round(d.avg*10)/10)} per game to ${posTxt} combined, ${DVP.season} season</div>
     <div class="gauge"><i style="left:${((d.rank-1)/Math.max(1,d.n-1)*100).toFixed(1)}%"></i></div>
-    <div class="gauge-l"><span>Easiest</span><span>Toughest</span></div>`;
+    <div class="gauge-l"><span>Easiest</span><span>Toughest</span></div>
+    <button class="linkbtn" id="defGo" style="margin-top:10px">All defenses vs ${posTxt}</button>`;
+  $("defGo").onclick = () => { DEF.pos = P.pl.pos; DEF.mk = BY_POS[P.pl.pos].includes(P.market) ? P.market : BY_POS[P.pl.pos][0]; DEF.open = opp; saveDef(); S.gview = "def"; go("games", "tab"); };
 }
 function renderVolume(){
   const [label, get] = VOL[P.pl.pos] || VOL.WR, L = P.pl.logs.slice(-10), v = L.map(get);
@@ -1651,7 +1749,7 @@ $("bwSeg").onclick = e => { const b=e.target.closest("[data-v]"); if(!b||b.datas
 let scrollTick = false;
 addEventListener("scroll", () => { if(scrollTick) return; scrollTick = true; requestAnimationFrame(()=>{ scrollTick = false;
   const sec = [...document.querySelectorAll("main>section")].find(x=>!x.hidden); sec?.querySelector(".top")?.classList.toggle("scrolled", scrollY>4); }); }, {passive:true});
-addEventListener("resize", () => { setSeg($("sortSeg"),S.sort); setSeg($("bwSeg"),S.bw); setSeg($("winSeg"),P.win); });
+addEventListener("resize", () => { setSeg($("gView"),S.gview); setSeg($("sortSeg"),S.sort); setSeg($("bwSeg"),S.bw); setSeg($("winSeg"),P.win); });
 document.fonts?.ready.then(()=>{ setSeg($("sortSeg"),S.sort); setSeg($("bwSeg"),S.bw); setSeg($("winSeg"),P.win); });
 
 load();
