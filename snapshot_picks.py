@@ -12,6 +12,7 @@ GRAB = """() => {
     k: p.key + "|" + p.kick, pid: p.pid, n: p.name, t: p.team, o: p.opp, m: p.market, sd: p.lean,
     l: p.pick.line, pr: p.pick.price, bk: p.pick.title, sc: p.score, pm: Math.round(p.pModel*1000)/1000,
     ed: Math.round(p.edge*1000)/1000, top: top.has(p.key) ? 1 : 0, kick: p.kick,
+    cl: p.line, cf: p.fair==null ? null : Math.round((p.lean==="over" ? p.fair : 1-p.fair)*1000)/1000,
     af: p.pl.logs.length ? p.pl.logs.at(-1).s*100 + p.pl.logs.at(-1).w : 0 }));
 }"""
 
@@ -46,6 +47,11 @@ def main():
         old = book["picks"].get(r["k"])
         if old and ts(old["kick"]) <= now: continue       # locked
         r["ts"] = now.isoformat(timespec="minutes")
+        # remember where the market was when we first made this pick (reset if the model flips sides)
+        if old and old.get("sd") == r["sd"] and "fcl" in old:
+            r["fcl"], r["fcf"] = old["fcl"], old.get("fcf")
+        else:
+            r["fcl"], r["fcf"] = r.get("cl"), r.get("cf")
         book["picks"][r["k"]] = r
         added += old is None; updated += old is not None
     book["updated"] = now.isoformat(timespec="seconds")
