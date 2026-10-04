@@ -171,6 +171,43 @@ button{cursor:pointer;-webkit-user-select:none;user-select:none;border:0;backgro
 span.spark{display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--faint)}
 .anim .list>.prow:nth-child(-n+10) .spark rect{animation:grow .45s var(--ease) both;animation-delay:var(--d)}
 .sortlbl{color:var(--post);font-weight:600;font-size:13px}
+.dstat{margin-top:12px}
+.ds{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line)}
+.ds i{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:800;font-size:12px}
+.ds i.g{background:rgba(61,220,151,.18);color:var(--over)} .ds i.r{background:rgba(255,107,107,.18);color:var(--under)}
+.ds b{display:block;font-size:14px;font-weight:600}
+.ds small{display:block;font-size:12.5px;color:var(--muted);line-height:1.35;margin-top:1px}
+.evb{display:block;font-style:normal;font-size:10px;font-weight:700;color:var(--over);margin-top:3px;white-space:nowrap}
+.evban{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:2px 10px;width:100%;text-align:left;background:linear-gradient(90deg,rgba(61,220,151,.16),rgba(61,220,151,.04));border:1px solid rgba(61,220,151,.35);border-radius:14px;padding:11px 14px;margin:12px 0 0}
+.evban b{color:var(--over);font-weight:700;font-size:15px}
+.evban span{font-size:12.5px;color:var(--muted);grid-column:1/3}
+.evban i{grid-row:1/3;grid-column:3;font-style:normal;font-size:24px;color:var(--over)}
+.evr{display:flex;align-items:center;gap:8px}
+.evr .row-main{flex:1;min-width:0}
+.evm{display:block;font-size:12px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.evm em{font-style:normal;font-weight:700} .evm em.g{color:var(--over)} .evm em.r{color:var(--under)}
+.evr .kv{width:58px}
+.evadd{flex:none;width:32px;height:32px;border-radius:50%;background:var(--surface3);color:var(--text);font-size:18px;font-weight:700}
+.evadd.on{background:var(--over);color:#06281A}
+#pairCard h4{font:700 15px/1.2 var(--cond);margin:14px 0 6px}
+.pr{display:flex;align-items:center;gap:8px;padding:9px 0;border-top:1px solid var(--line)}
+.pr .who b small{font:500 12px var(--body);color:var(--muted);margin-left:6px}
+.lkd{display:block;font-size:12px;color:var(--muted);margin-top:3px;line-height:1.35;white-space:normal}
+.lkd em,.pfoot em,.lk em{font-style:normal;font-weight:700}
+.lkd em.g,.pfoot em.g,.lk em.g{color:var(--over)} .lkd em.r,.pfoot em.r,.lk em.r{color:var(--under)} .lk em.m{color:var(--muted)}
+.addb{flex:none;background:var(--surface3);color:var(--text);font-weight:700;font-size:12.5px;border-radius:999px;padding:7px 11px}
+.pcard{background:var(--surface);border-radius:16px;padding:6px 12px 10px;margin-bottom:10px}
+.pcard>.row-main{display:flex;align-items:center;gap:9px;width:100%;padding:7px 0;border-bottom:1px solid var(--line);text-align:left}
+.pcard .who b small{font:500 12px var(--body);color:var(--muted);margin-left:6px}
+.pfoot{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center;padding-top:8px}
+.pfoot>div:first-child{grid-column:1/-1;font-size:12.5px;color:var(--muted)}
+.pfoot>div:first-child span{margin-left:6px}
+.pnums{display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--muted)}
+.pnums b{color:var(--text)} .pnums small{font-size:12px}
+.totals.links h4{font:700 15px/1.2 var(--cond);margin:0 0 6px}
+.lk{display:grid;grid-template-columns:1fr auto;gap:2px 8px;padding:7px 0;border-bottom:1px solid var(--line)}
+.lk span{font-weight:600;font-size:14px}
+.lk small{grid-column:1/-1;font-size:12px;color:var(--muted)}
 .stale.off{background:var(--surface);border-color:var(--line)}
 .stale.off b{color:var(--text)}
 .ptr{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:70;width:38px;height:38px;border-radius:50%;background:var(--surface3);color:var(--muted);display:grid;place-items:center;opacity:0;transform:translate(-50%,0);pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.35);transition:opacity .2s,transform .25s var(--ease),color .15s}
@@ -532,6 +569,7 @@ td.o{color:var(--over);font-weight:600} td.u{color:var(--under);font-weight:600}
       <div><div class="k">Low</div><div class="v" id="lo">—</div></div>
     </div>
     <div class="card" id="splitCard" hidden></div>
+    <div class="card" id="pairCard" hidden></div>
     <div class="card" id="matchCard"></div>
     <div class="card" id="volCard"></div>
     <div id="books"></div>
@@ -591,8 +629,13 @@ td.o{color:var(--over);font-weight:600} td.u{color:var(--under);font-weight:600}
 const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
 function showErr(msg){ let b=document.querySelector(".errbar"); if(!b){ b=document.createElement("div"); b.className="errbar"; b.onclick=()=>b.remove(); document.body.append(b); }
   b.textContent = "Something broke: " + msg + " (tap to dismiss, and send me this message)"; }
-addEventListener("error", e => showErr(e.message || "unknown error"));
-addEventListener("unhandledrejection", e => showErr(String(e.reason?.message || e.reason)));
+// "Script error." with no file or line comes from outside the app (a Safari extension, content blocker or
+// something iOS injects into the page). The browser hides the details and it doesn't affect the app, so skip it.
+addEventListener("error", e => {
+  if(e.message === "Script error." || (!e.filename && !e.lineno)){ console.warn("Ignored an error from outside the app", e); return; }
+  showErr(`${e.message || "unknown error"} (line ${e.lineno || "?"})`);
+});
+addEventListener("unhandledrejection", e => { if(e.reason == null) return; showErr(String(e.reason?.message || e.reason)); });
 
 /* ---------- constants ---------- */
 const MARKETS = {
@@ -613,7 +656,7 @@ const BY_POS = {
   TE:["rec_yds","rec","atd"],
 };
 const VOL = {QB:["Pass attempts",g=>g.pa], RB:["Carries + targets",g=>g.ca+g.tgt], WR:["Targets",g=>g.tgt], TE:["Targets",g=>g.tgt]};
-const QUICK = [["hot","Strong trend"],["edge","Value plays"],["soft","Soft matchup"],["streak","On a streak"],["move","Line moving"],["watch","Watchlist"]];
+const QUICK = [["hot","Strong trend"],["edge","Value plays"],["soft","Soft matchup"],["streak","On a streak"],["move","Line moving"],["pairs","Correlated pairs"],["ev","+EV prices"],["watch","Watchlist"]];
 const TEAM_COLOR = {ARI:"#97233F",ATL:"#A71930",BAL:"#4B2E9A",BUF:"#1E5BC6",CAR:"#0085CA",CHI:"#C83803",CIN:"#FB4F14",CLE:"#FF3C00",
   DAL:"#2F6DB5",DEN:"#FB4F14",DET:"#0076B6",GB:"#2E6B3F",HOU:"#A71930",IND:"#2A5CAA",JAX:"#006778",KC:"#E31837",LV:"#6B7278",
   LAC:"#0080C6",LA:"#2A58C9",MIA:"#008E97",MIN:"#6A3FA8",NE:"#C60C30",NO:"#A08A5B",NYG:"#1F43A8",NYJ:"#1B8A5A",PHI:"#0E7C86",
@@ -1243,7 +1286,7 @@ async function sharePlay(){
 }
 $("shareBtn").onclick = sharePlay;
 /* ---------- home-screen app: offline support, pull to refresh, update notice ---------- */
-const BUILD = "2026.10.03-1";
+const BUILD = "2026.10.03-5";
 let SAVED_DATA = false, NEW_HTML = null, hiddenAt = 0, lastCheck = 0;
 if("serviceWorker" in navigator && (location.protocol==="https:" || ["localhost","127.0.0.1"].includes(location.hostname))){
   navigator.serviceWorker.register("sw.js").catch(()=>{});
@@ -1288,6 +1331,243 @@ document.addEventListener("visibilitychange", () => {
     if(dist >= 85){ el.classList.add("spin"); setTimeout(() => location.reload(), 180); } else reset();
   }, {passive:true});
 })();
+/* ---------- correlation: which legs tend to hit together ---------- */
+// typical over/over relationships when there's little shared history (s = same player, t = teammates, o = opponents)
+const CORR_PRIOR = {
+  s:{"pass_yds|pass_att":.6,"pass_yds|pass_td":.45,"pass_att|pass_td":.3,"rec|rec_yds":.7,"rec_yds|rr_yds":.8,"rush_yds|rr_yds":.75,"rec|rr_yds":.5,
+     "rush_yds|carries":.7,"rush_yds|atd":.3,"carries|atd":.25,"rec_yds|atd":.3,"rec|atd":.25,"rr_yds|atd":.35},
+  t:{"pass_yds|rec_yds":.35,"pass_yds|rec":.25,"pass_att|rec":.3,"pass_att|rec_yds":.25,"pass_td|atd":.25,"pass_yds|atd":.15,"pass_yds|rr_yds":.2,
+     "pass_yds|rush_yds":-.1,"pass_att|rush_yds":-.15,"pass_att|carries":-.2,"rec_yds|rec_yds":-.05,"rec|rec":-.05,"rush_yds|rush_yds":-.15,"carries|carries":-.3},
+  o:{"pass_yds|pass_yds":.15,"pass_att|pass_att":.1,"pass_yds|rec_yds":.1,"pass_td|pass_td":.1,"rec_yds|rec_yds":.08,"pass_yds|rush_yds":.05}
+};
+const priorR = (rel, a, b) => { const T = CORR_PRIOR[rel]; return T[a+"|"+b] ?? T[b+"|"+a] ?? 0; };
+function corrRel(a, b){
+  if(!a.game || a.game!==b.game) return null;
+  if(a.pid && a.pid===b.pid) return "s";
+  if(a.team===b.team) return "t";
+  return a.opp===b.team ? "o" : null;
+}
+const logMaps = new Map();
+function logMap(pl){
+  if(!logMaps.has(pl.id)) logMaps.set(pl.id, new Map(pl.logs.filter(g=>g.s>=CUR-1).map(g=>[`${g.s}-${g.w}-${g.o}`, g])));
+  return logMaps.get(pl.id);
+}
+const corrCache = new Map();
+// a, b: props; sa/sb: "over"|"under"; la/lb: lines. Returns blended correlation of the two bets' outcomes.
+function corrPair(a, sa, la, b, sb, lb){
+  const rel = corrRel(a, b); if(!rel || !a.pl || !b.pl) return null;
+  const ck = [a.key,sa,la,b.key,sb,lb].join("|"); if(corrCache.has(ck)) return corrCache.get(ck);
+  const ma = logMap(a.pl), mb = logMap(b.pl), ga = MARKETS[a.market].get, gb = MARKETS[b.market].get, rows = [];
+  if(rel==="o"){ for(const g of ma.values()) if(g.o===b.team){ const h = mb.get(`${g.s}-${g.w}-${a.team}`); if(h) rows.push([g,h]); } }
+  else for(const [k,g] of ma) { const h = mb.get(k); if(h) rows.push([g,h]); }
+  let n = 0, nA = 0, nB = 0, nAB = 0;
+  rows.forEach(([g,h])=>{ const va = ga(g), vb = gb(h); if(va===la || vb===lb) return;
+    const A = sa==="over" ? va>la : va<la, B = sb==="over" ? vb>lb : vb<lb; n++; nA += A; nB += B; nAB += A && B; });
+  const prior = priorR(rel, a.market, b.market) * (sa==="over"?1:-1) * (sb==="over"?1:-1);
+  let meas = null;
+  if(n >= 5){ const pA = nA/n, pB = nB/n, den = Math.sqrt(pA*(1-pA)*pB*(1-pB)); if(den > 0) meas = (nAB/n - pA*pB)/den; }
+  const K = 16, r = meas==null ? prior : (meas*n + prior*K)/(n+K);
+  const res = {r, rel, n, nAB, exp: n ? nA*nB/n : 0, measured: meas!=null};
+  corrCache.set(ck, res); return res;
+}
+function legProb(p, side, line){
+  if(p.pick && line===p.pick.line && p.pModel!=null) return side===(p.lean||"over") ? p.pModel : 1-p.pModel;
+  const pj = p.pl && project(p.pl, p.market, line, side); return pj ? clamp(pj.p, .03, .97) : null;
+}
+// joint chance from each leg's chance and the pairwise links (pairwise-lift approximation)
+function jointProb(legs){
+  if(legs.some(l=>l.prob==null)) return null;
+  let pJ = legs.reduce((a,l)=>a*l.prob, 1);
+  for(let i=0;i<legs.length;i++) for(let j=i+1;j<legs.length;j++){
+    const c = legs[i].c?.[j]; if(!c) continue;
+    const pi = legs[i].prob, pj = legs[j].prob;
+    const pij = clamp(pi*pj + c.r*Math.sqrt(pi*(1-pi)*pj*(1-pj)), Math.max(0, pi+pj-1), Math.min(pi, pj));
+    pJ *= pij/(pi*pj);
+  }
+  return clamp(pJ, 0, Math.min(...legs.map(l=>l.prob)));
+}
+const linkWord = r => r >= .35 ? "Strong link" : r >= .12 ? "Works together" : r <= -.12 ? "Works against" : "Little link";
+const linkCls = r => r >= .12 ? "g" : r <= -.12 ? "r" : "m";
+function linkDetail(c){
+  return c.measured ? `${c.nAB} of ${c.n} together (${fmt(r1(c.exp))} expected)` : c.rel==="o" ? "Typical for opponents in the same game" : "Typical for this kind of pair";
+}
+const lastName = n => (n||"").split(" ").slice(-1)[0];
+function addLeg(key, side){ const i = SLIP.findIndex(l=>l.key===key); if(i>=0 && SLIP[i].side===side) return; toggleLeg(key, side); }
+
+/* pairs for one prop (player page) */
+function pairsFor(prop){
+  const side = prop.lean || "over", line = prop.pick?.line ?? prop.line, out = [];
+  for(const q of PROPS?.props || []){
+    if(q===prop || q.pid===prop.pid || q.game!==prop.game || !q.ok || !q.pick) continue;
+    const c = corrPair(prop, side, line, q, q.lean, q.pick.line); if(!c) continue;
+    out.push({q, c});
+  }
+  return out;
+}
+function pairRowHTML(prop, x){
+  const q = x.q, sd = q.market==="atd" ? (q.lean==="over"?"Yes":"No") : (q.lean==="over"?"O":"U");
+  return `<div class="pr"><button class="row-main press" data-open="${esc(q.key)}" style="flex:1;min-width:0">${avatar(q.team,q.pid)}
+      <span class="who"><b>${esc(shortName(q.name))}<small>${q.team===prop.team?"teammate":"opponent"}</small></b>
+      <span class="l2"><i class="sd ${q.lean}">${sd}</i> ${q.market==="atd"?"":fmt(q.pick.line)+" "}${MARKETS[q.market].ab}<span class="px">${am(q.pick.price)}</span></span>
+      <span class="lkd"><em class="${linkCls(x.c.r)}">${linkWord(x.c.r)}</em> · ${linkDetail(x.c)}</span></span></button>
+    ${x.c.r>0 ? `<button class="addb press" data-pair="${esc(prop.key)}~${prop.lean||"over"}~${esc(q.key)}~${q.lean}">Add both</button>` : ""}</div>`;
+}
+function renderPairs(){
+  const card = $("pairCard"), prop = curProp();
+  if(!prop || !prop.ok || !PROPS){ card.hidden = true; return; }
+  const all = pairsFor(prop);
+  const good = all.filter(x=>x.c.r>=.12 && x.q.pModel>=.5).sort((a,b)=>b.c.r*b.q.pModel - a.c.r*a.q.pModel).slice(0,5);
+  const bad = all.filter(x=>x.c.r<=-.12).sort((a,b)=>a.c.r-b.c.r).slice(0,2);
+  if(!good.length && !bad.length){ card.hidden = true; return; }
+  card.hidden = false;
+  card.innerHTML = `<h3>Pairs well with</h3>
+    <p class="spnote">Same-game props the model likes that tend to hit alongside ${esc(lastName(prop.name))}'s ${sideTxt(prop.market, prop.lean||"over", prop.pick?.line ?? prop.line).toLowerCase()}${prop.market==="atd"?"":" "+MARKETS[prop.market].label.toLowerCase()}. Built from their shared games since ${CUR-1}, leaning on typical relationships when the sample is small.</p>
+    ${good.map(x=>pairRowHTML(prop,x)).join("") || `<p class="spnote">No strong same-game partners this week.</p>`}
+    ${bad.length ? `<h4>Works against</h4>${bad.map(x=>pairRowHTML(prop,x)).join("")}` : ""}`;
+}
+
+/* best correlated pairs across the board */
+let pairsMemo = null;
+function boardPairs(){
+  const memoKey = [S.market, S.slot||"", S.q||"", S.showAll?1:0].join("|");
+  if(pairsMemo && pairsMemo.k===memoKey) return pairsMemo.v;
+  const pool = PROPS.props.filter(p=>p.ok && p.pick && p.pModel>=.55 && p.edge>=0 && passSlot(p) && passQ(p));
+  const byGame = new Map(); pool.forEach(p=>{ if(!byGame.has(p.game)) byGame.set(p.game, []); byGame.get(p.game).push(p); });
+  const out = [];
+  for(const ps of byGame.values()) for(let i=0;i<ps.length;i++) for(let j=i+1;j<ps.length;j++){
+    const a = ps[i], b = ps[j]; if(a.pid===b.pid) continue;
+    if(S.market && a.market!==S.market && b.market!==S.market) continue;
+    const c = corrPair(a, a.lean, a.pick.line, b, b.lean, b.pick.line); if(!c || c.r < .15) continue;
+    const legs = [{prob:a.pModel, c:[null,c]}, {prob:b.pModel}], pJ = jointProb(legs), d = dec(a.pick.price)*dec(b.pick.price);
+    out.push({a, b, c, pJ, ind: a.pModel*b.pModel, ev: pJ*d - 1, d});
+  }
+  out.sort((x,y)=>y.ev-x.ev);
+  pairsMemo = {k:memoKey, v:out.slice(0,30)}; return pairsMemo.v;
+}
+function pairCardHTML(x){
+  const leg = p => { const sd = p.market==="atd" ? (p.lean==="over"?"Yes":"No") : (p.lean==="over"?"O":"U");
+    return `<button class="row-main press" data-open="${esc(p.key)}">${avatar(p.team,p.pid)}<span class="who"><b>${esc(shortName(p.name))}<small>${esc(p.team)}</small></b>
+      <span class="l2"><i class="sd ${p.lean}">${sd}</i> ${p.market==="atd"?"":fmt(p.pick.line)+" "}${MARKETS[p.market].ab}<span class="px">${am(p.pick.price)}</span></span></span>
+      <span class="kv"><small>SCORE</small><b class="${p.score>=70?"g":p.score>=55?"y":""}">${p.score}</b></span></button>`; };
+  return `<div class="pcard">${leg(x.a)}${leg(x.b)}
+    <div class="pfoot"><div><em class="${linkCls(x.c.r)}">${linkWord(x.c.r)}</em><span>${linkDetail(x.c)}</span></div>
+      <div class="pnums"><span>Together <b>${Math.round(x.pJ*100)}%</b> <small>vs ${Math.round(x.ind*100)}% if unrelated</small></span>
+        <span>Fair ${am(toAm(1/x.pJ))} · best prices pay ${am(toAm(x.d))}</span></div>
+      <button class="addb press" data-pair="${esc(x.a.key)}~${x.a.lean}~${esc(x.b.key)}~${x.b.lean}">Add both</button></div></div>`;
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-pair]"); if(!b) return;
+  e.stopPropagation();
+  const [ka, sa, kb, sb] = b.dataset.pair.split("~"); addLeg(ka, sa); addLeg(kb, sb);
+  toast(`Added both to your slip`);
+}, true);
+
+/* slip: links between legs + correlation-aware chance */
+function slipCorr(){
+  const legs = SLIP.map(l=>({l, p:propByKey.get(l.key)})).filter(x=>x.p);
+  if(legs.length < 2 || legs.length !== SLIP.length) return null;
+  const L = legs.map(({l,p})=>({l, p, prob: legProb(p, l.side, l.line), c:[]})), links = [];
+  for(let i=0;i<L.length;i++) for(let j=i+1;j<L.length;j++){
+    const c = corrPair(L[i].p, L[i].l.side, L[i].l.line, L[j].p, L[j].l.side, L[j].l.line);
+    L[i].c[j] = c; if(c) links.push({i, j, c});
+  }
+  const pJ = jointProb(L), ind = L.some(x=>x.prob==null) ? null : L.reduce((a,x)=>a*x.prob, 1);
+  return {L, links, pJ, ind};
+}
+function slipCorrHTML(sc, d){
+  if(!sc) return "";
+  const lk = sc.links.length ? sc.links.map(({i,j,c})=>`<div class="lk"><span>${esc(lastName(sc.L[i].p.name))} + ${esc(lastName(sc.L[j].p.name))}</span><em class="${linkCls(c.r)}">${linkWord(c.r)}</em><small>${linkDetail(c)}</small></div>`).join("")
+    : `<p class="spnote" style="margin:0">No two legs are in the same game, so they're treated as unrelated.</p>`;
+  let est = "";
+  if(sc.pJ!=null){ const ev = sc.pJ*d - 1;
+    est = `<div class="rowx"><span>Model chance, with links</span><b>${(sc.pJ*100).toFixed(1)}%</b></div>
+      <div class="rowx"><span>If the legs were unrelated</span><b class="m">${(sc.ind*100).toFixed(1)}%</b></div>
+      <div class="rowx"><span>Fair odds vs this price</span><b class="${ev>0?"g":"r"}">${am(toAm(1/sc.pJ))} vs ${am(toAm(d))}</b></div>`; }
+  return `<div class="totals links"><h4>Leg links</h4>${lk}${est}
+    ${sc.links.some(x=>x.c.r>=.12) ? `<p class="spnote" style="margin:8px 0 0">Books price same-game parlays with these links built in, so compare the fair odds with your book's same-game parlay price, not the price above.</p>` : ""}</div>`;
+}
+/* ---------- +EV board: book prices vs a sharp-weighted, no-vig fair line ---------- */
+const PICKEM_RE = /prizepicks|underdog|sleeper|dabble|betr|parlayplay/i;
+function bookWeight(t){
+  const s = (t||"").toLowerCase();
+  if(/pinnacle|circa/.test(s)) return 3;
+  if(/fanduel|caesars|william hill|novig|prophet/.test(s)) return 2;
+  return 1;
+}
+const noVig = (o, u) => { const a = impl(o), b = impl(u); return a / (a + b); };
+let EVS = [], EV_BEST = new Map();
+// For every book price, compare it with the fair chance from the OTHER books at the same line (leave-one-out).
+function buildEV(){
+  EVS = []; EV_BEST = new Map();
+  for(const p of PROPS?.props || []){
+    const books = (p.books || []).filter(b=>b.title && !PICKEM_RE.test(b.title));
+    const byLine = new Map(); books.forEach(b=>{ if(!byLine.has(b.line)) byLine.set(b.line, []); byLine.get(b.line).push(b); });
+    for(const [line, bs] of byLine){
+      const two = bs.filter(b=>b.over!=null && b.under!=null);
+      for(const b of bs) for(const side of ["over","under"]){
+        const price = b[side]; if(price==null) continue;
+        const others = two.filter(x=>x!==b); if(others.length < 2) continue;
+        let w = 0, s = 0; others.forEach(x=>{ const k = bookWeight(x.title), f = noVig(x.over, x.under); w += k; s += k*(side==="over" ? f : 1-f); });
+        const fair = s/w, ev = fair*dec(price) - 1;
+        const row = {p, side, line, book:b.title, price, fair, ev, n: others.length + 1};
+        if(ev >= .03 && fair >= .2 && fair <= .8) EVS.push(row);
+        const k = p.key + "|" + side, cur = EV_BEST.get(k); if(!cur || ev > cur.ev) EV_BEST.set(k, row);
+      }
+    }
+  }
+  EVS.sort((a,b)=>b.ev-a.ev);
+}
+function evRowHTML(r){
+  const p = r.p, m = MARKETS[p.market], sd = p.market==="atd" ? (r.side==="over"?"Yes":"No") : (r.side==="over"?"O":"U");
+  const agree = p.ok && p.lean===r.side && p.pModel>=.55, disagree = p.ok && p.lean && p.lean!==r.side && p.pModel>=.55;
+  const onSlip = SLIP.some(l=>l.key===p.key && l.side===r.side && l.line===r.line && l.title===r.book);
+  return `<div class="row prow evr"><button class="row-main press" data-open="${esc(p.key)}" ${p.pl?"":"disabled"}>
+      <span class="avw">${avatar(p.team, p.pid)}</span>
+      <span class="who"><b>${esc(shortName(p.name))}<small>vs ${esc(p.opp||"")}</small></b>
+        <span class="l2"><i class="sd ${r.side}">${sd}</i> ${p.market==="atd"?"":fmt(r.line)+" "}${m.ab}<span class="px">${am(r.price)} ${esc(book(r.book))}</span></span>
+        <span class="evm">Fair ${am(toAm(1/r.fair))} · ${r.n} books${agree?` · <em class="g">Model agrees</em>`:disagree?` · <em class="r">Model disagrees</em>`:""}</span></span>
+      <span class="kv"><small>EV</small><b class="g">+${(r.ev*100).toFixed(1)}%</b></span>
+    </button>
+    <button class="evadd press${onSlip?" on":""}" data-evadd="${esc(p.key)}~${r.side}~${r.line}~${r.price}~${esc(r.book)}" aria-label="Add to slip">${onSlip?"✓":"+"}</button></div>`;
+}
+function evBannerHTML(){
+  const n = EVS.filter(r=>passSlot(r.p)).length; if(!n) return "";
+  return `<button class="evban press" data-evgo="1"><b>${n} +EV price${n>1?"s":""}</b><span>Book prices that beat the market's fair line</span><i>›</i></button>`;
+}
+function evListHTML(){
+  const rows = EVS.filter(r=>(!S.market || r.p.market===S.market) && passSlot(r.p) && passQ(r.p));
+  return `<div class="sec-t"><h2>+EV prices</h2><small>${rows.length} prices</small></div>
+    <p class="spnote">Each price is compared with a no-vig fair line from the other books at the same number, with FanDuel, Caesars and Pinnacle counted more heavily. EV is the expected return per dollar if the fair line is right. Prices from ${PROPS?.updated ? kickTime(PROPS.updated) : "the last update"}, and they move fast, so confirm at the book.</p>
+    ${rows.length ? `<div class="list flat">${rows.slice(0,60).map(evRowHTML).join("")}</div>` : `<div class="empty">No prices beat the fair line by 3% or more right now.</div>`}`;
+}
+document.addEventListener("click", e => {
+  const go = e.target.closest("[data-evgo]");
+  if(go){ S.quick = "ev"; saveState(); shown = 25; buildChips?.(); renderBoard(true); scrollTo({top:0}); return; }
+  const a = e.target.closest("[data-evadd]"); if(!a) return;
+  e.stopPropagation();
+  const [k, side, line, price, title] = a.dataset.evadd.split("~");
+  toggleLeg(k, side, +line, +price, title);
+  const on = SLIP.some(l=>l.key===k && l.side===side && l.line===+line && l.title===title);
+  a.classList.toggle("on", on); a.textContent = on ? "✓" : "+";
+}, true);
+/* ---------- data status (Players tab) ---------- */
+let LOADED = {};
+function dataStatusHTML(){
+  const ago = t => { if(!t) return ""; const h = (Date.now() - Date.parse(t))/36e5; return isNaN(h) ? "" : h < 1 ? "under an hour ago" : h < 48 ? `${Math.round(h)} hours ago` : `${Math.round(h/24)} days ago`; };
+  const injN = INJ ? Object.keys(INJ.players||{}).length : 0;
+  const ctxG = CTX ? Object.values(CTX.games||{}) : [];
+  const rows = [
+    ["Player logs", LOADED.logs, LOADED.logs ? `${DATA.players.length} players` : "Missing. Run Update player logs.", DATA?.updated],
+    ["Prop lines", LOADED.props, LOADED.props ? `${PROPS.props.length} props` : "Missing. Run Update prop lines.", PROPS?.updated],
+    ["Weather and game lines", LOADED.ctx, LOADED.ctx ? `${ctxG.filter(g=>g.total!=null).length} games with lines, ${ctxG.filter(g=>g.dome||g.wind!=null).length} with weather` : "Missing. Run Update game context.", CTX?.updated],
+    ["Injuries", LOADED.inj && injN>0, LOADED.inj ? `${injN} of your players listed${INJ.listed!=null?` (${INJ.listed} in the feed)`:""}${INJ.source?`, from ${INJ.source}`:""}` : "Missing. Run Update game context, and check that build_injuries.py is in the repo.", INJ?.updated],
+    ["Usage and snaps", LOADED.usage, LOADED.usage ? `${Object.keys(USAGE.players||{}).length} players` : "Missing. Run Update usage.", USAGE?.updated],
+    ["Schedule", LOADED.sched, LOADED.sched ? `${(SCHED.games||[]).length} games` : "Missing. Run Update usage.", SCHED?.updated],
+    ["Line history", LOADED.lines, LOADED.lines ? `${Object.keys(LINES.props||{}).length} props tracked` : "Starts after the next props update.", LINES?.updated],
+    ["Saved picks", LOADED.picks, LOADED.picks ? `${Object.keys(PICKS.picks||{}).length} picks` : "Starts after the next props update.", PICKS?.updated],
+  ];
+  return `<div class="card dstat"><h3>Data status</h3>${rows.map(([n,ok,txt,t])=>`<div class="ds"><i class="${ok?"g":"r"}">${ok?"✓":"!"}</i><span><b>${n}</b><small>${esc(txt)}${ok && ago(t) ? ` · updated ${ago(t)}` : ""}</small></span></div>`).join("")}</div>`;
+}
 function gameLineTxt(label){
   const c = CTX?.games?.[label]; if(!c || c.total==null || c.spread_home==null) return "";
   const [aw, hm] = label.split(" @ "), fav = c.spread_home <= 0 ? hm : aw;
@@ -1419,6 +1699,7 @@ async function getJSON(url){ const r = await fetch(url,{cache:"no-cache"}); if(!
 async function load(){
   const [d, pr, cx, us, ij, pk, ln, sc] = await Promise.all([getJSON("player_logs.json").catch(()=>null), getJSON("props.json").catch(()=>null), getJSON("context.json").catch(()=>null), getJSON("usage.json").catch(()=>null), getJSON("injuries.json").catch(()=>null), getJSON("picks.json").catch(()=>null), getJSON("lines.json").catch(()=>null), getJSON("schedule.json").catch(()=>null)]);
   DATA = d || demoData(); PROPS = pr; CTX = cx; USAGE = us; INJ = ij; PICKS = pk; LINES = ln; SCHED = sc;
+  LOADED = {logs:!!d, props:!!pr, ctx:!!cx, usage:!!us, inj:!!ij, picks:!!pk, lines:!!ln, sched:!!sc};
   DATA.players.forEach(p=>{ p.logs.sort((a,b)=>a.s-b.s||a.w-b.w); byId.set(p.id,p); });
   CUR = Math.max(...DATA.players.flatMap(p=>p.logs.map(g=>g.s)));
   buildDvp(); buildWeeks(); buildTeamEnv(); buildTeams();
@@ -1439,6 +1720,7 @@ async function load(){
     SLIP = SLIP.filter(l=>propByKey.has(l.key));
     $("updated").innerHTML = `Lines ${kickTime(PROPS.updated)}<br>${PROPS.props.length} props`;
     renderStale();
+    buildEV();
     if(S.slot && !slotsThisWeek().includes(S.slot)) S.slot = "";
   } else {
     $("updated").textContent = DATA.demo ? "Demo stats" : "";
@@ -1542,6 +1824,8 @@ function passQuick(p){
   const s = p.st;
   if(S.quick==="watch")  return WATCH.has(p.pid);
   if(S.quick==="move")   return !!mvOf(p);
+  if(S.quick==="pairs")  return true;
+  if(S.quick==="ev")     return true;
   if(!s) return false;
   if(S.quick==="hot")    return s.l10.n>=5 && s.l10.o/s.l10.n>=.7;
   if(S.quick==="edge")   return p.ok && p.edge>=.08;
@@ -1608,7 +1892,8 @@ function statHTML(p){
   else if(S.sort==="trend"){ k = BW_LBL[S.bw]; const x = pct(winHit(p)); v = x==null ? "—" : x + "%"; c = x==null ? "" : x>=60 ? "g" : x<=40 ? "r" : ""; }
   else if(S.sort==="gap"){ k = "GAP"; v = fmt(p.gap ?? 0); c = (p.gap||0) >= 1 ? "y" : ""; }
   else { k = "SCORE"; v = p.score ?? "—"; c = p.score==null ? "" : p.score>=70 ? "g" : p.score>=55 ? "y" : ""; }
-  return `<span class="kv"><small>${k}</small><b class="${c}">${v}</b></span>`;
+  const eb = EV_BEST.get(p.key + "|" + (p.lean||"over"));
+  return `<span class="kv"><small>${k}</small><b class="${c}">${v}</b>${eb && eb.ev >= .03 ? `<em class="evb">+${Math.round(eb.ev*100)}% EV</em>` : ""}</span>`;
 }
 function pickTxt(p){
   const side = p.lean || "over", pk = p.pick || pickFor(p, side), mk = MARKETS[p.market], lab = mk?.ab || mk?.label || p.market;
@@ -1648,7 +1933,13 @@ function renderBoard(animate){
   const draw = () => {
     const heroSrc = PROPS.props.filter(p=>(!S.market || p.market===S.market) && passSlot(p));
     const q = (S.q||"").trim();
-    $("heroWrap").innerHTML = S.quick || q ? "" : heroHTML(heroSrc);
+    $("heroWrap").innerHTML = S.quick || q ? "" : evBannerHTML() + heroHTML(heroSrc);
+    if(S.quick==="ev"){ $("boardList").innerHTML = slotBarHTML() + evListHTML(); return; }
+    if(S.quick==="pairs"){ const prs = boardPairs();
+      $("boardList").innerHTML = slotBarHTML() + `<div class="sec-t"><h2>Correlated pairs</h2><small>${prs.length} pairs</small></div>
+        <p class="spnote">Same-game pairs where the model likes both legs and they tend to hit together. Sorted by value at the best prices, but your book's same-game parlay price will differ, so compare it with the fair odds.</p>`
+        + (prs.length ? prs.map(pairCardHTML).join("") : `<div class="empty">No strong same-game pairs right now.</div>`);
+      return; }
     $("boardList").innerHTML = slotBarHTML() + (list.length
       ? `<div class="sec-t"><h2>${q ? `Results for “${esc(q)}”` : S.quick ? QUICK.find(q=>q[0]===S.quick)[1] : S.slot ? SLOT_LBL[S.slot]+" games" : "All props"}</h2><small>${list.length} props · <button class="sortlbl" data-fs="1">${SORT_LBL[S.sort]} ▾</button></small></div>${thinNote()}<div class="list flat">${list.slice(0,shown).map(rowHTML).join("")}</div>`
         + (list.length>shown ? `<button class="more press" id="moreBtn">Show ${Math.min(25,list.length-shown)} more</button>` : "")
@@ -1761,6 +2052,7 @@ function renderSlip(){
       <div class="rowx"><span>To win</span><b id="toWin" class="g">$${(stake*(d-1)).toFixed(2)}</b></div>
       ${tog ? `<div class="rowx"><span>All legs hit together</span><b class="${tog.hits/tog.n>=.5?"g":tog.hits?"y":"r"}">${tog.hits} of last ${tog.n} shared games</b></div>` : ""}
     </div>
+    ${slipCorrHTML(slipCorr(), d)}
     <p class="note">Prices are the best found at any book, so a real parlay at one sportsbook may pay a little less. Same-game legs are often correlated, which books price differently. This is a research tool, so bet only what you'd be fine losing.</p>
     <button class="clear" id="clearSlip">Clear slip</button>`;
   $("stake").oninput = e => { const v = parseFloat(e.target.value); if(!isNaN(v)&&v>=0){ stake=v; store.set("pb2_stake",v); $("toWin").textContent = "$"+(v*(d-1)).toFixed(2); } };
@@ -1789,7 +2081,7 @@ function renderPlayers(){
   };
   const withPhoto = DATA.players.filter(p=>p.hs||p.es).length;
   const photoNote = `<div class="thin" style="margin-top:14px">Photos available for ${withPhoto} of ${DATA.players.length} players.${withPhoto===0 ? " Run the Update player logs workflow in GitHub to load them." : ""}</div>`;
-  $("playersList").innerHTML = photoNote +
+  $("playersList").innerHTML = (t ? "" : dataStatusHTML()) + photoNote +
     (!t && watched.length ? `<div class="sec-t"><h2>Watchlist</h2></div><div class="list">${watched.map(item).join("")}</div>` : "") +
     `<div class="sec-t"><h2>${t ? "Results" : "Players with props this week"}</h2><small>${list.length}</small></div>` +
     (list.length ? `<div class="list">${list.map(item).join("")}</div>` : `<div class="empty">No player matches “${esc(t)}”.</div>`);
@@ -1863,6 +2155,7 @@ function renderPlayer(full){
   renderBooks(prop);
   renderAlt(prop);
   renderSplits();
+  renderPairs();
   $("shareBtn").disabled = !prop;
   const mi = prop ? mvInfoHTML(prop) : ""; $("mvInfo").hidden = !mi; $("mvInfo").innerHTML = mi;
 }

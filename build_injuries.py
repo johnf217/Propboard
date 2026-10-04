@@ -40,7 +40,12 @@ def from_espn():
             ath = node.get("athlete")
             if isinstance(ath, dict) and node.get("status"):
                 tm = (ath.get("team") or {}).get("abbreviation")
-                rows.append({"name": ath.get("displayName") or ath.get("fullName"), "es": str(ath.get("id") or ""),
+                es = str(ath.get("id") or "")
+                if not es:  # the league-wide feed often leaves out the id; it's inside the player link instead
+                    for lk in ath.get("links") or []:
+                        m = re.search(r"/id/(\d+)", str(lk.get("href", "")))
+                        if m: es = m.group(1); break
+                rows.append({"name": ath.get("displayName") or ath.get("fullName"), "es": es,
                              "team": ALIAS.get(tm, tm) if tm else t, "status": node.get("status"),
                              "note": node.get("shortComment") or (node.get("details") or {}).get("type") or ""})
             for v in node.values(): walk(v, t)
@@ -82,8 +87,11 @@ def main():
         pid = by_es.get(r.get("es") or "") or by_id.get(r.get("gsis") or "") \
               or by_name.get((norm(r.get("name")), r.get("team"))) or by_name.get((norm(r.get("name")), None))
         if pid: out["players"][pid] = {"st": st, "note": (r.get("note") or "")[:80]}
+    out["listed"] = len(rows)
     json.dump(out, open("injuries.json", "w"), separators=(",", ":"))
     print(f"wrote injuries.json from {src}: {len(out['players'])} matched of {len(rows)} listed")
+    if rows and not out["players"]:
+        print("WARNING: nobody matched. First few names in the feed:", [r.get("name") for r in rows[:5]])
 
 if __name__ == "__main__":
     main()
