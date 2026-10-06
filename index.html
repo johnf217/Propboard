@@ -171,6 +171,42 @@ button{cursor:pointer;-webkit-user-select:none;user-select:none;border:0;backgro
 span.spark{display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--faint)}
 .anim .list>.prow:nth-child(-n+10) .spark rect{animation:grow .45s var(--ease) both;animation-delay:var(--d)}
 .sortlbl{color:var(--post);font-weight:600;font-size:13px}
+.evc{background:var(--surface);border-radius:14px;padding:10px 12px;margin:0 0 10px}
+.evcr{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.evcr+.evcr{margin-top:8px;justify-content:flex-start}
+.evcr>span{font-size:13px;font-weight:600;color:var(--muted)}
+.evcr .chip{font-size:12.5px;padding:6px 10px}
+.evcr .chip.on{background:var(--post);color:#1B1405;border-color:transparent}
+.evt{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.evt em{font-style:normal;font-size:11px;font-weight:700;border-radius:6px;padding:2px 6px;background:var(--surface2)}
+.evt em.g{color:var(--over)} .evt em.r{color:var(--under)}
+.evt em.lag{color:var(--over);background:rgba(61,220,151,.14)} .evt em.lead{color:var(--post);background:rgba(255,209,102,.14)}
+#histCard{margin-top:0}
+.lhc{overflow:hidden}
+.lhc svg{display:block}
+.lht{margin-top:6px}
+.lhr{display:grid;grid-template-columns:1.3fr .7fr 1fr 1fr;gap:6px;font-size:12.5px;color:var(--muted);padding:5px 0;border-top:1px solid var(--line)}
+.lhr b{color:var(--text);font-weight:700}
+#oddsMk{margin:4px 0 6px}
+.og{background:var(--surface);border-radius:14px;margin-bottom:12px;overflow:hidden}
+.ogh{display:flex;justify-content:space-between;align-items:baseline;padding:10px 12px 6px;font:700 15px var(--cond)}
+.ogh small{font:600 12px var(--body);color:var(--post)}
+.otw{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.otw::-webkit-scrollbar{display:none}
+.ot{border-collapse:separate;border-spacing:0;font-size:13px;min-width:100%}
+.ot thead th{font-size:11px;font-weight:700;color:var(--faint);padding:4px 6px 6px;text-align:center;white-space:nowrap}
+.ot th:first-child,.ot td:first-child{position:sticky;left:0;z-index:1;background:var(--surface)}
+.ot tbody th{text-align:left;padding:0;border-top:1px solid var(--line);min-width:118px;max-width:130px}
+.ost{display:block;width:100%;text-align:left;padding:7px 8px 7px 12px}
+.ost b{display:block;font-weight:600;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ost small{display:block;font-size:11px;color:var(--faint)}
+.ot td{border-top:1px solid var(--line);padding:5px 4px;text-align:center;min-width:58px;white-space:nowrap}
+.ot td b{display:block;font-weight:700;font-size:13px}
+.ot td em{display:block;font-style:normal;font-size:10px;font-weight:700;color:var(--over)}
+.ot td.na{color:var(--faint)}
+.ot td.best{background:rgba(255,209,102,.13);box-shadow:inset 0 0 0 1.5px var(--post);border-radius:8px}
+.ol{display:block;font-size:11px;color:var(--faint);font-weight:600}
+.ol.g{color:var(--over)} .ol.r{color:var(--under)}
 .fsheet{max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .flh{text-transform:none;letter-spacing:0;font-weight:500;color:var(--faint);margin-left:6px}
 .mini.fview{width:100%}
@@ -486,6 +522,33 @@ td.o{color:var(--over);font-weight:600} td.u{color:var(--under);font-weight:600}
 @keyframes spin{to{transform:rotate(360deg)}}
 .errbar{position:fixed;left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:60;background:#3A1620;color:#FFD7DC;border-radius:12px;padding:10px 12px;font-size:13px}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* ---------- nav bars: premium, nothing can spill ---------- */
+html,body{overflow-x:hidden;overflow-x:clip;max-width:100%}
+section{min-width:0}
+.top{background:linear-gradient(180deg,#0F1B2D 0%,#0F1B2D 88%,rgba(15,27,45,.96) 100%);box-shadow:0 1px 0 transparent;transition:box-shadow .25s}
+.top.scrolled{border-bottom-color:transparent;box-shadow:0 1px 0 var(--line),0 10px 24px -14px rgba(0,0,0,.7)}
+.title{margin:2px 0 12px}
+.title h1{font-size:30px;letter-spacing:-.8px}
+.title small{background:var(--surface);border-radius:10px;padding:5px 9px;font-weight:600;font-size:11.5px}
+.seg{display:flex;gap:2px;max-width:100%;overflow:hidden;background:var(--surface);border-radius:13px;padding:3px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04)}
+.seg .pill{display:none!important}
+.seg button{flex:1 1 0;min-width:0;padding:8px 2px;border-radius:10px;font-size:13px;font-weight:600;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:background-color .2s,color .2s,box-shadow .2s}
+.seg button[aria-pressed="true"]{background:var(--surface3);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.05)}
+.seg button:active{background:var(--surface2)}
+.ctl{display:flex;gap:8px;align-items:center;margin-top:10px;min-width:0}
+.fbtn{flex:none;width:42px;height:42px;background:var(--surface);box-shadow:inset 0 0 0 1px rgba(255,255,255,.04)}
+.mkwrap{position:relative;flex:1;min-width:0;height:42px;background:var(--surface);border-radius:999px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04)}
+.mkwrap::after{content:"";position:absolute;top:0;right:0;bottom:0;width:26px;pointer-events:none;background:linear-gradient(90deg,rgba(23,38,61,0),var(--surface) 85%);border-radius:0 999px 999px 0}
+.mkwrap .chips.seg2{height:100%;margin:0;padding:3px 26px 3px 3px;gap:2px;background:none;border-radius:0;align-items:center;overflow-x:auto;overscroll-behavior-x:contain}
+.mkwrap .seg2 .chip{height:36px;padding:0 14px;border-radius:999px;display:flex;align-items:center;white-space:nowrap;font-size:14px}
+.mkwrap .seg2 .chip[aria-pressed="true"]{background:var(--surface3);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.05)}
+#v-games .mkwrap{display:block;margin-top:2px}
+#v-games .mkwrap[hidden]{display:none}
+.mini.slots{max-width:100%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04)}
+.mini{box-shadow:inset 0 0 0 1px rgba(255,255,255,.04)}
+.mini button[aria-pressed="true"]{box-shadow:0 1px 3px rgba(0,0,0,.35)}
+.carousel{max-width:none}
 </style>
 </head>
 <body>
@@ -502,7 +565,7 @@ td.o{color:var(--over);font-weight:600} td.u{color:var(--under);font-weight:600}
       <div class="ctl">
         <button class="iconbtn fbtn press" id="searchBtn" aria-label="Search players"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button>
         <button class="iconbtn fbtn press" id="filterBtn" aria-label="Sort and filters"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
-        <div class="chips seg2" id="mkChips" role="group" aria-label="Market"></div>
+        <div class="mkwrap"><div class="chips seg2" id="mkChips" role="group" aria-label="Market"></div></div>
       </div>
       <div class="sbar" id="sbar" hidden><input id="bq" type="search" placeholder="Search player or team" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="Search the board"><button id="bqX">Cancel</button></div>
     </div>
@@ -514,10 +577,11 @@ td.o{color:var(--over);font-weight:600} td.u{color:var(--under);font-weight:600}
   <!-- GAMES -->
   <section id="v-games" hidden>
     <div class="top"><div class="title"><h1>Games</h1><small id="gamesSub"></small></div>
-      <div class="seg gv" id="gView" role="group" aria-label="View"><button data-v="games">This week</button><button data-v="def">Defense rankings</button></div>
-      <div class="chips seg2" id="mkChips2" role="group" aria-label="Market"></div></div>
+      <div class="seg gv" id="gView" role="group" aria-label="View"><button data-v="games">This week</button><button data-v="def">Defense</button><button data-v="odds">Odds screen</button></div>
+      <div class="mkwrap" id="mkWrap2"><div class="chips seg2" id="mkChips2" role="group" aria-label="Market"></div></div></div>
     <div id="gamesList"></div>
     <div id="defBody" hidden></div>
+    <div id="oddsBody" hidden></div>
   </section>
 
   <!-- SLIP -->
@@ -562,6 +626,7 @@ td.o{color:var(--over);font-weight:600} td.u{color:var(--under);font-weight:600}
     <div class="pcells" id="pcells"></div>
     <div class="bets" id="bets"></div>
     <p class="mvinfo" id="mvInfo" hidden></p>
+    <div class="card" id="histCard" hidden></div>
     <div class="card" id="modelCard" hidden></div>
     <div class="seg" id="winSeg" role="group" aria-label="Games shown">
       <button data-v="l5">L5</button><button data-v="l10">L10</button><button data-v="l20">L20</button><button data-v="szn">Season</button><button data-v="h2h">H2H</button>
@@ -783,11 +848,9 @@ const cellCls = p => p==null ? "c0" : p>=70 ? "c5" : p>=55 ? "c4" : p>45 ? "c3" 
 const cell = (label, h, extra="") => { const v = pct(h); return `<span class="cell ${cellCls(v)}"><small>${label}</small><b>${v==null?"—":v+"%"}</b>${extra}</span>`; };
 
 function setSeg(el, value){
-  let pill = el.querySelector(".pill");
-  if(!pill){ pill = document.createElement("div"); pill.className="pill"; el.prepend(pill); }
-  const btn = [...el.querySelectorAll("button")].find(b=>b.dataset.v===value);
-  el.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed", b===btn));
-  if(btn && btn.offsetWidth){ pill.style.width = btn.offsetWidth+"px"; pill.style.transform = `translateX(${btn.offsetLeft}px)`; }
+  if(!el) return;
+  el.querySelectorAll(".pill").forEach(x=>x.remove());
+  el.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.v===value));
 }
 function countTo(el, to){
   const from = +(el.dataset.v || 0); el.dataset.v = to;
@@ -1099,7 +1162,7 @@ function renderDefense(){
 }
 function setGView(v){
   S.gview = v; saveState(); setSeg($("gView"), v);
-  $("mkChips2").hidden = v==="def"; $("gamesList").hidden = v==="def"; $("defBody").hidden = v!=="def";
+  $("mkWrap2").hidden = v!=="games"; $("gamesList").hidden = v!=="games"; $("defBody").hidden = v!=="def"; $("oddsBody").hidden = v!=="odds";
 }
 $("gView").onclick = e => { const b = e.target.closest("[data-v]"); if(!b || b.dataset.v===S.gview) return; setGView(b.dataset.v); scrollTo(0,0); renderGames(true); };
 $("defBody").onclick = e => {
@@ -1308,7 +1371,7 @@ async function sharePlay(){
 }
 $("shareBtn").onclick = sharePlay;
 /* ---------- home-screen app: offline support, pull to refresh, update notice ---------- */
-const BUILD = "2026.10.03-6";
+const BUILD = "2026.10.03-9";
 let SAVED_DATA = false, NEW_HTML = null, hiddenAt = 0, lastCheck = 0;
 if("serviceWorker" in navigator && (location.protocol==="https:" || ["localhost","127.0.0.1"].includes(location.hostname))){
   navigator.serviceWorker.register("sw.js").catch(()=>{});
@@ -1519,26 +1582,6 @@ function bookWeight(t){
 const noVig = (o, u) => { const a = impl(o), b = impl(u); return a / (a + b); };
 let EVS = [], EV_BEST = new Map();
 // For every book price, compare it with the fair chance from the OTHER books at the same line (leave-one-out).
-function buildEV(){
-  EVS = []; EV_BEST = new Map();
-  for(const p of PROPS?.props || []){
-    const books = (p.books || []).filter(b=>b.title && !PICKEM_RE.test(b.title));
-    const byLine = new Map(); books.forEach(b=>{ if(!byLine.has(b.line)) byLine.set(b.line, []); byLine.get(b.line).push(b); });
-    for(const [line, bs] of byLine){
-      const two = bs.filter(b=>b.over!=null && b.under!=null);
-      for(const b of bs) for(const side of ["over","under"]){
-        const price = b[side]; if(price==null) continue;
-        const others = two.filter(x=>x!==b); if(others.length < 2) continue;
-        let w = 0, s = 0; others.forEach(x=>{ const k = bookWeight(x.title), f = noVig(x.over, x.under); w += k; s += k*(side==="over" ? f : 1-f); });
-        const fair = s/w, ev = fair*dec(price) - 1;
-        const row = {p, side, line, book:b.title, price, fair, ev, n: others.length + 1};
-        if(ev >= .03 && fair >= .2 && fair <= .8) EVS.push(row);
-        const k = p.key + "|" + side, cur = EV_BEST.get(k); if(!cur || ev > cur.ev) EV_BEST.set(k, row);
-      }
-    }
-  }
-  EVS.sort((a,b)=>b.ev-a.ev);
-}
 function evRowHTML(r){
   const p = r.p, m = MARKETS[p.market], sd = p.market==="atd" ? (r.side==="over"?"Yes":"No") : (r.side==="over"?"O":"U");
   const agree = p.ok && p.lean===r.side && p.pModel>=.55, disagree = p.ok && p.lean && p.lean!==r.side && p.pModel>=.55;
@@ -1547,7 +1590,8 @@ function evRowHTML(r){
       <span class="avw">${avatar(p.team, p.pid)}</span>
       <span class="who"><b>${esc(shortName(p.name))}<small>vs ${esc(p.opp||"")}</small></b>
         <span class="l2"><i class="sd ${r.side}">${sd}</i> ${p.market==="atd"?"":fmt(r.line)+" "}${m.ab}<span class="px">${am(r.price)} ${esc(book(r.book))}</span></span>
-        <span class="evm">Fair ${am(toAm(1/r.fair))} · ${r.n} books${agree?` · <em class="g">Model agrees</em>`:disagree?` · <em class="r">Model disagrees</em>`:""}</span></span>
+        <span class="evm">Fair ${am(toAm(1/r.fair))} · ${r.n} books · hold ${(r.hold*100).toFixed(1)}%</span>
+        <span class="evt">${r.trend==="lag" ? `<em class="lag">Lagging: book hasn't moved yet</em>` : r.trend==="lead" ? `<em class="lead">Leading: this book just moved</em>` : ""}${agree?`<em class="g">Model agrees</em>`:disagree?`<em class="r">Model disagrees</em>`:""}</span></span>
       <span class="kv"><small>EV</small><b class="g">+${(r.ev*100).toFixed(1)}%</b></span>
     </button>
     <button class="evadd press${onSlip?" on":""}" data-evadd="${esc(p.key)}~${r.side}~${r.line}~${r.price}~${esc(r.book)}" aria-label="Add to slip">${onSlip?"✓":"+"}</button></div>`;
@@ -1559,7 +1603,8 @@ function evBannerHTML(){
 function evListHTML(){
   const rows = EVS.filter(r=>(!S.market || r.p.market===S.market) && passSlot(r.p) && passQ(r.p) && (!S.side || r.side===S.side));
   return `<div class="sec-t"><h2>Beats market</h2><small>${rows.length} prices</small></div>
-    <p class="spnote">Each price is compared with a no-vig fair line from the other books at the same number, with FanDuel, Caesars and Pinnacle counted more heavily. EV is the expected return per dollar if the fair line is right. Prices from ${PROPS?.updated ? kickTime(PROPS.updated) : "the last update"}, and they move fast, so confirm at the book.</p>
+    ${evControlsHTML()}
+    <p class="spnote">Each price is compared with a no-vig fair line from the other books at the same number, with FanDuel, Caesars and Pinnacle counted more heavily. ${EVOPT.method==="conservative" ? "Conservative uses the least favorable of three no-vig methods, so only edges that hold up under all of them show. " : ""}Hold is the books' built-in margin; lower hold means a more reliable fair line. <b>Lagging</b> means other books moved and this one hasn't caught up, which is the real opportunity. <b>Leading</b> means this book just moved first and may be right, so be careful. Prices from ${PROPS?.updated ? kickTime(PROPS.updated) : "the last update"}; confirm at the book.</p>
     ${rows.length ? `<div class="list flat">${rows.slice(0,60).map(evRowHTML).join("")}</div>` : `<div class="empty">No prices beat the fair line by 3% or more right now.</div>`}`;
 }
 document.addEventListener("click", e => {
@@ -1648,6 +1693,135 @@ document.addEventListener("click", e => {
   const u = e.target.closest("[data-unf]"); if(!u) return;
   const k = u.dataset.unf; if(k==="side") S.side = ""; else S.filters = S.filters.filter(x=>x!==k);
   saveState(); shown = 25; syncSheet(); renderBoard(true);
+});
+/* ---------- line history chart (player page) ---------- */
+function renderLineHist(prop){
+  const card = $("histCard");
+  if(!prop){ card.hidden = true; return; }
+  const h = LINES?.props?.[prop.key + "|" + prop.kick];
+  card.hidden = false;
+  if(!h || !h.length){ card.innerHTML = `<h3>Line history</h3><p class="spnote">Tracking starts with the next props update.</p>`; return; }
+  const lineMoved = h.some(x=>x[1]!==h[0][1]);
+  // plot the line if it moved; otherwise plot the over's no-vig chance from the prices
+  const pts = h.map(x=>({t:Date.parse(x[0]), line:x[1], po:x[2], pu:x[3], y: lineMoved ? x[1] : (x[2]!=null && x[3]!=null ? noVig(x[2], x[3])*100 : x[2]!=null ? impl(x[2])*100 : null)})).filter(x=>x.y!=null);
+  if(pts.length < 2){ card.innerHTML = `<h3>Line history</h3><p class="spnote">Opened ${fmt(h[0][1])}${h[0][2]!=null?` (O ${am(h[0][2])}${h[0][3]!=null?` / U ${am(h[0][3])}`:""})`:""}. No movement yet.</p>`; return; }
+  const W = Math.max(280, Math.min(560, ($("histCard").clientWidth || 340) - 28)), H = 130, L = 34, R = 10, T = 14, B = 22;
+  const t0 = pts[0].t, t1 = Math.max(pts.at(-1).t, t0 + 36e5), ys = pts.map(p=>p.y);
+  let lo = Math.min(...ys), hi = Math.max(...ys); const pad = lineMoved ? Math.max(.5, (hi-lo)*.25) : Math.max(2, (hi-lo)*.25); lo -= pad; hi += pad;
+  const X = t => Math.round(L + (t-t0)/(t1-t0)*(W-L-R)) + .5, Y = v => Math.round(T + (1-(v-lo)/(hi-lo))*(H-T-B)) + .5;
+  let d = `M${X(pts[0].t)},${Y(pts[0].y)}`;
+  for(let i=1;i<pts.length;i++) d += ` H${X(pts[i].t)} V${Y(pts[i].y)}`;
+  d += ` H${X(t1)}`;
+  const up = pts.at(-1).y > pts[0].y, col = pts.at(-1).y===pts[0].y ? "var(--muted)" : ((up === ((prop.lean||"over")==="over")) ? "var(--over)" : "var(--under)");
+  const ticks = [lo+pad, hi-pad].filter((v,i,a)=>i===0 || Math.abs(v-a[0])>1e-9);
+  const fmtY = v => lineMoved ? fmt(Math.round(v*2)/2) : Math.round(v) + "%";
+  const day = t => new Date(t).toLocaleString([], {weekday:"short", hour:"numeric"});
+  const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Line history">
+    ${ticks.map(v=>`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)" stroke-dasharray="3 3"/><text x="${L-6}" y="${Y(v)+4}" text-anchor="end" fill="var(--faint)" style="font:600 11px var(--body)">${fmtY(v)}</text>`).join("")}
+    <path d="${d}" fill="none" stroke="${col}" stroke-width="2.5" stroke-linejoin="round"/>
+    ${pts.map(p=>`<circle cx="${X(p.t)}" cy="${Y(p.y)}" r="3" fill="${col}"/>`).join("")}
+    <text x="${L}" y="${H-5}" fill="var(--faint)" style="font:500 10.5px var(--body)">${day(t0)}</text>
+    <text x="${W-R}" y="${H-5}" text-anchor="end" fill="var(--faint)" style="font:500 10.5px var(--body)">${day(pts.at(-1).t)}</text></svg>`;
+  const rows = [...h].reverse().slice(0,6).map(x=>`<div class="lhr"><span>${day(Date.parse(x[0]))}</span><b>${fmt(x[1])}</b><span>${x[2]!=null?"O "+am(x[2]):""}</span><span>${x[3]!=null?"U "+am(x[3]):""}</span></div>`).join("");
+  card.innerHTML = `<h3>Line history</h3><p class="spnote">${lineMoved ? "Consensus line" : "The line hasn't moved, so this shows the over's fair chance from the prices"} since it opened. Green means moving toward the model's pick.</p>
+    <div class="lhc">${svg}</div><div class="lht">${rows}</div>`;
+}
+
+/* ---------- odds screen (Games tab) ---------- */
+const OS = Object.assign({mk:"", side:"over"}, store.get("pb2_odds")||{});
+function renderOdds(){
+  const el = $("oddsBody");
+  if(!PROPS){ el.innerHTML = `<div class="empty">No lines loaded yet.</div>`; return; }
+  const mks = Object.keys(MARKETS).filter(k=>PROPS.props.some(p=>p.market===k));
+  if(!mks.includes(OS.mk)) OS.mk = mks[0];
+  const side = OS.side, props = PROPS.props.filter(p=>p.market===OS.mk && passSlot(p) && passQ(p) && (p.books||[]).length);
+  const cnt = new Map();
+  props.forEach(p=>p.books.forEach(b=>{ if(b.title && !PICKEM_RE.test(b.title)) cnt.set(b.title, (cnt.get(b.title)||0)+1); }));
+  const books = [...cnt.entries()].sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
+  const games = [...new Set(props.map(p=>p.game))].sort((a,b)=>Date.parse(props.find(p=>p.game===a).kick) - Date.parse(props.find(p=>p.game===b).kick));
+  const evSet = new Map(EVS.map(r=>[r.p.key+"|"+r.side+"|"+r.line+"|"+r.book, r.ev]));
+  const rowHTMLo = p => {
+    const cells = books.map(t=>({t, b: p.books.find(x=>x.title===t)})), line = p.line, better = side==="over" ? (a,c)=>a<c : (a,c)=>a>c;
+    let best = null;
+    cells.forEach(c=>{ const pr = c.b?.[side]; if(pr==null) return; const sc = (side==="over" ? -c.b.line : c.b.line)*1000 + dec(pr); if(!best || sc > best.sc) best = {t:c.t, sc}; });
+    return `<tr><th><button class="ost press" data-open="${esc(p.key)}" ${p.pl?"":"disabled"}><b>${esc(shortName(p.name))}</b><small>${esc(p.team)}${p.lean?` · model <i class="sd ${p.lean}">${p.lean==="over"?"O":"U"}</i>`:""}</small></button></th>
+      ${cells.map(c=>{ const pr = c.b?.[side]; if(pr==null) return `<td class="na">—</td>`;
+        const ln = c.b.line, lc = ln===line ? "" : better(ln, line) ? "g" : "r", ev = evSet.get(p.key+"|"+side+"|"+ln+"|"+c.t);
+        return `<td class="${best && best.t===c.t ? "best" : ""}"><span class="ol ${lc}">${fmt(ln)}</span><b>${am(pr)}</b>${ev ? `<em>+${Math.round(ev*100)}%</em>` : ""}</td>`; }).join("")}</tr>`;
+  };
+  el.innerHTML = `
+    <div class="chips" id="oddsMk">${mks.map(k=>`<button class="chip" data-om="${k}" aria-pressed="${k===OS.mk}">${MARKETS[k].ab||MARKETS[k].label}</button>`).join("")}</div>
+    <div class="dctl"><div class="mini"><button data-os="over" aria-pressed="${side==="over"}">Overs</button><button data-os="under" aria-pressed="${side==="under"}">Unders</button></div><small class="m">${props.length} props · ${books.length} books</small></div>
+    <p class="dnote">Every book's line and price. The gold box is the best number for the ${side}: the most favorable line, then the best price. A green line is easier to hit than the consensus, red is harder. Green percentages beat the market's fair line. Tap a player to open him.</p>
+    ${props.length && books.length ? games.map(g=>`<div class="og"><div class="ogh">${esc(g)}<small>${until(props.find(p=>p.game===g).kick)}</small></div>
+      <div class="otw"><table class="ot"><thead><tr><th></th>${books.map(t=>`<th>${esc(book(t))}</th>`).join("")}</tr></thead>
+      <tbody>${props.filter(p=>p.game===g).sort((a,b)=>(b.score??-1)-(a.score??-1)).map(rowHTMLo).join("")}</tbody></table></div></div>`).join("")
+      : `<div class="empty">No book prices for this market yet.</div>`}`;
+}
+$("oddsBody").onclick = e => {
+  const m = e.target.closest("[data-om]"); if(m){ OS.mk = m.dataset.om; store.set("pb2_odds", OS); renderOdds(); return; }
+  const s = e.target.closest("[data-os]"); if(s){ OS.side = s.dataset.os; store.set("pb2_odds", OS); renderOdds(); }
+};
+/* ---------- EV quality: fair-line method, hold, leading vs lagging ---------- */
+const EVOPT = Object.assign({method:"standard", lowHold:false, hideLead:false}, store.get("pb2_evopt")||{});
+// fair chance of the over from one book's two prices
+function fairOver(o, u){
+  const a = impl(o), b = impl(u), sum = a + b;
+  const mult = a / sum;
+  if(EVOPT.method !== "conservative") return {lo: mult, hi: mult};
+  const add = clamp(a - (sum-1)/2, .01, .99);
+  let k0 = 1, k1 = 6; for(let i=0;i<40;i++){ const k = (k0+k1)/2; (Math.pow(a,k) + Math.pow(b,k) > 1) ? k0 = k : k1 = k; }
+  const pow = Math.pow(a, (k0+k1)/2);
+  const all = [mult, add, pow];
+  return {lo: Math.min(...all), hi: Math.max(...all)};   // worst case for the over is lo; for the under it's 1 - hi
+}
+const holdOf = (o, u) => 1 - 1/(impl(o) + impl(u));
+function bookTrend(p, title){
+  const H = LINES?.books?.[p.key + "|" + p.kick]; if(!H || !H[title]) return null;
+  const mine = H[title], myChg = mine.length > 1 ? Date.parse(mine.at(-1)[0]) : null, myFirst = Date.parse(mine[0][0]);
+  const others = Object.entries(H).filter(([t])=>t!==title && !PICKEM_RE.test(t));
+  if(others.length < 2) return null;
+  const chg = others.map(([,h])=>h.length > 1 ? Date.parse(h.at(-1)[0]) : null);
+  const movedAfter = chg.filter(c=>c && c > (myChg || myFirst)).length;
+  const latest = Math.max(...chg.filter(Boolean), 0);
+  if(movedAfter >= 2) return "lag";                                   // others moved since this book last changed: likely stale
+  if(myChg && myChg >= latest && chg.filter(c=>c && c >= myChg).length === 0) return "lead";   // this book moved and nobody followed yet
+  return null;
+}
+function buildEV(){
+  EVS = []; EV_BEST = new Map();
+  for(const p of PROPS?.props || []){
+    const books = (p.books || []).filter(b=>b.title && !PICKEM_RE.test(b.title));
+    const byLine = new Map(); books.forEach(b=>{ if(!byLine.has(b.line)) byLine.set(b.line, []); byLine.get(b.line).push(b); });
+    for(const [line, bs] of byLine){
+      const two = bs.filter(b=>b.over!=null && b.under!=null);
+      for(const b of bs) for(const side of ["over","under"]){
+        const price = b[side]; if(price==null) continue;
+        const others = two.filter(x=>x!==b); if(others.length < 2) continue;
+        let w = 0, s = 0, hs = 0;
+        others.forEach(x=>{ const k = bookWeight(x.title), f = fairOver(x.over, x.under); w += k; s += k*(side==="over" ? f.lo : 1-f.hi); hs += holdOf(x.over, x.under); });
+        const fair = s/w, ev = fair*dec(price) - 1, hold = hs/others.length;
+        const row = {p, side, line, book:b.title, price, fair, ev, hold, n: others.length + 1, trend: bookTrend(p, b.title)};
+        const ok = ev >= .03 && fair >= .2 && fair <= .8 && (!EVOPT.lowHold || hold <= .055) && (!EVOPT.hideLead || row.trend !== "lead");
+        if(ok) EVS.push(row);
+        const k = p.key + "|" + side, cur = EV_BEST.get(k); if(ok && (!cur || ev > cur.ev)) EV_BEST.set(k, row);
+      }
+    }
+  }
+  const rank = r => r.ev + (r.trend==="lag" ? .01 : r.trend==="lead" ? -.03 : 0);
+  EVS.sort((a,b)=>rank(b)-rank(a));
+}
+function evControlsHTML(){
+  return `<div class="evc">
+    <div class="evcr"><span>Fair line</span><div class="mini"><button data-evm="standard" aria-pressed="${EVOPT.method==="standard"}">Standard</button><button data-evm="conservative" aria-pressed="${EVOPT.method==="conservative"}">Conservative</button></div></div>
+    <div class="evcr"><button class="chip${EVOPT.lowHold?" on":""}" data-evt="lowHold" aria-pressed="${EVOPT.lowHold}">Low-hold markets only</button><button class="chip${EVOPT.hideLead?" on":""}" data-evt="hideLead" aria-pressed="${EVOPT.hideLead}">Hide books that just moved</button></div>
+  </div>`;
+}
+document.addEventListener("click", e => {
+  const m = e.target.closest("[data-evm]"), t = e.target.closest("[data-evt]");
+  if(!m && !t) return;
+  if(m) EVOPT.method = m.dataset.evm; else EVOPT[t.dataset.evt] = !EVOPT[t.dataset.evt];
+  store.set("pb2_evopt", EVOPT); buildEV(); renderBoard(false);
 });
 function gameLineTxt(label){
   const c = CTX?.games?.[label]; if(!c || c.total==null || c.spread_home==null) return "";
@@ -2037,8 +2211,9 @@ document.addEventListener("click", e => {
 
 /* ---------- games ---------- */
 function renderGames(animate){
-  setGView(S.gview==="def" ? "def" : "games");
+  setGView(["def","odds"].includes(S.gview) ? S.gview : "games");
   if(S.gview==="def"){ renderDefense(); return; }
+  if(S.gview==="odds"){ renderOdds(); return; }
   if(!PROPS){ $("gamesList").innerHTML = `<div class="empty">No games loaded yet.</div>`; return; }
   const games = [...PROPS.games].sort((a,b)=>a.kick.localeCompare(b.kick));
   $("gamesSub").textContent = `${games.length} games`;
@@ -2225,6 +2400,7 @@ function renderPlayer(full){
   renderAlt(prop);
   renderSplits();
   renderPairs();
+  renderLineHist(prop);
   $("shareBtn").disabled = !prop;
   const mi = prop ? mvInfoHTML(prop) : ""; $("mvInfo").hidden = !mi; $("mvInfo").innerHTML = mi;
 }
