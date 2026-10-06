@@ -171,6 +171,50 @@ button{cursor:pointer;-webkit-user-select:none;user-select:none;border:0;backgro
 span.spark{display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--faint)}
 .anim .list>.prow:nth-child(-n+10) .spark rect{animation:grow .45s var(--ease) both;animation-delay:var(--d)}
 .sortlbl{color:var(--post);font-weight:600;font-size:13px}
+.rs2{display:flex;flex-direction:column;align-items:flex-end;gap:1px}
+.rs2 small{font-size:11.5px;color:var(--faint)}
+.dsum{display:flex;gap:8px;margin:2px 0 8px}
+.dsum>div{flex:1;background:var(--surface2);border-radius:10px;padding:6px 9px}
+.dsum small{display:block;font-size:11px;font-weight:600;color:var(--faint)}
+.dsum b{display:block;font:700 17px/1.2 var(--cond);margin-top:1px}
+.dsum b.y{color:var(--post)}
+.lgd{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:6px;font-size:11.5px;color:var(--muted)}
+.lgd i{display:inline-block;vertical-align:middle;margin-right:5px}
+.lgd i.dot{width:8px;height:8px;border-radius:50%;background:var(--over);box-shadow:-5px 0 0 -1px var(--under)}
+.lgd i.ln{width:14px;height:2.5px;border-radius:2px;background:var(--text)} .lgd i.ln.m{background:var(--muted)} .lgd i.ln.g{background:var(--over)}
+.lgd i.bx{width:9px;height:12px;border-radius:3px;background:rgba(255,209,102,.3);box-shadow:inset 0 -2px 0 var(--post)}
+.lgd i.bx2{width:9px;height:12px;border-radius:2px;background:var(--surface3);box-shadow:inset 0 -5px 0 var(--post)}
+.advg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.at{background:var(--surface2);border-radius:10px;padding:7px 8px;min-width:0}
+.at small{display:block;font-size:10.5px;font-weight:600;color:var(--faint);line-height:1.2;min-height:2.4em}
+.at b{display:block;font:700 18px/1.15 var(--cond);letter-spacing:-.2px;margin-top:2px}
+.at em{display:block;font-style:normal;font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#advCard h4{font:700 14px/1.2 var(--cond);margin:12px 0 6px;color:var(--muted)}
+.actx>div{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:baseline;padding:6px 0;border-top:1px solid var(--line);font-size:13px}
+.actx span{color:var(--muted)} .actx b{font-weight:700} .actx em{font-style:normal;font-size:11.5px;color:var(--faint);min-width:64px;text-align:right}
+.donut{display:flex;align-items:center;gap:12px}
+.donut svg{flex:none}
+.dleg{flex:1;min-width:0}
+.dleg>div{display:flex;align-items:center;gap:7px;padding:4px 0;font-size:13px}
+.dleg i{flex:none;width:10px;height:10px;border-radius:3px}
+.dleg span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted)}
+.dleg span small{color:var(--faint);font-size:11px}
+.dleg b{font-weight:700}
+.dleg .me span{color:var(--text);font-weight:700} .dleg .me b{color:var(--post)}
+.ladder{margin-top:10px}
+.ladder .lh,.ladder .lr{display:grid;grid-template-columns:.9fr 1fr 1fr 1.1fr;gap:6px;align-items:center}
+.ladder .lh{font-size:10.5px;font-weight:700;color:var(--faint);padding:0 8px 4px;text-transform:uppercase;letter-spacing:.4px}
+.ladder .lr{width:100%;text-align:left;padding:7px 8px;border-radius:10px;border-top:1px solid var(--line)}
+.ladder .lr.on{background:var(--surface2);box-shadow:inset 0 0 0 1.5px var(--post);border-top-color:transparent}
+.ll{font:700 15px var(--cond)} .ll small{display:block;font:600 10px var(--body);color:var(--post)}
+.lo{font-weight:700;font-size:14px} .lo small{display:block;font-size:11px;font-weight:600;color:var(--muted)}
+.lb{display:flex;flex-direction:column;font-size:11.5px;color:var(--faint)} .lb em{font-style:normal;font-weight:600;color:var(--muted)} .lb em.g{color:var(--over)}
+.pjs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 4px}
+.pjs>div{background:var(--surface2);border-radius:12px;padding:8px 10px}
+.pjs small{display:block;font-size:11px;font-weight:600;color:var(--faint)}
+.pjs b{display:block;font:700 21px/1.15 var(--cond);letter-spacing:-.3px;margin-top:2px}
+.pjs b.m{color:var(--muted)} .pjs b.y{color:var(--post)}
+.pjs em{display:block;font-style:normal;font-size:11px;color:var(--muted);margin-top:1px}
 .evc{background:var(--surface);border-radius:14px;padding:10px 12px;margin:0 0 10px}
 .evcr{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .evcr+.evcr{margin-top:8px;justify-content:flex-start}
@@ -638,6 +682,7 @@ section{min-width:0}
         <button class="slb" id="altUp" aria-label="Raise alt line">+</button></div>
       <div class="altout" id="altOut"></div>
       <p class="altbk" id="altBk" hidden></p>
+      <div class="ladder" id="ladder"></div>
     </div>
     <div class="chart"><div class="chart-scroll" id="chartScroll"><div id="chart"></div></div></div>
     <div class="sum">
@@ -646,10 +691,14 @@ section{min-width:0}
       <div><div class="k">High</div><div class="v" id="hi">—</div></div>
       <div><div class="k">Low</div><div class="v" id="lo">—</div></div>
     </div>
+    <div class="card" id="distCard" hidden></div>
+    <div class="card" id="trendCard" hidden></div>
+    <div class="card" id="advCard"></div>
     <div class="card" id="splitCard" hidden></div>
     <div class="card" id="pairCard" hidden></div>
     <div class="card" id="matchCard"></div>
     <div class="card" id="volCard"></div>
+    <div class="card" id="teamCard" hidden></div>
     <div id="books"></div>
     <div class="sec-t"><h2>Game log</h2></div>
     <div class="table"><table id="log"></table></div>
@@ -1052,7 +1101,7 @@ function renderRecord(){
   const el = $("recordBody");
   if(!PICKS || !Object.keys(PICKS.picks||{}).length){
     $("recordSub").textContent = "";
-    el.innerHTML = `<div class="empty">No saved picks yet.<br>The model's plays are saved automatically each time the props update runs, then graded once the box scores come in.</div>`;
+    el.innerHTML = accuracyHTML() + `<div class="empty">No saved picks yet.<br>The model's plays are saved automatically each time the props update runs, then graded once the box scores come in.</div>`;
     return;
   }
   const all = gradePicks(), top = all.filter(r=>r.top), T = summ(top), A = summ(all);
@@ -1061,7 +1110,7 @@ function renderRecord(){
   const buckets = [["80+", r=>r.sc>=80], ["70–79", r=>r.sc>=70 && r.sc<80], ["60–69", r=>r.sc>=60 && r.sc<70], ["Under 60", r=>r.sc<60]];
   const mks = [...new Set(all.map(r=>r.m))].filter(m=>MARKETS[m]);
   const recent = top.filter(r=>r.res!=="void").sort((a,b)=>Date.parse(b.kick)-Date.parse(a.kick)).slice(0,25);
-  el.innerHTML = `
+  el.innerHTML = accuracyHTML() + `
     <div class="card rhero">
       <h3>Top plays</h3>
       ${T.n ? `<div class="rbig"><div><b>${T.w}-${T.l}${T.pu?`-${T.pu}`:""}</b><small>Record</small></div>
@@ -1183,8 +1232,9 @@ function schedInfo(s, w, opp){
     SCHED_MAP = new Map();
     SCHED.games.forEach(([gs,gw,h,a,sp,tot,res,ind])=>{
       // keyed by the opponent: facing the home team means the player was away
-      SCHED_MAP.set(`${gs}|${gw}|${h}`, {home:0, fav: sp==null||sp===0 ? null : sp<0, tot, win: res==null||res===0 ? null : res<0, ind:!!ind});
-      SCHED_MAP.set(`${gs}|${gw}|${a}`, {home:1, fav: sp==null||sp===0 ? null : sp>0, tot, win: res==null||res===0 ? null : res>0, ind:!!ind});
+      const ok = sp!=null && tot!=null;
+      SCHED_MAP.set(`${gs}|${gw}|${h}`, {home:0, fav: sp==null||sp===0 ? null : sp<0, tot, win: res==null||res===0 ? null : res<0, ind:!!ind, sp: sp==null ? 0 : sp, tt: ok ? (tot - sp)/2 : null});
+      SCHED_MAP.set(`${gs}|${gw}|${a}`, {home:1, fav: sp==null||sp===0 ? null : sp>0, tot, win: res==null||res===0 ? null : res>0, ind:!!ind, sp: sp==null ? 0 : -sp, tt: ok ? (tot + sp)/2 : null});
     });
   }
   return SCHED_MAP.get(`${s}|${w}|${opp}`) || null;
@@ -1371,7 +1421,7 @@ async function sharePlay(){
 }
 $("shareBtn").onclick = sharePlay;
 /* ---------- home-screen app: offline support, pull to refresh, update notice ---------- */
-const BUILD = "2026.10.03-9";
+const BUILD = "2026.10.04-2";
 let SAVED_DATA = false, NEW_HTML = null, hiddenAt = 0, lastCheck = 0;
 if("serviceWorker" in navigator && (location.protocol==="https:" || ["localhost","127.0.0.1"].includes(location.hostname))){
   navigator.serviceWorker.register("sw.js").catch(()=>{});
@@ -1630,6 +1680,7 @@ function dataStatusHTML(){
     ["Injuries", LOADED.inj && injN>0, LOADED.inj ? `${injN} of your players listed${INJ.listed!=null?` (${INJ.listed} in the feed)`:""}${INJ.source?`, from ${INJ.source}`:""}` : "Missing. Run Update game context, and check that build_injuries.py is in the repo.", INJ?.updated],
     ["Usage and snaps", LOADED.usage, LOADED.usage ? `${Object.keys(USAGE.players||{}).length} players` : "Missing. Run Update usage.", USAGE?.updated],
     ["Schedule", LOADED.sched, LOADED.sched ? `${(SCHED.games||[]).length} games` : "Missing. Run Update usage.", SCHED?.updated],
+    ["Advanced stats", LOADED.adv, LOADED.adv ? `${Object.keys(ADV.players||{}).length} players, ${Object.keys(ADV.defense||{}).length} defenses` : "Missing. Run Update usage after adding build_advanced.py.", ADV?.updated],
     ["Line history", LOADED.lines, LOADED.lines ? `${Object.keys(LINES.props||{}).length} props tracked` : "Starts after the next props update.", LINES?.updated],
     ["Saved picks", LOADED.picks, LOADED.picks ? `${Object.keys(PICKS.picks||{}).length} picks` : "Starts after the next props update.", PICKS?.updated],
   ];
@@ -1661,7 +1712,11 @@ const FILTER_FN = {
   move:   p => !!mvOf(p),
   soft:   p => p.dvp && (p.lean==="over" ? p.dvp.rank<=8 : p.dvp.rank>p.dvp.n-8),
   tminj:  p => !!p.fx?.some(f=>f.k==="tminj" && f.d>0),
-  usage:  p => !!p.fx?.some(f=>(f.k==="usage" || f.k==="snaps") && f.d*((p.lean||"over")==="over"?1:-1) >= .04),
+  usage:  p => { const pl = p.pl; if(!pl) return false;
+    const us = USAGE?.players?.[pl.id], idx = pl.pos==="RB" ? 3 : pl.pos==="QB" ? null : 2, sh = us && idx ? shareTrend(us, idx) : null;
+    if(sh) return sh.l3 >= sh.l10*1.1;
+    const v = VOL[pl.pos]; if(!v || pl.logs.length < 6) return false;
+    const a = mean(pl.logs.slice(-10).map(v[1])), b = mean(pl.logs.slice(-3).map(v[1])); return a > 0 && b >= a*1.1; },
   hightot:p => (CTX?.games?.[p.game]?.total ?? 0) >= 48,
   fav:    p => (teamSpread(p) ?? 0) <= -6.5,
   dog:    p => (teamSpread(p) ?? 0) >= 6.5,
@@ -1823,6 +1878,420 @@ document.addEventListener("click", e => {
   if(m) EVOPT.method = m.dataset.evm; else EVOPT[t.dataset.evt] = !EVOPT[t.dataset.evt];
   store.set("pb2_evopt", EVOPT); buildEV(); renderBoard(false);
 });
+/* ---------- projection engine: opportunity x efficiency, in context ---------- */
+let ADV = null;
+const POS_YPT = {WR:8.1, TE:7.0, RB:5.8}, POS_CATCH = {WR:.63, TE:.70, RB:.77}, POS_YPC = {RB:4.25, QB:5.2, WR:7, TE:4};
+const POS_ADOT = {WR:11, TE:7.5}, POS_RACR = {WR:.82, TE:.9};
+const MK_CV = {rec_yds:.62, rush_yds:.55, rr_yds:.5, pass_yds:.27, pass_att:.17, rec:.45, carries:.33};
+const PROJ_MK = new Set(["rec_yds","rec","rush_yds","carries","rr_yds","pass_yds","pass_att","pass_td","atd"]);
+// --- math helpers ---
+function lnGamma(z){ const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,.1208650973866179e-2,-.5395239384953e-5];
+  let x=z, y=z, t=x+5.5; t-=(x+.5)*Math.log(t); let s=1.000000000190015; for(const k of c) s+=k/++y; return -t+Math.log(2.5066282746310005*s/x); }
+function gammaP(a, x){ // regularized lower incomplete gamma
+  if(x<=0) return 0;
+  if(x < a+1){ let ap=a, sum=1/a, del=sum; for(let n=0;n<200;n++){ ap++; del*=x/ap; sum+=del; if(Math.abs(del)<Math.abs(sum)*1e-9) break; } return sum*Math.exp(-x+a*Math.log(x)-lnGamma(a)); }
+  let b=x+1-a, c=1/1e-300, d=1/b, h=d;
+  for(let i=1;i<200;i++){ const an=-i*(i-a); b+=2; d=an*d+b; if(Math.abs(d)<1e-300) d=1e-300; c=b+an/c; if(Math.abs(c)<1e-300) c=1e-300; d=1/d; const del=d*c; h*=del; if(Math.abs(del-1)<1e-9) break; }
+  return 1 - Math.exp(-x+a*Math.log(x)-lnGamma(a))*h;
+}
+const poisCdf = (k, lam) => { let s=0, t=Math.exp(-lam); for(let i=0;i<=k;i++){ s+=t; t*=lam/(i+1); } return s; };
+// P(X > line) and a quantile, for the projection's distribution
+function distOver(d, line){
+  if(d.kind==="gamma"){ const k = 1/(d.cv*d.cv), th = d.mean*d.cv*d.cv; return 1 - gammaP(k, Math.max(0,line)/th); }
+  if(d.kind==="normal") return 1 - normCdf((line - d.mean)/Math.max(.5, d.cv*d.mean));
+  if(d.kind==="pois") return 1 - poisCdf(Math.floor(line), d.mean);
+  return null;
+}
+function distQ(d, q){
+  if(d.kind==="pois") return null;
+  let lo = 0, hi = d.mean*4 + 10; for(let i=0;i<40;i++){ const m=(lo+hi)/2; (1 - distOver(d, m)) < q ? lo = m : hi = m; } return (lo+hi)/2;
+}
+// --- inputs ---
+const sumBy = (L, f) => L.reduce((a,g)=>a+(f(g)||0), 0);
+function wRate(L, f){ // recency-weighted per-game volume: last 3 (.35), last 8 (.40), last 16 (.25)
+  if(!L.length) return 0; const m = n => { const s = L.slice(-n); return sumBy(s,f)/s.length; };
+  return .35*m(3) + .40*m(8) + .25*m(16);
+}
+function advIndex(pl){ const a = ADV?.players?.[pl.id]; if(!a || !a.w?.length) return null; if(!a._m) a._m = new Map(a.w.map(r=>[r[0]*100+r[1], r])); return a._m; }
+function envFor(team, game, opp){ // live game environment from context.json
+  const c = CTX?.games?.[game] || {}, e = {tt:null, sp:0, wind:0, rain:false, dome:!!c.dome};
+  if(c.total!=null && c.spread_home!=null && game){ const h = game.split(" @ ")[1], home = team===h; e.sp = home ? c.spread_home : -c.spread_home; e.tt = home ? (c.tt_home ?? (c.total-c.spread_home)/2) : (c.tt_away ?? (c.total+c.spread_home)/2); }
+  if(!c.dome){ e.wind = Math.max(c.wind||0, (c.gust||0)*.7); e.rain = (c.precip||0) >= 1.5 || ((c.pop||0) >= 70 && (c.precip||0) >= .5); }
+  return e;
+}
+function envMults(e, pos){
+  const plays = e.tt==null ? 1 : clamp(1 + .012*(e.tt - 22.5), .85, 1.15);
+  const spread = e.sp || 0;                       // positive = underdog
+  let pass = clamp(1 + .008*spread, .9, 1.1), rush = clamp(1 - .01*spread, .88, 1.12);
+  let wx = 1; if(e.wind >= 15) wx *= .94; if(e.rain) wx *= .96;
+  return {plays, pass, rush, wx};
+}
+function defMult(pos, mk, opp){
+  const d = opp && dvpFor(pos, mk, opp); if(!d) return 1;
+  const all = Object.values(DVP[pos]?.[mk] || {}); if(all.length < 6) return 1;
+  const lg = mean(all.map(x=>x.avg)); if(!lg) return 1;
+  let m = clamp(1 + .5*(d.avg/lg - 1), .82, 1.18);
+  const D = ADV?.defense?.[opp], LG = ADV?.league;
+  if(D && LG){
+    let m2 = null;
+    if((mk==="rec_yds" || mk==="rec") && D.ypt && LG.ypt) m2 = clamp(1 + .6*(D.ypt/LG.ypt - 1), .85, 1.15);
+    if((mk==="rush_yds" || mk==="carries") && D.ypc && LG.ypc) m2 = clamp(1 + .6*(D.ypc/LG.ypc - 1), .85, 1.15);
+    if(mk==="pass_yds" && D.epa_pass!=null && LG.epa_pass!=null) m2 = clamp(1 + 1.2*(D.epa_pass - LG.epa_pass), .85, 1.15);
+    if(m2!=null) m = (m + m2)/2;
+  }
+  return m;
+}
+function playerCV(L, get, mk, mu){
+  const v = L.slice(-16).map(get); if(v.length < 4 || !mu) return MK_CV[mk];
+  const m = mean(v), sd = Math.sqrt(mean(v.map(x=>(x-m)**2))), own = m ? sd/m : MK_CV[mk];
+  const w = v.length/(v.length+10); return clamp(w*own + (1-w)*MK_CV[mk], .12, 1.1);
+}
+/* Core projection. L = game logs before the game being projected; ctx = {env, opp, vac:{tgt,car}, qbOut, adv}.
+   Returns {mean, d (distribution), parts:[{k,label,mult,txt}], base, txt} or null. */
+function projectCore(pl, mk, L, ctx){
+  if(!PROJ_MK.has(mk) || L.length < 4) return null;
+  const pos = pl.pos, L16 = L.slice(-16), m = envMults(ctx.env || {}, pos), parts = [];
+  const add = (k, label, mult, txt) => { if(Math.abs(mult-1) >= .01) parts.push({k, label, mult, txt}); };
+  const adv = ctx.adv, keyOf = g => g.s*100+g.w;
+  let tg = wRate(L, g=>g.tgt), ca = wRate(L, g=>g.ca), pa = wRate(L, g=>g.pa);
+  // efficiency
+  const tgtN = sumBy(L16, g=>g.tgt), recN = sumBy(L16, g=>g.rec), reyN = sumBy(L16, g=>g.rey), caN = sumBy(L16, g=>g.ca), ryN = sumBy(L16, g=>g.ry), paN = sumBy(L16, g=>g.pa), pyN = sumBy(L16, g=>g.py);
+  let ypt = (reyN + 40*(POS_YPT[pos]||6))/(tgtN + 40), effTxt = "";
+  if(adv && (pos==="WR" || pos==="TE")){
+    const pairs = L16.filter(g=>adv.get(keyOf(g))), rows = pairs.map(g=>adv.get(keyOf(g)));
+    const ay = sumBy(rows, r=>r[3]), tt = sumBy(rows, r=>r[2]), reyA = sumBy(pairs, g=>g.rey);   // same games on both sides
+    if(tt >= 10){ const adot = (ay + 20*POS_ADOT[pos])/(tt + 20), racr = (reyA + 300*POS_RACR[pos])/(Math.max(ay,0) + 300); ypt = clamp(adot*racr, 4, 14); effTxt = ` (aDOT ${fmt(r1(adot))} × ${(racr).toFixed(2)} yds per air yd)`; }
+  }
+  const cr = (recN + 30*(POS_CATCH[pos]||.65))/(tgtN + 30);
+  const ypc = (ryN + 60*(POS_YPC[pos]||4.2))/(caN + 60), ypa = (pyN + 150*6.9)/(paN + 150);
+  // context multipliers
+  const passVol = m.plays*m.pass, rushVol = m.plays*m.rush;
+  const e = ctx.env || {};
+  const scriptTxt = e.tt!=null ? `${e.sp>=1?`${fmt(e.sp)}-pt underdog`:e.sp<=-1?`${fmt(-e.sp)}-pt favorite`:"close game"}, ${fmt(r1(e.tt))} implied pts` : "";
+  const vacT = ctx.vac?.tgt ? 1 + .6*ctx.vac.tgt/(1-ctx.vac.tgt) : 1, vacC = ctx.vac?.car ? 1 + .6*ctx.vac.car/(1-ctx.vac.car) : 1;
+  const qbM = ctx.qbOut && pos!=="QB" ? .85 : 1;
+  const dm = defMult(pos, mk, ctx.opp);
+  let mean0, meanF, d, txt;
+  const recv = (withCtx) => { const t = tg*(withCtx ? passVol*vacT*qbM : 1); return {t, yds: t*ypt*(withCtx ? m.wx*dm : 1), rec: t*cr*(withCtx ? dm : 1)}; };
+  const rush = (withCtx) => { const c = ca*(withCtx ? rushVol*vacC : 1); return {c, yds: c*ypc*(withCtx ? dm : 1)}; };
+  if(mk==="rec_yds" || mk==="rec"){
+    if(tg < .5) return null;
+    const a = recv(false), b = recv(true);
+    mean0 = mk==="rec" ? a.rec : a.yds; meanF = mk==="rec" ? b.rec : b.yds;
+    txt = mk==="rec" ? `${fmt(r1(b.t))} targets × ${Math.round(cr*100)}% catch rate` : `${fmt(r1(b.t))} targets × ${fmt(r1(ypt))} yds per target${effTxt}`;
+    add("script", "Game script", passVol, `${scriptTxt ? scriptTxt+", " : ""}${passVol>=1?"+":""}${Math.round((passVol-1)*100)}% passing volume`);
+    add("weather", "Weather", mk==="rec" ? 1 : m.wx, `${e.wind>=15?`Wind ${Math.round(e.wind)} mph`:""}${e.rain?`${e.wind>=15?", ":""}rain`:""}`);
+    add("matchup", "Matchup", dm, `${ctx.opp} defense: ${dm>=1?"+":""}${Math.round((dm-1)*100)}% vs average`);
+    add("tminj", "Teammates out", vacT*qbM, `${vacT>1?`+${Math.round((vacT-1)*100)}% targets from injured teammates`:""}${qbM<1?`${vacT>1?", ":""}starting QB out`:""}`);
+  } else if(mk==="rush_yds" || mk==="carries"){
+    if(ca < 1) return null;
+    const a = rush(false), b = rush(true);
+    mean0 = mk==="carries" ? a.c : a.yds; meanF = mk==="carries" ? b.c : b.yds;
+    txt = mk==="carries" ? `${fmt(r1(b.c))} carries` : `${fmt(r1(b.c))} carries × ${fmt(r1(ypc))} yds per carry`;
+    add("script", "Game script", rushVol, `${scriptTxt ? scriptTxt+", " : ""}${rushVol>=1?"+":""}${Math.round((rushVol-1)*100)}% rushing volume`);
+    add("matchup", "Matchup", mk==="carries" ? 1 : dm, `${ctx.opp} run defense: ${dm>=1?"+":""}${Math.round((dm-1)*100)}% vs average`);
+    add("tminj", "Teammates out", vacC, `+${Math.round((vacC-1)*100)}% carries from injured teammates`);
+  } else if(mk==="rr_yds"){
+    const a1 = recv(false), b1 = recv(true), a2 = rush(false), b2 = rush(true);
+    mean0 = a1.yds + a2.yds; meanF = b1.yds + b2.yds;
+    txt = `${fmt(r1(b2.yds))} rushing + ${fmt(r1(b1.yds))} receiving`;
+    add("script", "Game script", (a1.yds*passVol + a2.yds*rushVol)/Math.max(.1, a1.yds+a2.yds), scriptTxt);
+    add("matchup", "Matchup", dm, `${ctx.opp} defense: ${dm>=1?"+":""}${Math.round((dm-1)*100)}% vs average`);
+  } else if(mk==="pass_yds" || mk==="pass_att"){
+    if(pa < 10) return null;
+    const att0 = pa, att = pa*passVol;
+    mean0 = mk==="pass_att" ? att0 : att0*ypa; meanF = mk==="pass_att" ? att : att*ypa*m.wx*dm;
+    txt = mk==="pass_att" ? `${fmt(r1(att))} attempts` : `${fmt(r1(att))} attempts × ${fmt(r1(ypa))} yds per attempt`;
+    add("script", "Game script", passVol, `${scriptTxt ? scriptTxt+", " : ""}${passVol>=1?"+":""}${Math.round((passVol-1)*100)}% passing volume`);
+    if(mk==="pass_yds"){ add("weather", "Weather", m.wx, `${e.wind>=15?`Wind ${Math.round(e.wind)} mph`:""}${e.rain?`${e.wind>=15?", ":""}rain`:""}`);
+      add("matchup", "Matchup", dm, `${ctx.opp} pass defense: ${dm>=1?"+":""}${Math.round((dm-1)*100)}% vs average`); }
+  } else if(mk==="pass_td"){
+    if(pa < 10) return null;
+    const tdN = sumBy(L16, g=>g.ptd), rate = (tdN + 150*.045)/(paN + 150), ttm = e.tt==null ? 1 : clamp(1 + .6*(e.tt/22.5 - 1), .7, 1.35);
+    mean0 = pa*rate; meanF = pa*passVol*rate*ttm*m.wx;
+    txt = `${fmt(r1(pa*passVol))} attempts × ${(rate*100).toFixed(1)}% TD rate`;
+    add("script", "Game script", passVol*ttm, scriptTxt);
+    d = {kind:"pois", mean:meanF};
+  } else if(mk==="atd"){
+    const rtdN = sumBy(L16, g=>g.rtd), ctdN = sumBy(L16, g=>g.retd);
+    const rRate = (rtdN + 80*({RB:.032, QB:.04}[pos]||.02))/(caN + 80), cRate = (ctdN + 60*({TE:.055, WR:.045, RB:.03}[pos]||.03))/(tgtN + 60);
+    const ttm = e.tt==null ? 1 : clamp(1 + .7*(e.tt/22.5 - 1), .65, 1.4);
+    let lam0 = ca*rRate + tg*cRate;
+    if(adv){ const rows = L16.map(g=>adv.get(keyOf(g))).filter(Boolean);
+      if(rows.length >= 4){ const n = rows.length, rz = (sumBy(rows,r=>r[8])*.14 + sumBy(rows,r=>r[9])*.22 + sumBy(rows,r=>r[5])*.15 + sumBy(rows,r=>r[6])*.25)/n; lam0 = .5*lam0 + .5*rz; } }
+    mean0 = lam0; meanF = lam0*ttm*Math.sqrt(rushVol*passVol)*(qbM<1 ? .85 : 1);
+    txt = `${(meanF).toFixed(2)} expected TDs from his red-zone role and scoring rate`;
+    add("script", "Game script", ttm, scriptTxt);
+    d = {kind:"pois", mean:meanF};
+  }
+  if(!(meanF > 0)) return null;
+  if(!d){ const get = MARKETS[mk].get, cv = playerCV(L, get, mk, meanF); d = {kind: ["rec","carries","pass_att"].includes(mk) ? "normal" : "gamma", mean:meanF, cv}; }
+  return {mean:meanF, base:mean0, d, parts, txt};
+}
+// how much the score leans on the projection, set by its own backtest for that stat
+function projWeight(mk){
+  const key = {rr_yds:"rush_yds", pass_td:"pass_yds", atd:"rush_yds"}[mk] || mk, r = backtest()[key];
+  if(!r || r.n < 50) return .6;
+  return clamp(.6 + 3*(1 - r.ep/r.en), .3, .85);
+}
+function projFor(p){
+  if(!p.pl || !p.pl.logs) return null;
+  if(p._proj !== undefined) return p._proj;
+  const idx = TGT_MK.has(p.market) ? 2 : CAR_MK.has(p.market) ? 3 : null;
+  const ti = teamInjuries(p.pl, idx);
+  const vac = {tgt: (p.market==="rec_yds"||p.market==="rec") ? ti.v : 0, car: CAR_MK.has(p.market) ? ti.v : 0};
+  p._proj = projectCore(p.pl, p.market, p.pl.logs, {env: envFor(p.team, p.game, p.opp), opp: p.opp, vac, qbOut: ti.qbOut, adv: advIndex(p.pl)});
+  return p._proj;
+}
+// the market's implied number: the mean that makes our distribution match the fair price at this line
+function marketMean(pj, line, fairOverP){
+  if(!pj || fairOverP==null) return null;
+  let lo = .01, hi = Math.max(pj.mean*4, line*3) + 5;
+  for(let i=0;i<50;i++){ const m=(lo+hi)/2, d = Object.assign({}, pj.d, {mean:m}); (distOver(d, line) < fairOverP) ? lo = m : hi = m; }
+  return (lo+hi)/2;
+}
+/* Backtest: project each past game from the games before it and compare with a plain 10-game average. */
+let BT = null;
+function backtest(){
+  if(BT) return BT;
+  const MK = {WR:["rec_yds","rec"], TE:["rec_yds","rec"], RB:["rush_yds","carries"], QB:["pass_yds","pass_att"]}, res = {};
+  for(const pl of DATA.players){
+    const mks = MK[pl.pos]; if(!mks) continue;
+    const L = pl.logs, adv = advIndex(pl);
+    for(let i=6;i<L.length;i++){
+      const g = L[i]; if(g.s < CUR-1) continue;
+      const hist = L.slice(0,i), info = schedInfo(g.s, g.w, g.o);
+      const env = {tt: info?.tt ?? null, sp: info?.sp ?? 0, wind:0, rain:false, dome:!!info?.ind};
+      for(const mk of mks){
+        const get = MARKETS[mk].get, pj = projectCore(pl, mk, hist, {env, opp:g.o, adv}); if(!pj) continue;
+        const naive = mean(hist.slice(-10).map(get)), act = get(g), r = (res[mk] ??= {n:0, ep:0, en:0});
+        r.n++; r.ep += Math.abs(pj.mean - act); r.en += Math.abs(naive - act);
+      }
+    }
+  }
+  BT = res; return BT;
+}
+function accuracyHTML(){
+  const bt = backtest(), mks = Object.keys(bt).filter(k=>bt[k].n >= 20);
+  if(!mks.length) return "";
+  const tot = mks.reduce((a,k)=>({n:a.n+bt[k].n}), {n:0});
+  return `<div class="card"><h3>Projection accuracy</h3>
+    <p class="rnote">Every past game since ${CUR-1} projected from only the games before it, then compared with what happened. "Average" is a plain last-10-game average. Lower miss is better. ${tot.n.toLocaleString()} projections tested.</p>
+    ${mks.map(k=>{ const r = bt[k], mp = r.ep/r.n, mn = r.en/r.n, imp = (1 - mp/mn)*100, c = imp >= 2 ? "g" : imp <= -2 ? "r" : "y";
+      return `<div class="rrow"><span class="rl">${MARKETS[k].ab}</span><span class="rbar"><i class="${c}" style="width:${clamp(50+imp*2.5,4,100).toFixed(0)}%"></i><b style="left:50%"></b></span>
+        <span class="rs rs2"><b class="${c}">${imp>=0?"+":""}${imp.toFixed(1)}%</b><small>${fmt(r1(mp))} vs ${fmt(r1(mn))}</small></span></div>`; }).join("")}
+    <p class="rnote" style="margin-top:8px">Positive means the projection missed by less than the plain average (projection miss vs average miss shown under each). The model leans on the projection more for stats where it's winning here and less where it isn't. Past games use their closing spread and total but not their weather or injuries, so the live projections have more to work with.</p></div>`;
+}
+function projStripHTML(prop){
+  const pj = projFor(prop); if(!pj) return "";
+  const lo = distQ(pj.d, .1), hi = distQ(pj.d, .9), line = prop.line;
+  const mm = prop.fair!=null ? marketMean(pj, line, prop.fair) : null;
+  return `<div class="pjs"><div><small>Our projection</small><b>${fmt(r1(pj.mean))}</b>${lo!=null?`<em>likely ${Math.round(lo)}–${Math.round(hi)}</em>`:`<em>expected</em>`}</div>
+    <div><small>Market implies</small><b class="m">${mm!=null ? fmt(r1(mm)) : "—"}</b><em>from the fair price</em></div>
+    <div><small>Line</small><b class="y">${fmt(line)}</b><em>${pj.mean>line?"we're over":"we're under"}</em></div></div>`;
+}
+/* ---------- player page: distribution, trend, advanced stats, team usage, alt-line ladder ---------- */
+const cardW = id => Math.max(260, Math.min(620, ($(id).clientWidth || 340) - 28));
+const pctS = x => x==null ? "—" : Math.round(x*100) + "%";
+const f1 = x => x==null || !isFinite(x) ? "—" : fmt(r1(x));
+function svgText(x, y, t, a="middle", c="var(--faint)", w=600, s=10.5){ return `<text x="${x}" y="${y}" text-anchor="${a}" fill="${c}" style="font:${w} ${s}px var(--body)">${t}</text>`; }
+
+function renderDist(prop){
+  const card = $("distCard"), m = MARKETS[P.market];
+  if(m.fixed!=null){ card.hidden = true; return; }
+  const v = P.pl.logs.slice(-20).map(m.get); if(v.length < 4){ card.hidden = true; return; }
+  card.hidden = false;
+  const pj = prop && prop.market===P.market ? projFor(prop) : null, line = P.line;
+  const W = cardW("distCard"), H = 150, L = 8, R = 8, T = 18, B = 22;
+  const hiV = Math.max(...v, line, pj ? distQ(pj.d, .95) || 0 : 0) * 1.05, nb = Math.min(14, Math.max(6, Math.round(v.length/1.6)));
+  const step = Math.max(m.ab==="Rec"||P.market==="carries"||P.market==="pass_att" ? 1 : 0.5, Math.ceil(hiV/nb)), bins = Math.ceil(hiV/step) || 1;
+  const cnt = Array(bins).fill(0); v.forEach(x=>cnt[Math.min(bins-1, Math.max(0, Math.floor(x/step)))]++);
+  const exp = pj ? Array.from({length:bins}, (_,i)=>v.length*((1-distOver(pj.d, (i+1)*step)) - (1-distOver(pj.d, i*step)))) : null;
+  const ymax = Math.max(...cnt, ...(exp||[0]), 1);
+  const X = val => Math.round(L + val/(bins*step)*(W-L-R)), Y = c => Math.round(T + (1 - c/ymax)*(H-T-B));
+  const bw = Math.max(3, Math.floor((W-L-R)/bins) - 3);
+  let s = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Outcome distribution">`;
+  cnt.forEach((c,i)=>{ if(!c) return; const x0 = X(i*step)+1, mid = (i+.5)*step, col = mid > line ? "var(--over)" : "var(--under)";
+    s += `<rect x="${x0}" y="${Y(c)}" width="${bw}" height="${H-B-Y(c)}" rx="3" fill="${col}" opacity=".85"/>`; });
+  if(exp){ const pts = exp.map((e,i)=>`${X((i+.5)*step)},${Y(e)}`).join(" "); s += `<polyline points="${pts}" fill="none" stroke="var(--text)" stroke-width="2" stroke-linejoin="round" opacity=".85"/>`; }
+  const lx = X(line) + .5; s += `<line x1="${lx}" x2="${lx}" y1="${T-6}" y2="${H-B}" stroke="var(--post)" stroke-width="1.5" stroke-dasharray="4 3"/>` + svgText(lx, T-8, `Line ${fmt(line)}`, lx > W-50 ? "end" : "middle", "var(--post)", 700, 10.5);
+  if(pj){ const px = X(pj.mean); s += `<path d="M${px-5},${H-B+9} L${px+5},${H-B+9} L${px},${H-B+2} Z" fill="var(--text)"/>`; }
+  s += `<line x1="${L}" x2="${W-R}" y1="${H-B+.5}" y2="${H-B+.5}" stroke="var(--line)"/>` + svgText(L, H-4, "0", "start") + svgText(W-R, H-4, fmt(Math.round(bins*step)), "end");
+  s += `</svg>`;
+  const over = v.filter(x=>x>line).length, po = pj ? distOver(pj.d, line) : null;
+  card.innerHTML = `<h3>How often he clears ${fmt(line)}</h3>
+    <div class="dsum"><div><small>Last ${v.length} games</small><b class="${over/v.length>=.55?"g":over/v.length<=.45?"r":""}">${over} of ${v.length} over</b></div>
+      ${pj ? `<div><small>Projection says</small><b class="${po>=.55?"g":po<=.45?"r":""}">${Math.round(po*100)}% over</b></div>` : ""}</div>
+    <div class="lhc">${s}</div>
+    <p class="spnote" style="margin:6px 0 0">Bars are his last ${v.length} games (green cleared the line, red didn't).${pj ? " The white curve is what the projection expects over the same number of games, and the white marker is the projection." : ""}</p>`;
+}
+
+function renderTrend(prop){
+  const card = $("trendCard"), m = MARKETS[P.market];
+  if(m.fixed!=null){ card.hidden = true; return; }
+  const G = P.pl.logs.slice(-12), v = G.map(m.get); if(v.length < 4){ card.hidden = true; return; }
+  card.hidden = false;
+  const pj = prop && prop.market===P.market ? projFor(prop) : null, line = P.line;
+  const lo = pj ? distQ(pj.d, .1) : null, hi = pj ? distQ(pj.d, .9) : null;
+  const W = cardW("trendCard"), H = 150, L = 30, R = 10, T = 12, B = 20, n = v.length + 1;
+  const all = P.pl.logs.filter(g=>g.s===CUR).map(m.get), szn = all.length >= 3 ? mean(all) : mean(P.pl.logs.slice(-16).map(m.get));
+  const ymax = Math.max(...v, line, hi || 0, szn) * 1.1 || 1;
+  const lowest = Math.min(...v, line, lo ?? Infinity, szn), ymin = szn > 30 ? Math.max(0, Math.floor(lowest*.7/10)*10) : 0;
+  const X = i => Math.round(L + (i+.5)/n*(W-L-R)), Y = y => Math.round(T + (1 - (y-ymin)/(ymax-ymin))*(H-T-B)) + .5;
+  const roll = v.map((_,i)=>i>=2 ? (v[i]+v[i-1]+v[i-2])/3 : null);
+  let s = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Trend">`;
+  [ymin, Math.round((ymin+ymax)/2), Math.round(ymin + (ymax-ymin)*.95)].forEach(t=>{ s += `<line x1="${L}" x2="${W-R}" y1="${Y(t)}" y2="${Y(t)}" stroke="var(--line)" stroke-dasharray="2 4"/>` + svgText(L-6, Y(t)+3.5, t, "end"); });
+  s += `<line x1="${L}" x2="${W-R}" y1="${Y(line)}" y2="${Y(line)}" stroke="var(--post)" stroke-width="1.2" stroke-dasharray="5 4" opacity=".8"/>`;
+  s += `<line x1="${L}" x2="${W-R}" y1="${Y(szn)}" y2="${Y(szn)}" stroke="var(--muted)" stroke-width="1" opacity=".6"/>`;
+  const rp = roll.map((r,i)=>r==null ? null : `${X(i)},${Y(r)}`).filter(Boolean).join(" ");
+  if(rp) s += `<polyline points="${rp}" fill="none" stroke="var(--text)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>`;
+  v.forEach((x,i)=>{ s += `<circle cx="${X(i)}" cy="${Y(x)}" r="4" fill="${x>line?"var(--over)":x<line?"var(--under)":"var(--faint)"}" stroke="var(--surface)" stroke-width="1.5"/>`; });
+  if(pj){ const x = X(n-1); s += `<rect x="${x-7}" y="${Y(hi)}" width="14" height="${Math.max(2, Y(lo)-Y(hi))}" rx="5" fill="rgba(255,209,102,.16)" stroke="rgba(255,209,102,.55)" stroke-width="1"/><line x1="${x-9}" x2="${x+9}" y1="${Y(pj.mean)}" y2="${Y(pj.mean)}" stroke="var(--post)" stroke-width="3" stroke-linecap="round"/>` + svgText(x, H-5, "Next", "middle", "var(--post)", 700); }
+  G.forEach((g,i)=>{ if((G.length-1-i) % 2 === 1) s += svgText(X(i), H-5, g.o||""); });
+  s += `</svg>`;
+  const r3 = mean(v.slice(-3));
+  card.innerHTML = `<h3>Trend</h3>
+    <div class="dsum"><div><small>Last 3 avg</small><b class="${r3>szn*1.08?"g":r3<szn*.92?"r":""}">${f1(r3)}</b></div><div><small>${all.length>=3?"Season":"Recent"} avg</small><b>${f1(szn)}</b></div>${pj?`<div><small>Next game</small><b class="y">${f1(pj.mean)}</b></div>`:""}</div>
+    <div class="lhc">${s}</div>
+    <div class="lgd"><span><i class="dot"></i>Each game</span><span><i class="ln"></i>3-game average</span><span><i class="ln m"></i>Season average</span>${pj?`<span><i class="bx"></i>Projected range</span>`:""}</div>`;
+}
+
+function renderUsage(){
+  const pl = P.pl, [label, get] = VOL[pl.pos] || VOL.WR, G = pl.logs.slice(-10), v = G.map(get);
+  if(!v.length){ $("volCard").innerHTML = ""; return; }
+  const us = USAGE?.players?.[pl.id], idx = pl.pos==="RB" ? (CAR_MK.has(P.market) ? 3 : 2) : pl.pos==="QB" ? null : 2;
+  const umap = us ? new Map(us.map(r=>[r[0]*100+r[1], r])) : null;
+  const share = idx && umap ? G.map(g=>umap.get(g.s*100+g.w)?.[idx] ?? null) : [];
+  const snaps = umap ? G.map(g=>umap.get(g.s*100+g.w)?.[4] ?? null) : [];
+  const hasShare = share.some(x=>x!=null);
+  const W = cardW("volCard"), H = 120, L = 6, R = hasShare ? 34 : 6, T = 10, B = 18, n = v.length;
+  const vmax = Math.max(...v, 1) * 1.1, smax = hasShare ? Math.max(.3, ...share.filter(x=>x!=null)) * 1.15 : 1;
+  const slot = (W-L-R)/n, bw = Math.max(6, Math.floor(slot*.6)), X = i => Math.round(L + i*slot + (slot-bw)/2);
+  const Yv = x => Math.round(T + (1 - x/vmax)*(H-T-B)), Ys = x => Math.round(T + (1 - x/smax)*(H-T-B)) + .5;
+  let s = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Usage">`;
+  v.forEach((x,i)=>{ const y = Yv(x); s += `<rect x="${X(i)}" y="${y}" width="${bw}" height="${Math.max(2,H-B-y)}" rx="3" fill="${i>=n-3?"var(--post)":"var(--surface3)"}"/>`; });
+  if(hasShare){
+    const pts = share.map((x,i)=>x==null ? null : `${X(i)+bw/2},${Ys(x)}`).filter(Boolean);
+    s += `<polyline points="${pts.join(" ")}" fill="none" stroke="var(--over)" stroke-width="2" stroke-linejoin="round"/>`;
+    share.forEach((x,i)=>{ if(x!=null) s += `<circle cx="${X(i)+bw/2}" cy="${Ys(x)}" r="3" fill="var(--over)"/>`; });
+    [smax*.95, smax/2].forEach(t=>{ s += svgText(W-2, Ys(t)+3.5, Math.round(t*100)+"%", "end", "var(--over)", 600, 10); });
+  }
+  v.forEach((x,i)=>{ s += `<text x="${X(i)+bw/2}" y="${Yv(x)-4}" text-anchor="middle" fill="var(--text)" stroke="var(--surface)" stroke-width="3" paint-order="stroke" style="font:700 10.5px var(--body)">${x}</text>`; });
+  G.forEach((g,i)=>{ if((n-1-i) % 2 === 0) s += svgText(X(i)+bw/2, H-4, g.o||""); });
+  s += `</svg>`;
+  const avg = mean(v), l3 = mean(v.slice(-3)), tr = l3 - avg;
+  const sh3 = hasShare ? mean(share.slice(-3).filter(x=>x!=null)) : null, sh10 = hasShare ? mean(share.filter(x=>x!=null)) : null;
+  const sn = snaps.filter(x=>x!=null), sn3 = sn.length ? mean(sn.slice(-3)) : null;
+  $("volCard").innerHTML = `<h3>${label}, last ${n}</h3>
+    <div class="dsum"><div><small>Average</small><b>${f1(avg)}</b></div><div><small>Last 3</small><b class="${tr>=1?"g":tr<=-1?"r":""}">${f1(l3)}</b></div>
+      ${hasShare ? `<div><small>${idx===3?"Carry":"Target"} share, L3</small><b class="${sh3>sh10*1.08?"g":sh3<sh10*.92?"r":""}">${pctS(sh3)}</b></div>` : sn3!=null ? `<div><small>Snaps, L3</small><b>${pctS(sn3)}</b></div>` : ""}</div>
+    <div class="lhc">${s}</div>
+    <div class="lgd"><span><i class="bx2"></i>${label} per game (last 3 in yellow)</span>${hasShare?`<span><i class="ln g"></i>Share of team ${idx===3?"carries":"targets"}</span>`:""}${sn3!=null && hasShare?`<span>Snaps ${pctS(sn3)} last 3</span>`:""}</div>`;
+}
+
+function rankOf(map, key, team, desc=true){
+  const arr = Object.entries(map||{}).filter(([,x])=>x[key]!=null).sort((a,b)=>desc ? b[1][key]-a[1][key] : a[1][key]-b[1][key]);
+  const i = arr.findIndex(([t])=>t===team); return i < 0 ? null : {r:i+1, n:arr.length};
+}
+function renderAdv(){
+  const pl = P.pl, pos = pl.pos, L5 = pl.logs.slice(-5), L16 = pl.logs.slice(-16), adv = advIndex(pl), ng = ADV?.players?.[pl.id]?.ngs || {};
+  const pg = (L, f) => L.length ? sumBy(L, f)/L.length : null, rat = (L, a, b) => { const d = sumBy(L, b); return d ? sumBy(L, a)/d : null; };
+  const rows = L => adv ? L.map(g=>adv.get(g.s*100+g.w)).filter(Boolean) : [];
+  const R5 = rows(L5), R16 = rows(L16), rsum = (R, i) => sumBy(R, r=>r[i]);
+  const us = USAGE?.players?.[pl.id], shr = idx => { const t = us ? shareTrend(us, idx) : null; return t; };
+  const tiles = [];
+  const T = (label, now, base, fmtF = f1, hint="") => tiles.push({label, now, base, fmtF, hint});
+  if(pos==="WR" || pos==="TE" || (pos==="RB" && TGT_MK.has(P.market))){
+    T("Targets / game", pg(L5,g=>g.tgt), pg(L16,g=>g.tgt));
+    const ts = shr(2); if(ts) T("Target share", ts.l3, ts.l10, pctS, "L3 vs L10");
+    if(R16.length >= 3){ T("aDOT", rsum(R5,2) ? rsum(R5,3)/rsum(R5,2) : null, rsum(R16,2) ? rsum(R16,3)/rsum(R16,2) : null, f1, "air yds per target");
+      T("Air yards / game", R5.length ? rsum(R5,3)/R5.length : null, rsum(R16,3)/R16.length); }
+    T("Yards / target", rat(L5,g=>g.rey,g=>g.tgt), rat(L16,g=>g.rey,g=>g.tgt));
+    T("Catch rate", rat(L5,g=>g.rec,g=>g.tgt), rat(L16,g=>g.rec,g=>g.tgt), pctS);
+    if(R16.length >= 3){ T("Red-zone targets", rsum(R5,5), rsum(R16,5)*L5.length/Math.max(1,R16.length), f1, "last 5 games");
+      T("End-zone targets", rsum(R5,6), rsum(R16,6)*L5.length/Math.max(1,R16.length), f1, "last 5 games"); }
+    if(ng.sep!=null) T("Separation", ng.sep, null, x=>x==null?"—":x.toFixed(1)+" yd", "Next Gen, season");
+    if(ng.yacoe!=null) T("YAC over expected", ng.yacoe, null, x=>x==null?"—":(x>0?"+":"")+x.toFixed(1), "per catch");
+  }
+  if(pos==="RB" && !TGT_MK.has(P.market)){
+    T("Carries / game", pg(L5,g=>g.ca), pg(L16,g=>g.ca));
+    const cs = shr(3); if(cs) T("Carry share", cs.l3, cs.l10, pctS, "L3 vs L10");
+    T("Yards / carry", rat(L5,g=>g.ry,g=>g.ca), rat(L16,g=>g.ry,g=>g.ca));
+    T("Targets / game", pg(L5,g=>g.tgt), pg(L16,g=>g.tgt));
+    if(R16.length >= 3){ T("Red-zone carries", rsum(R5,8), rsum(R16,8)*L5.length/Math.max(1,R16.length), f1, "inside the 10, last 5");
+      T("Goal-line carries", rsum(R5,9), rsum(R16,9)*L5.length/Math.max(1,R16.length), f1, "inside the 5, last 5"); }
+    if(ng.ryoe!=null) T("Rush yds over exp", ng.ryoe, null, x=>x==null?"—":(x>0?"+":"")+x.toFixed(2), "per carry");
+  }
+  if(pos==="QB"){
+    T("Attempts / game", pg(L5,g=>g.pa), pg(L16,g=>g.pa));
+    T("Yards / attempt", rat(L5,g=>g.py,g=>g.pa), rat(L16,g=>g.py,g=>g.pa));
+    T("TD rate", rat(L5,g=>g.ptd,g=>g.pa), rat(L16,g=>g.ptd,g=>g.pa), x=>x==null?"—":(x*100).toFixed(1)+"%");
+    if(R16.length >= 3) T("Air yards / att", rsum(R5,10) ? rsum(R5,11)/rsum(R5,10) : null, rsum(R16,10) ? rsum(R16,11)/rsum(R16,10) : null);
+    T("Rush attempts / game", pg(L5,g=>g.ca), pg(L16,g=>g.ca));
+    if(ng.cpoe!=null) T("Comp % over exp", ng.cpoe, null, x=>x==null?"—":(x>0?"+":"")+x.toFixed(1), "Next Gen, season");
+    if(ng.ttt!=null) T("Time to throw", ng.ttt, null, x=>x==null?"—":x.toFixed(2)+"s", "Next Gen, season");
+    if(ng.aggr!=null) T("Tight-window throws", ng.aggr/100, null, pctS, "aggressiveness");
+  }
+  const sn = us ? shareTrend(us, 4) : null; if(sn && pos!=="QB") T("Snap share", sn.l3, sn.l10, pctS, "L3 vs L10");
+  // team and matchup context
+  const ctx = [], tm = ADV?.teams?.[pl.team], opp = currentOpp(), D = opp ? ADV?.defense?.[opp] : null;
+  if(tm){ const rp = rankOf(ADV.teams, "plays", pl.team), rn = rankOf(ADV.teams, "npr", pl.team);
+    ctx.push([`${pl.team} plays / game`, f1(tm.plays), rp ? `${ord(rp.r)} most` : ""]);
+    if(tm.npr!=null) ctx.push([`${pl.team} neutral pass rate`, pctS(tm.npr), rn ? `${ord(rn.r)} highest` : ""]);
+    if(tm.proe!=null) ctx.push([`${pl.team} pass rate over expected`, (tm.proe>0?"+":"")+(tm.proe*100).toFixed(1)+"%", ""]); }
+  if(D){ const r1x = rankOf(ADV.defense, "epa_pass", opp), r2 = rankOf(ADV.defense, "ypt", opp), r3 = rankOf(ADV.defense, "ypc", opp);
+    if(D.epa_pass!=null) ctx.push([`${opp} EPA allowed per dropback`, (D.epa_pass>0?"+":"")+D.epa_pass.toFixed(2), r1x ? `${ord(r1x.r)} worst` : ""]);
+    if(D.ypt!=null) ctx.push([`${opp} yards allowed per target`, D.ypt.toFixed(1), r2 ? `${ord(r2.r)} most` : ""]);
+    if(D.ypc!=null) ctx.push([`${opp} yards allowed per carry`, D.ypc.toFixed(1), r3 ? `${ord(r3.r)} most` : ""]); }
+  const tileHTML = t => { const up = t.base!=null && t.now!=null ? t.now - t.base : null, c = up==null || Math.abs(up) < Math.abs(t.base||0)*.07 ? "" : up > 0 ? "g" : "r";
+    return `<div class="at"><small>${t.label}</small><b class="${c}">${t.fmtF(t.now)}</b><em>${t.base!=null ? `${t.hint && t.hint.startsWith("L3") ? "L10" : t.hint.startsWith("last 5") || t.hint.startsWith("inside") ? "typical" : "season"} ${t.fmtF(t.base)}` : t.hint}</em></div>`; };
+  $("advCard").innerHTML = `<h3>Advanced stats</h3><p class="spnote">Last 5 games, compared with his longer-run number. Green is trending up, red down.</p>
+    <div class="advg">${tiles.map(tileHTML).join("")}</div>
+    ${ctx.length ? `<h4>Team and matchup</h4><div class="actx">${ctx.map(([a,b,c])=>`<div><span>${a}</span><b>${b}</b><em>${c}</em></div>`).join("")}</div>` : ""}
+    ${ADV ? "" : `<p class="spnote" style="margin:8px 0 0">Air yards, red-zone usage, Next Gen stats and team pace appear once advanced.json is in. Run Update usage.</p>`}`;
+}
+
+function renderTeamUsage(){
+  const pl = P.pl, card = $("teamCard"), mates = BY_TEAM.get(pl.team) || [];
+  const useCar = pl.pos==="RB" && !TGT_MK.has(P.market) && P.market!=="rr_yds";
+  const f = useCar ? g=>g.ca : g=>g.tgt, label = useCar ? "carries" : "targets";
+  const weeks = new Set(); mates.forEach(t=>t.logs.forEach(g=>{ if(g.s===CUR || g.s===CUR-1) weeks.add(g.s*100+g.w); }));
+  const recent = new Set([...weeks].sort((a,b)=>a-b).slice(-5));
+  const tot = mates.map(t=>({t, n: sumBy(t.logs.filter(g=>recent.has(g.s*100+g.w) && (pl.pos!=="QB" || true)), f)})).filter(x=>x.n>0 && (!useCar || x.t.pos!=="QB" || true)).sort((a,b)=>b.n-a.n);
+  const sum = sumBy(tot, x=>x.n);
+  if(sum < 10 || tot.length < 2){ card.hidden = true; return; }
+  card.hidden = false;
+  const top = tot.slice(0,5), other = sum - sumBy(top, x=>x.n), segs = [...top.map(x=>({name:shortName(x.t.name), pos:x.t.pos, n:x.n, me:x.t===pl})), ...(other>0?[{name:"Everyone else", n:other}]:[])];
+  const shades = ["#5B6E8F","#4A5C7C","#3D4E6B","#33425C","#2B384F"], R = 52, C = 2*Math.PI*R;
+  let off = 0, si = 0, arcs = "";
+  segs.forEach(sg=>{ const len = sg.n/sum*C, col = sg.me ? "var(--post)" : sg.name==="Everyone else" ? "#253247" : shades[si++ % shades.length];
+    arcs += `<circle r="${R}" cx="70" cy="70" fill="none" stroke="${col}" stroke-width="22" stroke-dasharray="${Math.max(0,len-2).toFixed(2)} ${(C-len+2).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 70 70)"/>`; off += len; });
+  const me = segs.find(x=>x.me);
+  card.innerHTML = `<h3>${pl.team} ${label}, last ${recent.size} games</h3>
+    <div class="donut"><svg width="140" height="140" viewBox="0 0 140 140" role="img" aria-label="Team ${label} split">${arcs}
+      <text x="70" y="68" text-anchor="middle" fill="var(--text)" style="font:700 22px var(--cond)">${me ? Math.round(me.n/sum*100)+"%" : "—"}</text>
+      <text x="70" y="86" text-anchor="middle" fill="var(--faint)" style="font:600 10.5px var(--body)">${me ? "his share" : pl.pos==="QB" ? "his targets" : ""}</text></svg>
+      <div class="dleg">${segs.map((sg,i)=>`<div class="${sg.me?"me":""}"><i style="background:${sg.me ? "var(--post)" : sg.name==="Everyone else" ? "#253247" : shades[segs.slice(0,i).filter(x=>!x.me && x.name!=="Everyone else").length % shades.length]}"></i><span>${esc(sg.name)}${sg.pos?` <small>${sg.pos}</small>`:""}</span><b>${Math.round(sg.n/sum*100)}%</b></div>`).join("")}</div></div>`;
+}
+
+function renderLadder(prop){
+  const el = $("ladder"), m = MARKETS[P.market];
+  if(m.fixed!=null || !prop || prop.market!==P.market){ el.innerHTML = ""; return; }
+  const main = prop.line, step = main >= 40 ? 10 : main >= 15 ? 5 : 1, lines = [];
+  for(let k=-3;k<=3;k++){ const l = main + k*step; if(l > 0) lines.push(l); }
+  if(!lines.includes(P.line)) { lines.push(P.line); lines.sort((a,b)=>a-b); }
+  const rows = lines.map(l=>{ const e = altEstimate(l, prop); if(!e) return "";
+    const po = e.po, pu = 1-po, at = (prop.books||[]).filter(b=>b.line===l && !PICKEM_RE.test(b.title||""));
+    const bo = at.filter(b=>b.over!=null).sort((a,b)=>dec(b.over)-dec(a.over))[0], bu = at.filter(b=>b.under!=null).sort((a,b)=>dec(b.under)-dec(a.under))[0];
+    const evO = bo ? po*dec(bo.over)-1 : null, evU = bu ? pu*dec(bu.under)-1 : null;
+    return `<button class="lr${l===P.line?" on":""}${l===main?" main":""}" data-ll="${l}"><span class="ll">${fmt(l)}${l===main?"<small>main</small>":""}</span>
+      <span class="lo ${po>=.55?"g":po<=.45?"r":""}">${Math.round(po*100)}%<small>${am(toAm(1/po))}</small></span>
+      <span class="lo ${pu>=.55?"g":pu<=.45?"r":""}">${Math.round(pu*100)}%<small>${am(toAm(1/pu))}</small></span>
+      <span class="lb">${bo ? `<em class="${evO>0?"g":""}">O ${am(bo.over)}</em>` : ""}${bu ? `<em class="${evU>0?"g":""}">U ${am(bu.under)}</em>` : ""}${!bo && !bu ? "—" : ""}</span></button>`; }).join("");
+  el.innerHTML = `<div class="lh"><span>Line</span><span>Over</span><span>Under</span><span>Books</span></div>${rows}
+    <p class="spnote" style="margin:6px 0 0">Model chance with fair odds under it. Tap a line to chart it. Green book prices pay more than fair.</p>`;
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-ll]"); if(!b) return; P.line = +b.dataset.ll; renderPlayer(false); });
 function gameLineTxt(label){
   const c = CTX?.games?.[label]; if(!c || c.total==null || c.spread_home==null) return "";
   const [aw, hm] = label.split(" @ "), fav = c.spread_home <= 0 ? hm : aw;
@@ -1859,6 +2328,7 @@ function evaluate(p){
   const myInj = injOf(pl.id), injOut = myInj && myInj.st !== "Questionable";
   const tIdx = pl.pos==="QB" ? null : TGT_MK.has(mk) ? 2 : CAR_MK.has(mk) ? 3 : (mk==="rr_yds" || mk==="atd") ? (pl.pos==="RB" ? 3 : 2) : null;
   const ti = teamInjuries(pl, tIdx);
+  const PJ = projFor(p);
   for(const side of ["over","under"]){
     const pk = side==="over" ? p.bestOver : p.bestUnder;
     if(!pk || pk.price==null) continue;
@@ -1871,46 +2341,57 @@ function evaluate(p){
     const fx = [], add = (k,d,txt) => { fx.push({k, d:Math.round(d*1000)/1000, txt}); };
     let z = z0;
     add("form", z0 - logit(clamp(prior,.05,.95)), `Cashed ${st.l10.o} of last ${st.l10.n}`);
-    const pj = project(pl, mk, pk.line, side);
-    if(pj){ const d = clamp(.45*(logit(clamp(pj.p,.05,.95)) - z0), -.5, .5); z += d; add("proj", d, `Median ${fmt(r1(pj.med))} vs ${fmt(pk.line)} line`); }
+    if(PJ){
+      const pS = dd => { const o = distOver(dd, pk.line); return clamp(side==="over" ? o : 1-o, .03, .97); };
+      const lo = distQ(PJ.d, .1), hi = distQ(PJ.d, .9);
+      const PW = projWeight(mk), d0 = clamp(PW*(logit(pS(Object.assign({}, PJ.d, {mean:PJ.base}))) - z0), -.8, .8); z += d0;
+      add("proj", d0, `Projects ${fmt(r1(PJ.mean))}${lo!=null ? ` (likely ${Math.round(lo)}–${Math.round(hi)})` : ""}: ${PJ.txt}`);
+      let cur = PJ.base;
+      for(const pt of PJ.parts){ const nx = cur*pt.mult;
+        const dd = clamp(PW*(logit(pS(Object.assign({}, PJ.d, {mean:nx}))) - logit(pS(Object.assign({}, PJ.d, {mean:cur})))), -.5, .5);
+        cur = nx; if(Math.abs(dd) >= .01){ z += dd; add(pt.k, dd, pt.txt || pt.label); } }
+    } else {
+      const pj = project(pl, mk, pk.line, side);
+      if(pj){ const d = clamp(.45*(logit(clamp(pj.p,.05,.95)) - z0), -.5, .5); z += d; add("proj", d, `Median ${fmt(r1(pj.med))} vs ${fmt(pk.line)} line`); }
+    }
     if(st.streak >= 3){ const d = .03*Math.min(st.streak,7); z += d; add("streak", d, `Cashed ${st.streak} straight`); }
     else { const ms = missRun(pl.logs, get, pk.line, side); if(ms >= 3){ const d = -.03*Math.min(ms,5); z += d; add("streak", d, `Missed ${ms} straight`); } }
     const us = USAGE?.players?.[pl.id];
     // share of the team's targets/carries is steadier than raw counts (it ignores how many plays the team ran)
     const shIdx = pl.pos==="QB" ? null : TGT_MK.has(mk) ? 2 : CAR_MK.has(mk) ? 3 : (mk==="rr_yds" || mk==="atd") ? (pl.pos==="RB" ? 3 : 2) : null;
-    const shr = us && shIdx ? shareTrend(us, shIdx) : null;
+    const shr = !PJ && us && shIdx ? shareTrend(us, shIdx) : null;
     if(shr){
       const rel = (shr.l3-shr.l10)/shr.l10, d = clamp(rel*.5, -.2, .2)*(mk==="atd" ? .6 : 1)*sgn;
       if(Math.abs(d) >= .02){ z += d; add("usage", d, `${shIdx===2?"Target":"Carry"} share ${pctTxt(shr.l3)} last 3 (L10 ${pctTxt(shr.l10)})`); }
-    } else if(vol && pl.logs.length >= 6){
+    } else if(!PJ && vol && pl.logs.length >= 6){
       const v = pl.logs.slice(-10).map(vol[1]), avg = mean(v), l3 = mean(v.slice(-3));
       if(avg > 0){ const rel = (l3-avg)/avg; let d = clamp(rel*.6, -.25, .25)*(mk==="atd" ? .5 : 1)*sgn;
         if(Math.abs(d) >= .02){ z += d; add("usage", d, `${vol[0]} ${rel>0?"up":"down"} ${Math.abs(Math.round(rel*100))}% last 3`); } }
     }
     const sn = us && pl.pos!=="QB" ? shareTrend(us, 4) : null;
     if(sn){
-      let d = clamp((sn.l3-sn.l10)*1.2, -.15, .15), txt = `Snaps ${pctTxt(sn.l3)} last 3 (L10 ${pctTxt(sn.l10)})`;
+      let d = PJ ? 0 : clamp((sn.l3-sn.l10)*1.2, -.15, .15), txt = `Snaps ${pctTxt(sn.l3)} last 3 (L10 ${pctTxt(sn.l10)})`;
       if(sn.l3 < .5){ d -= .08; txt = `Part-time role, ${pctTxt(sn.l3)} of snaps last 3`; }
       d *= sgn;
       if(Math.abs(d) >= .02){ z += d; add("snaps", d, txt); }
     }
-    if(p.dvp){ const r = (p.dvp.rank-1)/Math.max(1,p.dvp.n-1), d = (side==="over" ? .5-r : r-.5)*.6;
+    if(p.dvp && !PJ){ const r = (p.dvp.rank-1)/Math.max(1,p.dvp.n-1), d = (side==="over" ? .5-r : r-.5)*.6;
       z += d; add("matchup", d, p.dvp.rank <= p.dvp.n/2 ? `${p.opp} allows ${ord(p.dvp.rank)}-most ${MARKETS[mk].short}` : `${p.opp} allows ${ord(p.dvp.n-p.dvp.rank+1)}-fewest ${MARKETS[mk].short}`); }
     if(st.h2h.n >= 2 && st.h2h.o/st.h2h.n !== .5){ const d = (st.h2h.o/st.h2h.n - .5)*.3*Math.min(st.h2h.n,4)/4; z += d; add("h2h", d, `${st.h2h.o} of ${st.h2h.n} against ${p.opp}`); }
-    if(tenv && (PASS_MK.has(mk) || RUSH_MK.has(mk))){
+    if(!PJ && tenv && (PASS_MK.has(mk) || RUSH_MK.has(mk))){
       const diff = tenv.pr - LGPR; let d = clamp(diff*2.5, -.15, .15)*(PASS_MK.has(mk) ? 1 : -1)*sgn;
       if(Math.abs(d) >= .03){ z += d; add("team", d, `${diff>0?"Pass-heavy":"Run-heavy"} offense (${Math.round(tenv.pr*100)}% pass)`); }
     }
-    const gs = scriptFx(p, mk);
+    const gs = PJ ? null : scriptFx(p, mk);
     if(gs && Math.abs(gs.d) >= .02){ const d = gs.d*sgn; z += d; add("script", d, gs.txt); }
     if(side==="under" && mk!=="atd"){ const d = mk==="pass_yds" ? .07 : .04; z += d; add("lean", d, "Unders cash more often league-wide"); }
     if(myInj?.st==="Questionable"){ const d = side==="over" ? -.12 : .06; z += d; add("inj", d, `Questionable${myInj.note ? " ("+myInj.note+")" : ""}`); }
-    { let d = 0; const bits = [];
+    if(!PJ){ let d = 0; const bits = [];
       if(ti.v >= .08 && tIdx){ d += clamp((1/(1-ti.v)-1)*.6, 0, .25); bits.push(`${ti.names.slice(0,2).join(", ")} out: ${pctTxt(ti.v)} of ${tIdx===2?"targets":"carries"} open`); }
       if(ti.qbOut && pl.pos!=="QB"){ const q = (PASS_MK.has(mk) || mk==="rr_yds") && pl.pos!=="RB" ? -.15 : RUSH_MK.has(mk) ? .05 : mk==="atd" ? -.08 : 0;
         if(q){ d += q; bits.push("Starting QB out"); } }
       if(bits.length){ d *= sgn; z += d; add("tminj", d, bits.join(", ")); } }
-    const wf = weatherFx(ctx, mk);
+    const wf = PJ ? null : weatherFx(ctx, mk);
     if(wf){ const d = wf.d*sgn; z += d; add("weather", d, wf.txt); }
     z = clamp(z, -3.2, 3.2);
     const pm = sig(z), edge = pm - pImpl, ev = pm*(dec(pk.price)-1) - (1-pm);
@@ -1952,9 +2433,9 @@ function oppOf(p){ const [a,h] = (p.game||"").split(" @ "); return p.team===a ? 
 /* ---------- load ---------- */
 async function getJSON(url){ const r = await fetch(url,{cache:"no-cache"}); if(!r.ok) throw 0; if(r.headers.get("X-PB-Saved")) SAVED_DATA = true; return r.json(); }
 async function load(){
-  const [d, pr, cx, us, ij, pk, ln, sc] = await Promise.all([getJSON("player_logs.json").catch(()=>null), getJSON("props.json").catch(()=>null), getJSON("context.json").catch(()=>null), getJSON("usage.json").catch(()=>null), getJSON("injuries.json").catch(()=>null), getJSON("picks.json").catch(()=>null), getJSON("lines.json").catch(()=>null), getJSON("schedule.json").catch(()=>null)]);
-  DATA = d || demoData(); PROPS = pr; CTX = cx; USAGE = us; INJ = ij; PICKS = pk; LINES = ln; SCHED = sc;
-  LOADED = {logs:!!d, props:!!pr, ctx:!!cx, usage:!!us, inj:!!ij, picks:!!pk, lines:!!ln, sched:!!sc};
+  const [d, pr, cx, us, ij, pk, ln, sc, ad] = await Promise.all([getJSON("player_logs.json").catch(()=>null), getJSON("props.json").catch(()=>null), getJSON("context.json").catch(()=>null), getJSON("usage.json").catch(()=>null), getJSON("injuries.json").catch(()=>null), getJSON("picks.json").catch(()=>null), getJSON("lines.json").catch(()=>null), getJSON("schedule.json").catch(()=>null), getJSON("advanced.json").catch(()=>null)]);
+  DATA = d || demoData(); PROPS = pr; CTX = cx; USAGE = us; INJ = ij; PICKS = pk; LINES = ln; SCHED = sc; ADV = ad;
+  LOADED = {logs:!!d, props:!!pr, ctx:!!cx, usage:!!us, inj:!!ij, picks:!!pk, lines:!!ln, sched:!!sc, adv:!!ad};
   DATA.players.forEach(p=>{ p.logs.sort((a,b)=>a.s-b.s||a.w-b.w); byId.set(p.id,p); });
   CUR = Math.max(...DATA.players.flatMap(p=>p.logs.map(g=>g.s)));
   buildDvp(); buildWeeks(); buildTeamEnv(); buildTeams();
@@ -2394,10 +2875,12 @@ function renderPlayer(full){
     (full || !chartState || P.line > chartState.max/1.12) ? drawChart(g, vals) : moveLine(vals);
     drawLog(g, m);
   }
-  if(full){ renderMatchup(opp); renderVolume(); }
+  if(full){ renderMatchup(opp); }
+  renderUsage(); renderAdv(); renderTeamUsage();
   renderModel(prop);
   renderBooks(prop);
   renderAlt(prop);
+  renderLadder(prop); renderDist(prop); renderTrend(prop);
   renderSplits();
   renderPairs();
   renderLineHist(prop);
@@ -2407,6 +2890,9 @@ function renderPlayer(full){
 /* ---------- alt line slider: model estimate + fair odds at any line ---------- */
 function altEstimate(line, prop){
   const pl = P.pl, mk = P.market;
+  const PJ = prop && prop.market===mk ? projFor(prop) : null;
+  if(PJ){ const o = clamp(distOver(PJ.d, line), .02, .98), st = hitStats(pl, mk, line, currentOpp(), "over"), M = 6, sh = h => (h.o + M*o)/(h.n + M);
+    return {po: clamp(.6*o + .25*sh(st.l10) + .15*sh(st.szn.n>=3 ? st.szn : st.l20), .02, .98), st}; }
   const pj = project(pl, mk, line, "over"); if(!pj) return null;
   const st = hitStats(pl, mk, line, currentOpp(), "over"), M = 6, sh = h => (h.o + M*pj.p)/(h.n + M);
   const base = .5*pj.p + .3*sh(st.l10) + .2*sh(st.szn.n>=3 ? st.szn : st.l20);
@@ -2493,6 +2979,7 @@ function renderModel(prop){
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span class="lean ${prop.lean}" style="margin:0">${sideTxt(m,prop.lean,pk.line).toUpperCase()} ${am(pk.price)}</span>
     <span style="font:600 17px var(--cond)">${Math.round(prop.pModel*100)}% estimated vs ${Math.round(prop.pImpl*100)}% priced</span></div>
     <div class="m" style="font-size:13px;margin-top:8px;line-height:1.45">${msg}</div>
+    ${projStripHTML(prop)}
     <div class="fxl">${[...(prop.fx||[])].sort((a,b)=>Math.abs(b.d)-Math.abs(a.d)).map(f=>`<div class="fx"><span class="fxn">${FACTOR_LABEL[f.k]}</span>
       <span class="fxb"><i class="${f.d>=0?"g":"r"}" style="width:${Math.min(50,Math.abs(f.d)/.5*50).toFixed(1)}%;${f.d>=0?"left:50%":"right:50%"}"></i></span>
       <span class="fxt">${esc(f.txt)}</span></div>`).join("")}</div>`;
