@@ -252,6 +252,13 @@ span.spark{display:flex;align-items:center;justify-content:center;font-size:11px
 .ol{display:block;font-size:11px;color:var(--faint);font-weight:600}
 .ol.g{color:var(--over)} .ol.r{color:var(--under)}
 .fsheet{max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.presets{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.presets button{text-align:left;background:var(--surface2);border-radius:12px;padding:10px 11px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);transition:background-color .2s,box-shadow .2s}
+.presets b{display:block;font:700 15px/1.2 var(--cond);color:var(--text)}
+.presets small{display:block;font-size:11.5px;line-height:1.3;color:var(--muted);margin-top:3px}
+.presets button[aria-pressed="true"]{background:rgba(255,209,102,.12);box-shadow:inset 0 0 0 1.5px var(--post)}
+.presets button[aria-pressed="true"] b{color:var(--post)}
+.presets button:active{transform:scale(.98)}
 .flh{text-transform:none;letter-spacing:0;font-weight:500;color:var(--faint);margin-left:6px}
 .mini.fview{width:100%}
 .mini.fview button{flex:1;padding:8px 6px;font-size:13px}
@@ -720,6 +727,13 @@ section{min-width:0}
 <div class="sheet fsheet" id="fsheet" role="dialog" aria-modal="true" aria-labelledby="fTitle">
   <div class="grab"></div>
   <h3 id="fTitle">Sort and filter</h3>
+  <p class="fl">Quick setups</p>
+  <div class="presets" id="presetRow">
+    <button data-preset="core"><b>Core</b><small>Model + market agree, best EV first</small></button>
+    <button data-preset="under"><b>Under hunter</b><small>Unders with model edge vs tough D</small></button>
+    <button data-preset="alt"><b>Alt-line hunting</b><small>Room past the line, market agrees</small></button>
+    <button data-preset="news"><b>News reaction</b><small>Teammate out and role growing</small></button>
+  </div>
   <p class="fl">View</p>
   <div class="mini fview" id="viewSeg" role="group" aria-label="View"><button data-view="">All props</button><button data-view="pairs">Correlated pairs</button><button data-view="ev">Beats market</button></div>
   <p class="fl">Sort by</p>
@@ -1421,7 +1435,7 @@ async function sharePlay(){
 }
 $("shareBtn").onclick = sharePlay;
 /* ---------- home-screen app: offline support, pull to refresh, update notice ---------- */
-const BUILD = "2026.10.04-2";
+const BUILD = "2026.10.07-1";
 let SAVED_DATA = false, NEW_HTML = null, hiddenAt = 0, lastCheck = 0;
 if("serviceWorker" in navigator && (location.protocol==="https:" || ["localhost","127.0.0.1"].includes(location.hostname))){
   navigator.serviceWorker.register("sw.js").catch(()=>{});
@@ -1724,7 +1738,26 @@ const FILTER_FN = {
   watch:  p => WATCH.has(p.pid),
 };
 const passSide = p => !S.side || (p.lean||"") === S.side;
+const PRESETS = {
+  core:  {view:"", sort:"ev",   side:"",      filters:["agree"],        ev:{method:"conservative", hideLead:true}},
+  under: {view:"", sort:"edge", side:"under", filters:["edge","soft"]},
+  alt:   {view:"", sort:"edge", side:"",      filters:["alt","agree"]},
+  news:  {view:"", sort:"edge", side:"",      filters:["tminj","usage"]},
+};
+function activePreset(){
+  return Object.keys(PRESETS).find(k=>{ const p = PRESETS[k];
+    return (S.view||"")===p.view && S.sort===p.sort && (S.side||"")===p.side && S.filters.length===p.filters.length && p.filters.every(f=>S.filters.includes(f)); }) || null;
+}
+function applyPreset(k){
+  const p = PRESETS[k]; if(!p) return;
+  if(activePreset()===k){ S.view = ""; S.sort = "score"; S.side = ""; S.filters = []; }   // tap again to turn it off
+  else { S.view = p.view; S.sort = p.sort; S.side = p.side; S.filters = [...p.filters];
+    if(p.ev){ Object.assign(EVOPT, p.ev); store.set("pb2_evopt", EVOPT); buildEV(); } }
+  saveState(); shown = 25; syncSheet(); renderBoard(true);
+}
 function syncSheet(){
+  const ap = activePreset();
+  document.querySelectorAll("#presetRow [data-preset]").forEach(b=>b.setAttribute("aria-pressed", b.dataset.preset===ap));
   document.querySelectorAll("#sortGrid [data-v]").forEach(b=>b.setAttribute("aria-pressed", b.dataset.v===S.sort));
   document.querySelectorAll("#viewSeg [data-view]").forEach(b=>b.setAttribute("aria-pressed", b.dataset.view===(S.view||"")));
   document.querySelectorAll("#sideSeg [data-side]").forEach(b=>b.setAttribute("aria-pressed", b.dataset.side===(S.side||"")));
@@ -1738,6 +1771,7 @@ function activeFiltersHTML(){
 }
 function onSheetChange(){ saveState(); shown = 25; syncSheet(); renderBoard(true); }
 $("fsheet").addEventListener("click", e => {
+  const pb = e.target.closest("[data-preset]"); if(pb){ applyPreset(pb.dataset.preset); return; }
   const sb = e.target.closest("#sortGrid [data-v]"); if(sb){ S.sort = sb.dataset.v; onSheetChange(); return; }
   const vb = e.target.closest("#viewSeg [data-view]"); if(vb){ S.view = vb.dataset.view; onSheetChange(); return; }
   const db = e.target.closest("#sideSeg [data-side]"); if(db){ S.side = db.dataset.side; onSheetChange(); return; }
@@ -2665,7 +2699,7 @@ function renderBoard(animate){
         + (prs.length ? prs.map(pairCardHTML).join("") : `<div class="empty">No strong same-game pairs right now.</div>`);
       return; }
     $("boardList").innerHTML = slotBarHTML() + (list.length
-      ? `<div class="sec-t"><h2>${q ? `Results for “${esc(q)}”` : S.filters.length || S.side ? "Filtered props" : S.slot ? SLOT_LBL[S.slot]+" games" : "All props"}</h2><small>${list.length} props · <button class="sortlbl" data-fs="1">${SORT_LBL[S.sort]} ▾</button></small></div>${activeFiltersHTML()}${thinNote()}<div class="list flat">${list.slice(0,shown).map(rowHTML).join("")}</div>`
+      ? `<div class="sec-t"><h2>${q ? `Results for “${esc(q)}”` : activePreset() ? {core:"Core",under:"Under hunter",alt:"Alt-line hunting",news:"News reaction"}[activePreset()] : S.filters.length || S.side ? "Filtered props" : S.slot ? SLOT_LBL[S.slot]+" games" : "All props"}</h2><small>${list.length} props · <button class="sortlbl" data-fs="1">${SORT_LBL[S.sort]} ▾</button></small></div>${activeFiltersHTML()}${thinNote()}<div class="list flat">${list.slice(0,shown).map(rowHTML).join("")}</div>`
         + (list.length>shown ? `<button class="more press" id="moreBtn">Show ${Math.min(25,list.length-shown)} more</button>` : "")
       : `${activeFiltersHTML()}<div class="empty">${q ? `No props match “${esc(q)}”.` : "Nothing matches these filters right now."}</div>${thinNote()}`);
   };
