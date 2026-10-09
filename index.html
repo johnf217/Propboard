@@ -1,19 +1,22 @@
 <!DOCTYPE html>
-<html lang="en" style="background:#0F1B2D">
+<html lang="en" style="background:#08101F">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#0F1B2D">
+<meta name="theme-color" content="#08101F">
 <meta name="apple-mobile-web-app-title" content="Prop Board">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=Inter:wght@400;500;600;700&display=swap">
 <title>Prop Board</title>
 <style>
 :root{
-  --bg:#0F1B2D; --surface:#17263D; --surface2:#1F3150; --surface3:#273B5E; --line:#2A3F62;
+  --bg:#08101F; --surface:#17263D; --surface2:#1F3150; --surface3:#273B5E; --line:#2A3F62;
   --text:#EEF2F7; --muted:#8FA3BF; --faint:#5E7394;
   --over:#3DDC97; --under:#FF6B6B; --push:#8FA3BF; --post:#FFD166;
   --cond:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif;
@@ -35,7 +38,7 @@ button{cursor:pointer;-webkit-user-select:none;user-select:none;border:0;backgro
 .g{color:var(--over)} .r{color:var(--under)} .y{color:var(--post)} .m{color:var(--muted)}
 
 /* header */
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;margin:0 -16px;padding:10px 16px;background:#0F1B2D;border-bottom:1px solid transparent;transition:border-color .2s}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;margin:0 -16px;padding:10px 16px;background:#08101F;border-bottom:1px solid transparent;transition:border-color .2s}
 .top.scrolled{border-bottom-color:var(--line)}
 .title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:4px 0 10px}
 .title h1{font:700 28px/1 var(--cond);letter-spacing:-.6px;margin:0;white-space:nowrap}
@@ -530,7 +533,7 @@ td.o{color:var(--over);font-weight:600} td.u{color:var(--under);font-weight:600}
 .clear{margin-top:12px;color:var(--under);font-weight:600;font-size:14px}
 
 /* tab bar */
-.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;justify-content:center;background:#0F1B2D;border-top:1px solid var(--line);padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px))}
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;justify-content:center;background:#08101F;border-top:1px solid var(--line);padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px))}
 .tabbar nav{display:flex;width:100%;max-width:560px}
 .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 0;font-size:11px;font-weight:600;color:var(--faint);transition:color .2s}
 .tab svg{width:24px;height:24px;transition:transform .25s var(--ease)}
@@ -577,7 +580,7 @@ td.o{color:var(--over);font-weight:600} td.u{color:var(--under);font-weight:600}
 /* ---------- nav bars: premium, nothing can spill ---------- */
 html,body{overflow-x:hidden;overflow-x:clip;max-width:100%}
 section{min-width:0}
-.top{background:linear-gradient(180deg,#0F1B2D 0%,#0F1B2D 88%,rgba(15,27,45,.96) 100%);box-shadow:0 1px 0 transparent;transition:box-shadow .25s}
+.top{background:linear-gradient(180deg,#08101F 0%,#08101F 88%,rgba(8,16,31,.96) 100%);box-shadow:0 1px 0 transparent;transition:box-shadow .25s}
 .top.scrolled{border-bottom-color:transparent;box-shadow:0 1px 0 var(--line),0 10px 24px -14px rgba(0,0,0,.7)}
 .title{margin:2px 0 12px}
 .title h1{font-size:30px;letter-spacing:-.8px}
@@ -600,6 +603,404 @@ section{min-width:0}
 .mini{box-shadow:inset 0 0 0 1px rgba(255,255,255,.04)}
 .mini button[aria-pressed="true"]{box-shadow:0 1px 3px rgba(0,0,0,.35)}
 .carousel{max-width:none}
+
+/* ===== design system v2 ===== */
+:root{--muted:#A4B4CB;--faint:#8094B2;--line:#223551;--surface:#16253C;--surface2:#1E304B;--surface3:#28405F;--r-box:18px;--r-tile:14px;--r-in:10px}
+body{font-size:15px}
+/* header */
+.title.bt{align-items:flex-end;margin:4px 0 14px}
+.title .ttl{min-width:0}
+.title.bt h1{font-size:30px;letter-spacing:-.9px}
+#updated{display:block;background:none!important;padding:0!important;margin-top:6px;text-align:left;font-size:13px;font-weight:500;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#updated.old{color:var(--post)}
+.title small:empty{display:none}
+.hact{display:flex;gap:8px;flex:none}
+.hact .fbtn{width:40px;height:40px;border-radius:12px}
+.fbtn.on{background:var(--surface3)}
+.top .mkwrap{margin:0 0 8px}
+.seg.bw{border-radius:12px}
+.seg.bw button{padding:7px 2px;font-size:12.5px}
+.top{padding-bottom:12px}
+/* notices */
+.stale,.evban{border:0!important;border-radius:var(--r-tile);background:var(--surface);padding:12px 14px 12px 16px;margin:16px 0 0;font-size:13.5px;line-height:1.45;color:var(--muted)}
+.stale{box-shadow:inset 3px 0 0 var(--post)}
+.stale b{color:var(--text);font-weight:700}
+.stale.off{box-shadow:inset 3px 0 0 var(--faint)}
+.evban{box-shadow:inset 3px 0 0 var(--over)}
+.evban b{color:var(--text);font-size:15px}
+.evban span{font-size:13px;color:var(--muted)}
+.evban i{color:var(--muted);font-size:0}
+.stale+#heroWrap .evban{margin-top:8px}
+/* section headings */
+.sec-t{margin:28px 0 12px;align-items:center}
+.sec-t h2{font-size:22px;letter-spacing:-.4px}
+.sec-t small{font-size:13px;color:var(--muted)}
+.thin{font-size:12.5px;color:var(--muted);margin:-4px 0 12px}
+/* column header */
+.colh{display:flex;align-items:center;gap:9px;padding:0 0 8px;border-bottom:1px solid var(--line);font-size:12px;font-weight:600;color:var(--faint)}
+.colh .cn{flex:1;min-width:0}
+.colh .ck{flex:none;width:50px;display:flex;align-items:center;justify-content:center;gap:4px;font-size:12px;font-weight:700;color:var(--post)}
+.colh .cs{flex:none;width:100px;text-align:right}
+.gcolh{padding:0 14px 8px;margin-top:2px}
+.gcolh .ck{color:var(--faint)}
+#boardList .prow .kv small,.game-b .prow .kv small{display:none}
+#boardList .prow .kv b,.game-b .prow .kv b{margin-top:0;font-size:19px}
+/* rows */
+.prow{padding:13px 0}
+.prow .av{width:46px;height:46px}
+.prow .who b{font-size:16px;font-weight:650}
+.prow .who b small{font-size:12px;font-weight:500;color:var(--faint)}
+.prow .who .l2{font-size:13.5px;margin-top:5px}
+.px{color:var(--faint)}
+/* avatars without a photo */
+.av:not(.hs){background:var(--surface2);background:color-mix(in srgb,var(--c,#3A4E70) 34%,#13213A);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
+.av:not(.hs) em{color:#fff;opacity:.92}
+/* top plays */
+.carousel{gap:12px;padding-bottom:4px}
+.hc{width:272px;padding:16px;border-radius:var(--r-box)}
+.hc b.nm{font-size:21px;margin-top:12px}
+.hc .mk{font-size:13px;margin-top:3px}
+.hc .lean{margin-top:10px;font-size:14px;padding:5px 9px;border-radius:8px}
+.hc .cells{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:12px}
+.hc .cell{min-width:0}
+.hc .why{display:block;margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07)}
+.hc .why .tag{display:block;background:none;padding:0;border-radius:0;font-size:12.5px;font-weight:500;line-height:1.6;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hc .why .tag::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:8px;vertical-align:1px;background:var(--over)}
+.hc .why .tag.r{color:var(--muted)}
+.hc .why .tag.r::before{background:var(--under)}
+/* hit-rate tiles: tint, color the number */
+.cell{border-radius:var(--r-in);background:var(--surface2)}
+.cell small{color:var(--muted);font-weight:600;letter-spacing:0}
+.c5{background:rgba(61,220,151,.15)} .c5 b{color:var(--over)}
+.c4{background:rgba(61,220,151,.07)} .c4 b{color:#9FEACB}
+.c3{background:var(--surface2)}
+.c2{background:rgba(255,107,107,.07)} .c2 b{color:#FFB0B0}
+.c1{background:rgba(255,107,107,.15)} .c1 b{color:var(--under)}
+.pcells{gap:6px;margin-bottom:12px}
+.pcells .cell{background-color:var(--surface)}
+.pcells .cell.c5{background:rgba(61,220,151,.15)} .pcells .cell.c4{background:rgba(61,220,151,.07)}
+.pcells .cell.c2{background:rgba(255,107,107,.07)} .pcells .cell.c1{background:rgba(255,107,107,.15)}
+.pcells .cell em{color:var(--muted)}
+/* containers */
+.card,.chart,.books,.game,.alt,.og{border-radius:var(--r-box)}
+.card{padding:16px;margin-bottom:12px}
+.card h3,#recordBody .card h3{font:700 17px/1.25 var(--cond);color:var(--text);letter-spacing:-.2px;margin:0 0 10px}
+.card h4,#splitCard h4,#pairCard h4,#advCard h4{color:var(--text)}
+.spnote,.rnote,.dnote{color:var(--muted);font-size:13px;line-height:1.45}
+.panel,.bet,.sum div{border-radius:var(--r-tile)}
+.panel{padding:14px}
+.at,.dsum>div,.pjs>div,.ao,.spc{border-radius:var(--r-in)}
+.bet{box-shadow:none;background:var(--surface);padding:12px 14px}
+.bet small{color:var(--muted)}
+.bet b{font-size:24px}
+.bets{gap:8px;margin-bottom:12px}
+.deck{gap:8px;margin:16px 0 8px}
+.sum{gap:8px}
+.chart{margin:8px 0 12px}
+.seg.wseg{margin:4px 0 0}
+#histCard{margin-top:0}
+/* sentence-case labels */
+.fsheet .fl{text-transform:none;letter-spacing:0;font-size:13px;font-weight:700;color:var(--text);margin:18px 0 8px}
+.fsheet .fl .flh{color:var(--faint);font-weight:500}
+.altrow .k{text-transform:none;letter-spacing:0;font-size:13px;color:var(--muted)}
+.ladder .lh{text-transform:none;letter-spacing:0;font-size:12px}
+.kv small{letter-spacing:.2px}
+/* games */
+.game{margin-top:12px}
+.game-h{padding:16px}
+.game-h .mu{font-size:21px}
+.game-b .row,.game-b .prow{background:none}
+.game-b .list{padding:0 0 4px}
+.game-b .prow{padding:12px 16px;border-bottom:1px solid var(--line)}
+.gcolh{padding:8px 16px;border-top:1px solid var(--line)}
+/* tab bar */
+.tabbar{background:#08101F;padding-top:6px}
+.tab{gap:2px;color:var(--faint)}
+.tab .ic{display:grid;place-items:center;width:54px;height:30px;border-radius:999px;transition:background-color .2s}
+.tab svg{width:22px;height:22px}
+.tab[aria-current="true"]{color:var(--text)}
+.tab[aria-current="true"] .ic{background:var(--surface2)}
+.tab[aria-current="true"] svg{transform:none}
+/* empty states */
+.empty{padding:40px 24px;color:var(--muted);font-size:15px;line-height:1.5}
+
+.spark{width:88px}
+.colh .cs{width:88px}
+.hc .mk{display:block}
+.game-b .prow .who b small{display:none}
+#gamesList>.thin{margin:14px 0 4px}
+.prow .row-main{gap:10px}
+.prow .av{width:44px;height:44px}
+
+.game-b .spark{width:76px}
+.gcolh .cs{width:76px}
+
+/* ===== design system v3: bold ===== */
+:root{--ink:#06142A}
+.wrap{padding-bottom:calc(118px + env(safe-area-inset-bottom,0px))}
+.title.bt h1,.title h1{font-size:36px;font-weight:800;letter-spacing:-1.4px}
+.title small{background:none;padding:0;font-weight:500;font-size:12.5px;color:var(--faint);text-align:left;margin-top:6px;display:block}
+.sec-t h2{font-size:23px;font-weight:800;letter-spacing:-.6px}
+.sec-t small{color:var(--faint);font-weight:500}
+/* market pills: standalone, white selected */
+.chips.seg2{background:none;padding:0 16px 2px;margin:0 -16px;gap:8px}
+.seg2 .chip,.chip{border:1.5px solid var(--surface3);background:none;padding:8px 15px;font-size:14.5px;font-weight:650;color:var(--muted)}
+.seg2 .chip[aria-pressed="true"],.chip[aria-pressed="true"]{background:#fff;border-color:#fff;color:var(--ink)}
+/* segments become underline tabs */
+.seg{background:none;box-shadow:inset 0 -1px 0 var(--line);border-radius:0;padding:0;gap:18px;justify-content:flex-start}
+.seg button{flex:0 0 auto;padding:12px 0 11px;border-radius:0;background:none!important;box-shadow:none!important;font-size:14.5px;font-weight:650;color:var(--faint);position:relative;overflow:visible}
+.seg button[aria-pressed="true"]{color:#fff}
+.seg button[aria-pressed="true"]::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:3px 3px 0 0;background:var(--post)}
+.seg.bw button{padding:12px 0 11px;font-size:14.5px}
+.seg.bw,.seg.wseg{margin-top:6px}
+/* board rows as cards */
+#boardList{display:flex;flex-direction:column;gap:8px}
+.prow{background:var(--surface);border:0;border-radius:var(--r-box);padding:12px 12px 12px 12px}
+.prow .av{width:48px;height:48px}
+.prow .who b{font-size:17px;font-weight:750;letter-spacing:-.3px}
+.prow .who .l2{font-size:14px;margin-top:5px}
+.prow .sd{display:inline-block;padding:2px 7px;border-radius:6px;font-size:12.5px;font-weight:800;margin-right:2px}
+.prow .sd.over{background:rgba(61,220,151,.16)} .prow .sd.under{background:rgba(255,107,107,.16)}
+.colh{border:0;padding:0 12px 6px}
+/* score/value badges */
+.kv{width:54px}
+.kv small{font-size:10px;font-weight:700;letter-spacing:.3px;color:var(--faint)}
+.kv b{margin-top:5px;padding:7px 0;border-radius:11px;background:var(--surface2);font-size:17px;font-weight:800;letter-spacing:-.4px}
+.kv b.g{background:var(--over);color:var(--ink)}
+.kv b.y{background:var(--post);color:var(--ink)}
+.kv b.r{background:var(--under);color:var(--ink)}
+.kv .evb{margin-top:4px}
+/* top plays: tickets */
+/* player hero: team band */
+.hero{margin:0 -16px;padding:22px 16px 20px;border-radius:0 0 26px 26px;
+  background:linear-gradient(160deg,color-mix(in srgb,var(--c,#3A4E70) 80%,#000) 0%,color-mix(in srgb,var(--c,#3A4E70) 35%,#08101F) 70%,#08101F 100%)}
+.hero .wm{opacity:.2;width:200px;height:200px;right:-36px;top:-30px}
+.hero .av{width:88px;height:88px;box-shadow:0 0 0 3px rgba(255,255,255,.9)}
+.hero h1{font-size:33px;font-weight:850;letter-spacing:-1.2px}
+.hero p{color:rgba(255,255,255,.82)}
+.hero p b{color:#fff;background:rgba(0,0,0,.28);padding:1px 7px;border-radius:6px;margin-left:4px}
+.hit{font-size:46px;font-weight:850;letter-spacing:-1.8px}
+/* hit strip */
+.pcells{gap:0;background:var(--surface);border-radius:var(--r-tile);overflow:hidden}
+.pcells .cell{background:none!important;border-radius:0;padding:10px 2px 9px}
+.pcells .cell+.cell{box-shadow:inset 1px 0 0 var(--line)}
+.pcells .cell b{font-size:21px;font-weight:850}
+/* cards */
+.card{border-radius:var(--r-box);border:1px solid rgba(255,255,255,.04)}
+/* floating dock */
+.tabbar{left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));padding:6px;border:1px solid rgba(255,255,255,.07);border-radius:26px;background:#14233A;box-shadow:0 14px 34px rgba(0,0,0,.5)}
+.tab{font-size:10.5px;color:var(--faint)}
+.tab[aria-current="true"]{color:#fff}
+.tab[aria-current="true"] .ic{background:#fff;color:var(--ink)}
+.toast{bottom:calc(98px + env(safe-area-inset-bottom,0px))}
+.utoast{bottom:calc(98px + env(safe-area-inset-bottom,0px))}
+.list.flat{gap:8px}
+.prow{padding:11px 10px}
+.prow .row-main{gap:9px}
+.prow .av{width:44px;height:44px}
+.prow .spark{width:80px}
+.kv{width:52px}
+.mkwrap{background:none;box-shadow:none;border-radius:0;height:44px;margin:0 -16px!important;overflow:visible}
+.mkwrap::after{display:none}
+.mkwrap .chips.seg2{padding:2px 16px;gap:8px}
+.mkwrap .seg2 .chip{height:38px;padding:0 16px;border:1.5px solid var(--surface3);font-weight:650;color:var(--muted)}
+.mkwrap .seg2 .chip[aria-pressed="true"]{background:#fff;border-color:#fff;color:var(--ink);box-shadow:none}
+.seg.bw,.seg.bw button{border-radius:0}
+.seg.bw button{padding:12px 0 11px;font-size:14.5px}
+.hero{margin-bottom:16px}
+.game-b .list.flat{gap:0}
+.game-b .prow{background:none;border-radius:0;box-shadow:inset 0 -1px 0 var(--line);padding:11px 14px}
+.game-b .prow:last-child{box-shadow:none}
+
+/* ===== Prime Desk ===== */
+:root{--bg:#08101F;--surface:#0F1A2E;--surface2:#16233B;--surface3:#1F2F4C;--line:#1C2A42;--text:#F2F5FA;--muted:#8C9AB3;--faint:#71809C;
+  --over:#22E39B;--under:#FF5C66;--post:#FFC93C;--push:#8C9AB3;--ink:#08101F;
+  --cond:"Archivo",-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif;
+  --body:"Inter",-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif}
+.top{background:var(--bg)}
+.title h1,.title.bt h1{font-family:var(--cond);font-weight:900;font-stretch:118%;font-size:30px;line-height:1;letter-spacing:-.6px;text-transform:uppercase}
+.title small{color:var(--muted);font-size:12.5px;margin-top:7px}
+.sec-t h2{font:800 17px/1.1 var(--cond);font-stretch:112%;letter-spacing:0;text-transform:uppercase}
+.sec-t small{font-size:12.5px;color:var(--muted)}
+.card{background:var(--surface);border-radius:20px;border:0}
+.card h3,#recordBody .card h3{font:800 15px/1.2 var(--cond);font-stretch:112%;text-transform:uppercase;letter-spacing:.1px;color:var(--text)}
+.iconbtn{width:44px;height:44px;border-radius:12px;background:var(--surface)}
+.mkwrap .seg2 .chip,.chip{border-color:var(--line);color:var(--muted);font-weight:700}
+.mkwrap .seg2 .chip{height:36px;padding:0 15px}
+.mkwrap .seg2 .chip[aria-pressed="true"],.chip[aria-pressed="true"]{background:#fff;border-color:#fff;color:var(--ink)}
+.seg{box-shadow:inset 0 -1px 0 var(--line)}
+.seg button{font-size:13.5px;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed="true"]{color:var(--text)}
+.seg.bw{margin:2px 0 0}
+.sec-t+.seg.bw{margin-top:-4px}
+.seg.bw button{padding:9px 0;font-size:13.5px}
+/* top plays */
+.carousel{gap:10px}
+.hc.tk{width:214px;padding:0;border-radius:18px;background:var(--surface);display:flex;flex-direction:column;box-shadow:none;overflow:hidden}
+.tk-band{position:relative;display:flex;align-items:center;justify-content:space-between;height:40px;padding:0 12px;overflow:hidden;color:#fff;background:var(--c);background:color-mix(in srgb,var(--c) 90%,#000)}
+.hc .tk-band .wm{position:absolute;right:-8px;top:-28px;width:96px;height:96px;opacity:.22;object-fit:contain}
+.tk-band b{position:relative;font:800 13px var(--cond)}
+.tk-band span{position:relative;font-size:12px;font-weight:600}
+.tk-body{display:block;padding:10px 12px 12px}
+.tk-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.tk-id{display:block;min-width:0}
+.hc.tk b.nm{display:block;margin:0;font:800 17px/1.15 var(--cond);letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hc.tk .mk{display:block;margin:2px 0 0;font-size:12.5px;color:var(--muted)}
+.tk-sc{flex:none;width:42px;height:38px;border-radius:10px;display:grid;place-items:center;font:900 19px var(--cond);background:var(--surface3);color:var(--text)}
+.tk-sc.g{background:var(--over);color:var(--ink)} .tk-sc.y{background:var(--post);color:var(--ink)}
+.tk-pk{display:flex;align-items:center;gap:8px;margin-top:10px}
+.hc.tk .lean{margin:0;padding:6px 9px;border-radius:8px;font:900 15px/1 var(--cond);letter-spacing:0}
+.hc.tk .lean.over{background:var(--over);color:var(--ink)} .hc.tk .lean.under{background:var(--under);color:var(--ink)}
+.tk-pk>b{font-size:13px;font-weight:600}
+.tk-st{display:block;font-size:12px;color:var(--muted);margin-top:9px}
+.tk-st b{color:var(--text);font-weight:700} .tk-st b.g{color:var(--over)} .tk-st b.r{color:var(--under)}
+.hc.tk .why{display:block;margin:5px 0 0;padding:0;border:0}
+.hc.tk .why .tag{font-size:12px;line-height:1.5;color:var(--muted)}
+.hc.tk .why .tag::before{width:6px;height:6px;margin-right:7px}
+/* board table */
+.list.flat{gap:0}
+.colh{display:grid;grid-template-columns:minmax(0,1fr) 66px 46px 70px;gap:8px;align-items:center;padding:10px 0 7px 6px;border:0;font-size:11px;font-weight:600;color:var(--muted)}
+.colh .ck{width:auto;justify-content:center;font-size:11px;color:var(--post)}
+.colh .cs{width:auto;text-align:right}
+.gcolh,.game-b .gcolh{padding:8px 14px 7px 17px;border-top:1px solid var(--line)}
+.gcolh .cs{width:auto}
+.prow,.game-b .prow{margin:0;padding:0 12px;background:none;border-radius:0;border-top:1px solid var(--line);box-shadow:inset 3px 0 0 var(--c,var(--surface3))}
+#boardList .prow{margin:0 -16px;padding:0 16px}
+.game-b .prow{padding:0 14px}
+.game-b .prow:last-child{box-shadow:inset 3px 0 0 var(--c,var(--surface3))}
+.prow .row-main{display:grid;grid-template-columns:minmax(0,1fr) 66px 46px 70px;gap:8px;align-items:center;min-height:58px;padding:7px 0 7px 6px}
+.prow .who{min-width:0}
+.prow .who b{display:block;font:600 15px/1.2 var(--body);letter-spacing:-.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prow .who .l2{display:block;font-size:12px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prow .who .star{position:static;display:inline;width:auto;height:auto;background:none;color:var(--post);font-size:12px;margin-right:4px;line-height:1}
+.prow .ij{margin-left:5px}
+.pk{display:block;min-width:0}
+.pk b{display:block;font:800 14px/1.15 var(--cond);white-space:nowrap}
+.pk b.sd{padding:0;background:none!important;margin:0}
+.pk b .mv{font-size:9px;margin-left:3px;vertical-align:1px}
+.pk small{display:block;font-size:11.5px;color:var(--muted);margin-top:3px}
+.prow .kv{width:auto;display:flex;flex-direction:column;align-items:stretch}
+.prow .kv small{display:none}
+.kv b{margin:0;height:34px;padding:0;display:grid;place-items:center;border-radius:9px;background:var(--surface3);font:900 17px/1 var(--cond);letter-spacing:-.2px}
+.kv b.g{background:var(--over);color:var(--ink)} .kv b.y{background:var(--post);color:var(--ink)} .kv b.r{background:var(--under);color:var(--ink)}
+.prow .kv .evb{margin-top:4px;text-align:center;font-size:10px}
+.prow .spark,.game-b .prow .spark{width:70px;justify-self:end}
+/* player page */
+.hero{background:var(--c,#3A4E70);background:color-mix(in srgb,var(--c,#3A4E70) 88%,#000);padding:18px 16px 18px;border-radius:0 0 26px 26px}
+.hero .wm{opacity:.16}
+.hero .av{width:68px;height:68px;box-shadow:0 0 0 3px #fff}
+.hero h1{font:900 28px/1 var(--cond);font-stretch:110%;letter-spacing:-.4px;text-transform:uppercase}
+.hero p{color:rgba(255,255,255,.88);font-size:13px;font-weight:600}
+.deck{gap:0;margin:14px 0 0;background:var(--surface);border-radius:20px 20px 0 0;overflow:hidden}
+.deck .panel{background:none;border-radius:0;padding:14px}
+.deck .panel+.panel{box-shadow:inset 1px 0 0 var(--line)}
+.panel .k{font-size:11.5px;font-weight:600;color:var(--muted)}
+.stepper button{width:36px;height:36px;border-radius:10px;background:var(--surface3)}
+.stepper input{font:900 26px/1 var(--cond)}
+.hit{font:900 34px/1.05 var(--cond);letter-spacing:-.8px}
+.pcells{margin:0 0 10px;background:var(--surface);border-radius:0 0 20px 20px;box-shadow:inset 0 1px 0 var(--line)}
+.pcells .cell small{font-size:11px;font-weight:600;color:var(--muted)}
+.pcells .cell b{font:900 18px/1.1 var(--cond)}
+.bet{border-radius:16px}
+.bet b,.bet .px{font-family:var(--cond)}
+/* dock */
+.tabbar{background:#111D33;border-color:var(--line)}
+.tab{color:var(--muted)}
+.tab[aria-current="true"] .ic{background:#fff;color:var(--ink)}
+
+/* ===== Prime Desk: mockup fidelity + polish ===== */
+:root{--bd:rgba(255,255,255,.06);--sh:inset 0 1px 0 rgba(255,255,255,.035),0 14px 30px -18px rgba(0,0,0,.75);--t:.18s}
+/* depth: one border + soft shadow on every raised surface */
+.card,.pcard,.hc.tk,.game,.stale,.evban,.iconbtn{border:1px solid var(--bd);box-shadow:var(--sh)}
+.tabbar{border:1px solid rgba(255,255,255,.08);box-shadow:0 18px 40px -10px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.05)}
+/* spacing + type rhythm */
+.top{padding:10px 16px 8px}
+.title.bt{margin:2px 0 12px}
+.sec-t{margin:22px 0 10px}
+.card{padding:16px;margin-bottom:10px}
+.stale,.evban{margin-bottom:8px}
+.thin{font-size:12.5px;color:var(--muted);margin:0 0 4px;line-height:1.45}
+/* micro-interactions, 150-200ms */
+.press{transition:transform var(--t) var(--ease),background-color var(--t),box-shadow var(--t),opacity var(--t)}
+.press:active{transform:scale(.975)}
+.prow .row-main.press:active{transform:none;background:rgba(255,255,255,.04)}
+.prow .row-main{transition:background-color var(--t)}
+.chip,.seg button,.tab,.tab .ic,.iconbtn,.books .px,.stepper button,.kv b,.tk-sc,.pksc{transition:background-color var(--t),color var(--t),border-color var(--t),box-shadow var(--t),transform var(--t) var(--ease)}
+.chip:active,.iconbtn:active,.stepper button:active,.books .px:active{transform:scale(.93)}
+.seg button::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:3px 3px 0 0;background:var(--post);transform:scaleX(0);transition:transform var(--t) var(--ease)}
+.seg button[aria-pressed="true"]::after{transform:scaleX(1)}
+.tab:active .ic{transform:scale(.9)}
+/* player: team band runs under the header */
+#v-player>.top{background:var(--c,#3A4E70);background:color-mix(in srgb,var(--c,#3A4E70) 88%,#000);box-shadow:none;border:0}
+#v-player .back,#v-player .star{color:#fff}
+#v-player .star.on{color:var(--post)}
+.hero{margin:0 -16px;padding:4px 16px 20px;gap:14px;border-radius:0 0 26px 26px}
+.hero .hid{position:relative;min-width:0}
+.hero h1{font-size:28px;line-height:1.02}
+.hero p{margin:7px 0 0;font-size:13px;font-weight:600;color:rgba(255,255,255,.9)}
+#pMarkets{margin-top:14px}
+/* main card: line | pick, then hit strip */
+.pcard{margin:12px 0 10px;background:var(--surface);border-radius:20px;overflow:hidden}
+.pcard .deck{margin:0;border-radius:0;background:none;gap:0}
+.pcard .deck .panel{padding:14px}
+.pcard .pcells{margin:0;border-radius:0;background:none;box-shadow:inset 0 1px 0 var(--line)}
+.pcard .pcells .cell{padding:9px 2px 10px}
+.pcard .pcells .cell em{font-size:10.5px}
+.pickp{display:flex;flex-direction:column;align-items:stretch;text-align:left;width:100%;min-width:0;transition:background-color var(--t),box-shadow var(--t)}
+.pickp:active{transform:none;background:rgba(255,255,255,.04)}
+.pickp:disabled{cursor:default}
+.pkrow{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}
+.pkside{font:900 24px/1 var(--cond);font-stretch:105%;letter-spacing:-.2px}
+.pkside.over{color:var(--over)} .pkside.under{color:var(--under)} .pkside.m{color:var(--muted);font-size:20px;margin-top:6px}
+.pksc{flex:none;width:46px;height:42px;border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--surface3)}
+.pksc b{font:900 20px/1 var(--cond)} .pksc small{font-size:8.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;margin-top:1px}
+.pksc.g{background:var(--over);color:var(--ink)} .pksc.y{background:var(--post);color:var(--ink)}
+.pksub{display:block;font-size:12.5px;color:var(--muted);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pksub b{color:var(--text);font-weight:700}
+.pickp.on{background:rgba(34,227,155,.08);box-shadow:inset 1px 0 0 var(--line),inset 0 0 0 2px var(--over)}
+.pickp.on .k{color:var(--over)}
+/* chart card */
+.chartcard{padding:14px 14px 0;overflow:hidden}
+.cch{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.cch h3{margin:0}
+.cch small{font-size:12.5px;color:var(--muted);white-space:nowrap}
+.cch small b{color:var(--text);font-weight:700} .cch small b.g{color:var(--over)} .cch small b.r{color:var(--under)}
+.chartcard .seg.wseg{margin:6px 0 0}
+.chartcard .chart{background:none;border-radius:0;padding:10px 0 0;margin:0}
+.chartcard .sum{gap:0;margin:6px -14px 0;border-top:1px solid var(--line)}
+.chartcard .sum div{background:none;border-radius:0;padding:0}
+.chartcard .sum>div{padding:10px 0 11px;text-align:center}
+.chartcard .sum>div+div{box-shadow:inset 1px 0 0 var(--line)}
+.chartcard .sum .k{font-size:11px;font-weight:600;color:var(--muted)}
+.chartcard .sum .v{font:900 17px/1.2 var(--cond);margin-top:2px}
+/* model card: key/value table */
+.mrows{margin:4px -16px 0}
+.mrows>div{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 16px;border-top:1px solid var(--line);font-size:14px}
+.mrows>div>span{color:var(--muted)}
+.mrows b{font:800 14.5px/1.2 var(--cond);text-align:right;white-space:nowrap}
+.mrows b .lean{display:inline-block;margin:0 6px 0 0;padding:4px 7px;border-radius:6px;font:900 13px/1 var(--cond)}
+.mrows b .lean.over{background:var(--over);color:var(--ink)} .mrows b .lean.under{background:var(--under);color:var(--ink)}
+.mrows .g{color:var(--over)} .mrows .r{color:var(--under)}
+.mmsg{margin:0 -16px;padding:12px 16px 2px;border-top:1px solid var(--line);font-size:13px;line-height:1.45;color:var(--muted)}
+#modelCard .fxl{margin-top:8px}
+/* books card */
+.bookcard{padding:16px 0 6px}
+.bookcard h3{padding:0 16px}
+.bookcard .books{background:none;border-radius:0;margin:0;overflow:visible}
+.books .bh{font-size:11px;font-weight:600;padding:2px 16px 8px}
+.books .br{padding:7px 16px}
+.books .ln{font:700 14px var(--cond)}
+.books .px{font:800 14px var(--cond);background:var(--surface2);border-radius:8px;padding:7px 0}
+.books .px.best{background:var(--over);color:var(--ink);box-shadow:none}
+.books .px.on{background:var(--post);color:var(--ink)}
+.ladder .lh{font-size:11px;font-weight:600;color:var(--muted);padding:0 8px 6px}
+.ladder .lr{border-radius:0;padding:8px;transition:background-color var(--t)}
+.ladder .lr.on{border-radius:10px}
+.ladder .lr b,.ladder .lr strong{font-family:var(--cond)}
+.alt{border:1px solid var(--bd);box-shadow:var(--sh)}
+.stale{box-shadow:inset 3px 0 0 var(--post),var(--sh)}
+.evban{box-shadow:inset 3px 0 0 var(--over),var(--sh)}
+.thin{padding:0}
 </style>
 </head>
 <body>
@@ -609,15 +1010,12 @@ section{min-width:0}
   <!-- BOARD -->
   <section id="v-board" hidden>
     <div class="top">
-      <div class="title"><h1>Prop Board</h1><small id="updated"></small></div>
-      <div class="seg bw" id="bwSeg" role="group" aria-label="Games in chart">
-        <button data-v="szn">Season</button><button data-v="h2h">H2H</button><button data-v="l5">L5</button><button data-v="l10">L10</button><button data-v="l20">L20</button>
-      </div>
-      <div class="ctl">
+      <div class="title bt"><div class="ttl"><h1>Prop Board</h1><small id="updated"></small></div>
+      <div class="hact">
         <button class="iconbtn fbtn press" id="searchBtn" aria-label="Search players"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button>
         <button class="iconbtn fbtn press" id="filterBtn" aria-label="Sort and filters"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
-        <div class="mkwrap"><div class="chips seg2" id="mkChips" role="group" aria-label="Market"></div></div>
-      </div>
+      </div></div>
+      <div class="mkwrap"><div class="chips seg2" id="mkChips" role="group" aria-label="Market"></div></div>
       <div class="sbar" id="sbar" hidden><input id="bq" type="search" placeholder="Search player or team" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="Search the board"><button id="bqX">Cancel</button></div>
     </div>
     <div class="stale" id="stale" hidden></div>
@@ -659,6 +1057,7 @@ section{min-width:0}
     <div class="top"><div class="phead"><button class="back press" id="backBtn">Back</button><div class="pacts"><button class="star shr" id="shareBtn" aria-label="Share this play"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7.5 7.5L12 3l4.5 4.5"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg></button><button class="star" id="starBtn" aria-label="Add to watchlist">★</button></div></div></div>
     <div class="hero" id="hero"></div>
     <div class="chips" id="pMarkets" role="group" aria-label="Prop market"></div>
+    <div class="pcard">
     <div class="deck">
       <div class="panel">
         <div class="k">Line</div>
@@ -668,20 +1067,33 @@ section{min-width:0}
           <button id="plus" aria-label="Raise line">+</button>
         </div>
       </div>
-      <div class="panel" id="hitPanel">
-        <div class="k" id="hitLabel">Went over, L10</div>
+      <button class="panel pickp press" id="pickPanel" type="button"></button>
+      <div class="panel" id="hitPanel" hidden>
+        <div class="k" id="hitLabel"></div>
         <div class="hit" id="hit"><span>0</span>/<span>0</span><small></small></div>
         <div class="meter"><div id="meter" style="width:0"></div></div>
       </div>
     </div>
     <div class="pcells" id="pcells"></div>
-    <div class="bets" id="bets"></div>
-    <p class="mvinfo" id="mvInfo" hidden></p>
-    <div class="card" id="histCard" hidden></div>
-    <div class="card" id="modelCard" hidden></div>
-    <div class="seg" id="winSeg" role="group" aria-label="Games shown">
-      <button data-v="l5">L5</button><button data-v="l10">L10</button><button data-v="l20">L20</button><button data-v="szn">Season</button><button data-v="h2h">H2H</button>
     </div>
+    <div class="bets" id="bets" hidden></div>
+    <p class="mvinfo" id="mvInfo" hidden></p>
+    <div class="card chartcard">
+      <div class="cch"><h3 id="chTitle">Last 10 games</h3><small id="chSub"></small></div>
+      <div class="seg wseg" id="winSeg" role="group" aria-label="Games shown">
+        <button data-v="l5">L5</button><button data-v="l10">L10</button><button data-v="l20">L20</button><button data-v="szn">Season</button><button data-v="h2h">H2H</button>
+      </div>
+      <div class="chart"><div class="chart-scroll" id="chartScroll"><div id="chart"></div></div></div>
+      <div class="sum">
+        <div><div class="k">Average</div><div class="v" id="avg">—</div></div>
+        <div><div class="k">Median</div><div class="v" id="med">—</div></div>
+        <div><div class="k">High</div><div class="v" id="hi">—</div></div>
+        <div><div class="k">Low</div><div class="v" id="lo">—</div></div>
+      </div>
+    </div>
+    <div class="card" id="modelCard" hidden></div>
+    <div class="card bookcard" id="books" hidden></div>
+    <div class="card" id="histCard" hidden></div>
     <div class="alt" id="altCard">
       <div class="altrow"><span class="k">Alt line</span><b id="altVal"></b><button class="altreset" id="altReset" hidden></button></div>
       <div class="slrow"><button class="slb" id="altDown" aria-label="Lower alt line">−</button>
@@ -691,13 +1103,6 @@ section{min-width:0}
       <p class="altbk" id="altBk" hidden></p>
       <div class="ladder" id="ladder"></div>
     </div>
-    <div class="chart"><div class="chart-scroll" id="chartScroll"><div id="chart"></div></div></div>
-    <div class="sum">
-      <div><div class="k">Average</div><div class="v" id="avg">—</div></div>
-      <div><div class="k">Median</div><div class="v" id="med">—</div></div>
-      <div><div class="k">High</div><div class="v" id="hi">—</div></div>
-      <div><div class="k">Low</div><div class="v" id="lo">—</div></div>
-    </div>
     <div class="card" id="distCard" hidden></div>
     <div class="card" id="trendCard" hidden></div>
     <div class="card" id="advCard"></div>
@@ -706,7 +1111,6 @@ section{min-width:0}
     <div class="card" id="matchCard"></div>
     <div class="card" id="volCard"></div>
     <div class="card" id="teamCard" hidden></div>
-    <div id="books"></div>
     <div class="sec-t"><h2>Game log</h2></div>
     <div class="table"><table id="log"></table></div>
   </section>
@@ -1323,7 +1727,7 @@ function renderStale(){
   if(ca!=null && ca > 30*36e5) msgs.push(`weather, game lines and injuries are ${ageTxt(ca)} old`);
   const el = $("stale");
   el.hidden = !msgs.length;
-  if(msgs.length){ const t = msgs.join(", and "); el.innerHTML = `<b>⚠ ${t.charAt(0).toUpperCase() + t.slice(1)}.</b> An update may have failed. Check the workflows in GitHub Actions.`; }
+  if(msgs.length){ const t = msgs.join(", and "); el.innerHTML = `<b>${t.charAt(0).toUpperCase() + t.slice(1)}.</b> An update may have failed. Check the workflows in GitHub Actions.`; }
   $("updated").classList.toggle("old", pa!=null && pa > 18*36e5);
 }
 /* ---------- board search + kickoff slots ---------- */
@@ -1371,8 +1775,8 @@ function drawShareCard(prop){
   const c = cv.getContext("2d"), pl = prop.pl, m = MARKETS[prop.market], col = TEAM_COLOR[prop.team] || "#3A4A66";
   const GREEN = "#3DDC97", RED = "#FF6B6B", YEL = "#FFD166", TXT = "#EEF2F7", MUT = "#8FA0B8", SURF = "#172742", SURF2 = "#1F3152";
   const sideCol = d.side==="over" ? GREEN : RED;
-  c.fillStyle = "#0F1B2D"; c.fillRect(0,0,W,H);
-  const gr = c.createLinearGradient(0,0,0,520); gr.addColorStop(0, col+"66"); gr.addColorStop(1, "#0F1B2D00"); c.fillStyle = gr; c.fillRect(0,0,W,520);
+  c.fillStyle = "#08101F"; c.fillRect(0,0,W,H);
+  const gr = c.createLinearGradient(0,0,0,520); gr.addColorStop(0, col+"66"); gr.addColorStop(1, "#08101F00"); c.fillStyle = gr; c.fillRect(0,0,W,520);
   c.textBaseline = "alphabetic";
   c.fillStyle = MUT; c.font = SF(700, 28); c.fillText("PROP BOARD", 72, 92);
   c.textAlign = "right"; c.fillText(prop.kick ? kickTime(prop.kick) : "", W-72, 92); c.textAlign = "left";
@@ -1435,7 +1839,7 @@ async function sharePlay(){
 }
 $("shareBtn").onclick = sharePlay;
 /* ---------- home-screen app: offline support, pull to refresh, update notice ---------- */
-const BUILD = "2026.10.07-1";
+const BUILD = "2026.10.08-4";
 let SAVED_DATA = false, NEW_HTML = null, hiddenAt = 0, lastCheck = 0;
 if("serviceWorker" in navigator && (location.protocol==="https:" || ["localhost","127.0.0.1"].includes(location.hostname))){
   navigator.serviceWorker.register("sw.js").catch(()=>{});
@@ -1662,7 +2066,7 @@ function evRowHTML(r){
 }
 function evBannerHTML(){
   const n = EVS.filter(r=>passSlot(r.p)).length; if(!n) return "";
-  return `<button class="evban press" data-evgo="1"><b>${n} price${n>1?"s":""} beat the market</b><span>Book prices better than the other books' fair line</span><i>›</i></button>`;
+  return `<button class="evban press" data-evgo="1"><b>${n} price${n>1?"s":""} beat the market</b><span>Better than the other books' fair line</span><i><svg viewBox="0 0 8 14" width="8" height="14"><path d="M1 1l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></i></button>`;
 }
 function evListHTML(){
   const rows = EVS.filter(r=>(!S.market || r.p.market===S.market) && passSlot(r.p) && passQ(r.p) && (!S.side || r.side===S.side));
@@ -1789,7 +2193,7 @@ function renderLineHist(prop){
   if(!prop){ card.hidden = true; return; }
   const h = LINES?.props?.[prop.key + "|" + prop.kick];
   card.hidden = false;
-  if(!h || !h.length){ card.innerHTML = `<h3>Line history</h3><p class="spnote">Tracking starts with the next props update.</p>`; return; }
+  if(!h || h.length < 2){ card.hidden = true; return; }
   const lineMoved = h.some(x=>x[1]!==h[0][1]);
   // plot the line if it moved; otherwise plot the over's no-vig chance from the prices
   const pts = h.map(x=>({t:Date.parse(x[0]), line:x[1], po:x[2], pu:x[3], y: lineMoved ? x[1] : (x[2]!=null && x[3]!=null ? noVig(x[2], x[3])*100 : x[2]!=null ? impl(x[2])*100 : null)})).filter(x=>x.y!=null);
@@ -2326,6 +2730,14 @@ function renderLadder(prop){
     <p class="spnote" style="margin:6px 0 0">Model chance with fair odds under it. Tap a line to chart it. Green book prices pay more than fair.</p>`;
 }
 document.addEventListener("click", e => { const b = e.target.closest("[data-ll]"); if(!b) return; P.line = +b.dataset.ll; renderPlayer(false); });
+const COL_LBL = {score:"Score", edge:"Edge", trend:"Hit %", ev:"EV", kick:"Score", move:"Move"};
+function bwSegHTML(){
+  return `<div class="seg bw" id="bwSeg" role="group" aria-label="Games in chart">` + [["l5","L5"],["l10","L10"],["l20","L20"],["szn","Season"],["h2h","H2H"]]
+    .map(([v,l])=>`<button data-v="${v}" aria-pressed="${S.bw===v}">${l}</button>`).join("") + `</div>`;
+}
+function colhHTML(){
+  return `<div class="colh"><span class="cn">Player</span><span class="cp">Pick</span><button class="ck sortlbl" data-fs="1" aria-label="Change sort">${COL_LBL[S.sort]||"Score"}<svg viewBox="0 0 10 6" width="9" height="6"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button><span class="cs">${BW_LBL[S.bw]==="SZN"?"Season":BW_LBL[S.bw]}</span></div>`;
+}
 function gameLineTxt(label){
   const c = CTX?.games?.[label]; if(!c || c.total==null || c.spread_home==null) return "";
   const [aw, hm] = label.split(" @ "), fav = c.spread_home <= 0 ? hm : aw;
@@ -2488,7 +2900,7 @@ async function load(){
       if(p.pid){ propIdx.set(p.pid+"|"+p.market, p); if(!BY_PID.has(p.pid)) BY_PID.set(p.pid, []); BY_PID.get(p.pid).push(p); }
     });
     SLIP = SLIP.filter(l=>propByKey.has(l.key));
-    $("updated").innerHTML = `Lines ${kickTime(PROPS.updated)}<br>${PROPS.props.length} props`;
+    $("updated").textContent = `${PROPS.props.length} props · lines ${kickTime(PROPS.updated)}`;
     renderStale();
     buildEV();
     if(S.slot && !slotsThisWeek().includes(S.slot)) S.slot = "";
@@ -2595,7 +3007,7 @@ function boardProps(){ return PROPS.props.filter(p=>visible(p) && (!S.market || 
 function thinNote(){
   const n = PROPS.props.filter(p=>!p.ok && (!S.market || p.market===S.market)).length;
   if(!n) return "";
-  return `<div class="thin">${S.showAll ? "Showing everything, including thin props." : `Hiding ${n} low-quality props: injuries, limited role, heavy juice, or tiny lines.`} <button data-thin="1">${S.showAll ? "Hide them" : "Show"}</button></div>`;
+  return `<div class="thin">${S.showAll ? "Showing everything, including thin props." : `${n} thin prop${n>1?"s":""} hidden.`} <button data-thin="1">${S.showAll ? "Hide them" : "Show"}</button></div>`;
 }
 function pickFor(p, side){
   const b = side==="over" ? p.bestOver : p.bestUnder;
@@ -2634,7 +3046,7 @@ function sparkHTML(p){
   const side = p.lean || "over", pk = p.pick || pickFor(p, side), line = pk?.line ?? p.line, get = MARKETS[p.market].get;
   const L = winLogs(p);
   if(!L.length) return `<span class="spark none">${S.bw==="h2h" ? "No H2H" : "No games"}</span>`;
-  const W = 100, H = 44, v = L.map(get), n = v.length, mx = (Math.max(line, ...v) || 1) * 1.1;
+  const W = 88, H = 44, v = L.map(get), n = v.length, mx = (Math.max(line, ...v) || 1) * 1.1;
   const gap = 2, bw = Math.min(13, Math.floor((W - gap*(n-1)) / n)), x0 = W - (n*bw + (n-1)*gap);
   let hits = 0, r = "";
   v.forEach((x,i)=>{ const res = result(x, line), c = res==="p" ? "p" : (res==="o")===(side==="over") ? "h" : "m"; if(c==="h") hits++;
@@ -2659,12 +3071,19 @@ function pickTxt(p){
   const sd = p.market==="atd" ? (side==="over" ? "Yes" : "No") : (side==="over" ? "O" : "U");
   return `<i class="sd ${side}">${sd}</i> ${p.market==="atd" ? "" : fmt(pk.line) + " "}${mvArrow(mvOf(p))}${lab}<span class="px">${am(pk.price)}</span>`;
 }
+function pickCol(p){
+  const side = p.lean || "over", pk = p.pick || pickFor(p, side);
+  const sd = p.market==="atd" ? (side==="over" ? "Yes" : "No") : (side==="over" ? "O" : "U");
+  const ln = p.market==="atd" ? "" : " " + fmt(pk ? pk.line : p.line);
+  return `<span class="pk"><b class="sd ${side}">${sd}${ln}${mvArrow(mvOf(p))}</b><small>${pk ? am(pk.price) : "—"}</small></span>`;
+}
 function rowHTML(p){
   const star = p.pid && WATCH.has(p.pid) ? `<i class="star" aria-label="On watchlist">★</i>` : "";
-  return `<div class="row prow" data-key="${esc(p.key)}">
+  const mk = MARKETS[p.market], lab = mk?.ab || mk?.label || p.market, inj = injOf(p.pid);
+  return `<div class="row prow" data-key="${esc(p.key)}" style="--c:${TEAM_COLOR[p.team]||"#3A4E70"}">
     <button class="row-main press" data-open="${esc(p.key)}" ${p.pl?"":"disabled"}>
-      <span class="avw">${avatar(p.team, p.pid)}${star}</span>
-      <span class="who"><b>${esc(shortName(p.name))}${injOf(p.pid)?`<em class="ij">${INJ_SHORT[injOf(p.pid).st]}</em>`:""}${p.opp?`<small>vs ${esc(p.opp)}</small>`:""}</b><span class="l2">${pickTxt(p)}</span></span>
+      <span class="who"><b>${star}${esc(shortName(p.name))}${inj?`<em class="ij">${INJ_SHORT[inj.st]}</em>`:""}</b><span class="l2">${esc(p.team||"")}${p.opp?` vs ${esc(p.opp)}`:""} · ${lab}</span></span>
+      ${pickCol(p)}
       ${statHTML(p)}
       ${sparkHTML(p)}
     </button>
@@ -2673,16 +3092,16 @@ function rowHTML(p){
 function heroHTML(list){
   const top = topPlays(list);
   if(!top.length) return "";
-  return `<div class="sec-t"><h2>Top plays</h2><small>Swipe for more</small></div><div class="carousel">` + top.map(p=>{
-    const s = p.st, pk = p.pick;
-    return `<button class="hc press" data-open="${esc(p.key)}" style="--c:${TEAM_COLOR[p.team]||"#3A4E70"}">
-      ${logoImg(p.team,"wm")}
-      <span class="hc-top">${avatar(p.team,p.pid)}${ring(p.score,50)}</span>
-      <b class="nm">${esc(p.name)}</b>
-      <span class="mk">${MARKETS[p.market].label}${p.opp?` vs ${esc(p.opp)}`:""}</span>
-      <span class="lean ${p.lean}">${sideTxt(p.market,p.lean,pk?.line ?? p.line).toUpperCase()}${pk?` <small style="font:600 12px var(--body);opacity:.8">${am(pk.price)}</small>`:""}</span>
-      <span class="cells">${cell("L5",s.l5)+cell("L10",s.l10)+cell("SZN",s.szn)}</span>
-      <span class="why">${whyTags(p,3)}</span>
+  return `<div class="sec-t"><h2>Top plays</h2><small>Swipe for more</small></div><div class="carousel">` + top.map((p,i)=>{
+    const s = p.st, pk = p.pick, sc = p.score, scc = sc>=70?"g":sc>=55?"y":"n", pc = x => { let v = pct(x); if(v==null) return "—"; if(p.lean==="under") v = 100 - v; return `<b class="${v>=60?"g":v<=40?"r":""}">${v}%</b>`; };
+    return `<button class="hc tk press" data-open="${esc(p.key)}" style="--c:${TEAM_COLOR[p.team]||"#3A4E70"}">
+      <span class="tk-band">${logoImg(p.team,"wm")}<b>#${i+1} · ${esc(p.team||"")}</b>${p.kick?`<span>${until(p.kick)}</span>`:""}</span>
+      <span class="tk-body">
+        <span class="tk-hd"><span class="tk-id"><b class="nm">${esc(p.name)}</b><span class="mk">${MARKETS[p.market].label}${p.opp?` vs ${esc(p.opp)}`:""}</span></span><span class="tk-sc ${scc}">${sc ?? "—"}</span></span>
+        <span class="tk-pk"><span class="lean ${p.lean}">${sideTxt(p.market,p.lean,pk?.line ?? p.line)}</span>${pk?`<b>${am(pk.price)}</b>`:""}</span>
+        <span class="tk-st">L10 ${pc(s.l10)} · Season ${pc(s.szn)}</span>
+        <span class="why">${whyTags(p,1)}</span>
+      </span>
     </button>`; }).join("") + `</div>`;
 }
 function renderBoard(animate){
@@ -2699,7 +3118,7 @@ function renderBoard(animate){
         + (prs.length ? prs.map(pairCardHTML).join("") : `<div class="empty">No strong same-game pairs right now.</div>`);
       return; }
     $("boardList").innerHTML = slotBarHTML() + (list.length
-      ? `<div class="sec-t"><h2>${q ? `Results for “${esc(q)}”` : activePreset() ? {core:"Core",under:"Under hunter",alt:"Alt-line hunting",news:"News reaction"}[activePreset()] : S.filters.length || S.side ? "Filtered props" : S.slot ? SLOT_LBL[S.slot]+" games" : "All props"}</h2><small>${list.length} props · <button class="sortlbl" data-fs="1">${SORT_LBL[S.sort]} ▾</button></small></div>${activeFiltersHTML()}${thinNote()}<div class="list flat">${list.slice(0,shown).map(rowHTML).join("")}</div>`
+      ? `<div class="sec-t"><h2>${q ? `Results for “${esc(q)}”` : activePreset() ? {core:"Core",under:"Under hunter",alt:"Alt-line hunting",news:"News reaction"}[activePreset()] : S.filters.length || S.side ? "Filtered props" : S.slot ? SLOT_LBL[S.slot]+" games" : "All props"}</h2><small>${list.length} props</small></div>${activeFiltersHTML()}${thinNote()}${bwSegHTML()}${colhHTML()}<div class="list flat">${list.slice(0,shown).map(rowHTML).join("")}</div>`
         + (list.length>shown ? `<button class="more press" id="moreBtn">Show ${Math.min(25,list.length-shown)} more</button>` : "")
       : `${activeFiltersHTML()}<div class="empty">${q ? `No props match “${esc(q)}”.` : "Nothing matches these filters right now."}</div>${thinNote()}`);
   };
@@ -2751,7 +3170,7 @@ function renderGames(animate){
 function gameProps(label){ return PROPS.props.filter(p=>p.game===label && visible(p) && (!S.market || p.market===S.market)).sort((a,b)=>(b.score??-1)-(a.score??-1)); }
 function gameBody(props, all){
   const n = all ? props.length : 10;
-  return `<div class="list flat">${props.slice(0,n).map(rowHTML).join("")}</div>` + (props.length>n ? `<button class="more press" data-all="1" style="margin:0 8px 8px;width:calc(100% - 16px)">Show all ${props.length}</button>` : "");
+  return `<div class="colh gcolh"><span class="cn">Player</span><span class="cp">Pick</span><span class="ck">Score</span><span class="cs">${BW_LBL[S.bw]==="SZN"?"Season":BW_LBL[S.bw]}</span></div><div class="list flat">${props.slice(0,n).map(rowHTML).join("")}</div>` + (props.length>n ? `<button class="more press" data-all="1" style="margin:0 8px 8px;width:calc(100% - 16px)">Show all ${props.length}</button>` : "");
 }
 $("gamesList").addEventListener("click", e => {
   const all = e.target.closest("[data-all]");
@@ -2863,8 +3282,11 @@ function loadPlayer(pl, market){
   const list = BY_POS[pl.pos] || Object.keys(MARKETS);
   P.market = market && list.includes(market) ? market : (list.find(k=>propIdx.has(pl.id+"|"+k)) || list[0]);
   const anyProp = BY_PID.get(pl.id)?.[0];
+  $("v-player").style.setProperty("--c", TEAM_COLOR[pl.team]||"#3A4E70");
+  const gc = anyProp?.game ? CTX?.games?.[anyProp.game] : null;
+  const sub = [esc(pl.pos), esc(pl.team), anyProp?.opp ? "vs " + esc(anyProp.opp) : "", anyProp?.kick ? until(anyProp.kick) : "", gc?.total!=null ? "Total " + fmt(gc.total) : ""].filter(Boolean).join(" · ");
   $("hero").innerHTML = `${logoImg(pl.team,"wm")}${avatar(pl.team, pl.id)}
-    <div><h1>${esc(pl.name)}</h1><p>${esc(pl.pos)}, ${esc(pl.team)}${anyProp?`<span>vs ${logoImg(anyProp.opp,"tlog")}${esc(anyProp.opp||"")} <b>${until(anyProp.kick)}</b></span>`:""}</p></div>`;
+    <div class="hid"><h1>${esc(pl.name)}</h1><p>${sub}</p></div>`;
   $("starBtn").classList.toggle("on", WATCH.has(pl.id));
   $("pMarkets").innerHTML = list.map(k=>`<button class="chip" data-pm="${k}" aria-pressed="${k===P.market}">${MARKETS[k].label}${propIdx.has(pl.id+"|"+k)?"<i></i>":""}</button>`).join("");
   resetLine(); renderPlayer(true);
@@ -2872,6 +3294,18 @@ function loadPlayer(pl, market){
 function resetLine(){
   const m = MARKETS[P.market], prop = curProp();
   P.line = m.fixed!=null ? m.fixed : prop ? prop.line : toHalf(median(P.pl.logs.slice(-10).map(m.get)));
+}
+function renderPick(prop){
+  const el = $("pickPanel");
+  const side = prop && (prop.lean || "over"), b = prop && (side==="over" ? prop.bestOver : prop.bestUnder);
+  if(!prop || !b){ el.disabled = true; el.classList.remove("on");
+    el.innerHTML = `<span class="k">Pick</span><b class="pkside m">No line</b><span class="pksub">Not on the board this week</span>`; return; }
+  const on = inSlip(prop.key, side), sc = prop.score, scc = sc==null ? "" : sc>=70 ? "g" : sc>=55 ? "y" : "";
+  el.disabled = false; el.classList.toggle("on", on); el.dataset.side = side;
+  el.setAttribute("aria-label", `${on ? "Remove" : "Add"} ${sideTxt(prop.market, side, b.line)} to slip`);
+  el.innerHTML = `<span class="k">${on ? "In your slip" : "Pick"}</span>
+    <span class="pkrow"><b class="pkside ${side}">${prop.market==="atd" ? (side==="over"?"YES":"NO") : side.toUpperCase()}</b>${sc!=null?`<span class="pksc ${scc}"><b>${sc}</b><small>Score</small></span>`:""}</span>
+    <span class="pksub">${b.line!==P.line && prop.market!=="atd" ? `at ${fmt(b.line)}, ` : ""}<b>${am(b.price)}</b> ${esc(b.title)}</span>`;
 }
 function renderPlayer(full){
   const m = MARKETS[P.market], fixed = m.fixed!=null, prop = curProp(), opp = currentOpp();
@@ -2891,12 +3325,10 @@ function renderPlayer(full){
   $("pcells").innerHTML = [["L5",s.l5],["L10",s.l10],["L20",s.l20],["SZN",s.szn],["H2H",s.h2h]]
     .map(([l,x])=>cell(l,x,`<em>${x.n?x.o+"/"+x.n:"no games"}</em>`)).join("");
 
-  if(prop){
-    const o = prop.bestOver, u = prop.bestUnder;
-    $("bets").innerHTML = [["over",o],["under",u]].map(([side,b])=> b ? `<button class="bet ${side}${inSlip(prop.key,side)?" on":""}" data-bet="${side}">
-      <small>${sideTxt(prop.market,side,b.line)}, best at ${esc(b.title)}</small><b class="${side==="over"?"g":"r"}">${am(b.price)}</b></button>` : `<div></div>`).join("");
-    $("bets").hidden = false;
-  } else $("bets").hidden = true;
+  renderPick(prop);
+  const wt = {l5:"Last 5 games", l10:"Last 10 games", l20:"Last 20 games", szn:"This season", h2h:"vs "+(opp||"opponent")}[P.win];
+  $("chTitle").textContent = wt;
+  $("chSub").innerHTML = h.n ? `<b class="${pc>=60?"g":pc<=40?"r":""}">${h.o} of ${h.n}</b> over ${fmt(P.line)}` : "";
 
   const g = pGames(), vals = g.map(m.get);
   if(!g.length){
@@ -2984,7 +3416,7 @@ function drawChart(g, vals){
   g.forEach((gm,i)=>{
     const v = vals[i], x = x0 + i*step, r = result(v,P.line), h = Math.max(2, base-y(v));
     s += `<rect class="bar" x="${x}" y="${base-h}" width="${bw}" height="${h}" rx="4" fill="var(--${r==="o"?"over":r==="u"?"under":"push"})" style="animation-delay:${i*28}ms"/>`;
-    s += `<text x="${x+bw/2}" y="${base-h-7}" text-anchor="middle" fill="var(--text)" style="font:600 12.5px var(--body)">${fmt(v)}</text>`;
+    s += `<text x="${x+bw/2}" y="${base-h-7}" text-anchor="middle" fill="var(--text)" style="font:700 12px var(--cond)">${fmt(v)}</text>`;
     s += `<image href="${LOGO(gm.o)}" x="${x+bw/2-9}" y="${base+5}" width="18" height="18" onerror="this.nextElementSibling.style.display='inline';this.remove()"><title>${gm.o}</title></image>`;
     s += `<text x="${x+bw/2}" y="${base+18}" text-anchor="middle" fill="var(--muted)" font-size="11" style="display:none">${gm.o}</text>`;
     s += `<text x="${x+bw/2}" y="${base+36}" text-anchor="middle" fill="var(--faint)" style="font:500 10px var(--body)">W${gm.w}</text>`;
@@ -3009,11 +3441,18 @@ function renderModel(prop){
       : edgePts>=0 ? "Roughly fairly priced. Nothing stands out here." : "The price already looks better than the recent form supports, so there's no value on this side.")
     : ({injury:`He's listed as ${myInjTxt(prop)}, so this prop is hidden.`, role:"He doesn't play or touch the ball enough for these numbers to mean much.", juice:"The price already assumes this hits, so there's little to gain even if it does.", line:"The line is too low to be a meaningful prop.", sample:"Not enough recent games to trust."}[prop.flag]);
   el.hidden = false;
-  el.innerHTML = `<h3>Model view</h3>
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span class="lean ${prop.lean}" style="margin:0">${sideTxt(m,prop.lean,pk.line).toUpperCase()} ${am(pk.price)}</span>
-    <span style="font:600 17px var(--cond)">${Math.round(prop.pModel*100)}% estimated vs ${Math.round(prop.pImpl*100)}% priced</span></div>
-    <div class="m" style="font-size:13px;margin-top:8px;line-height:1.45">${msg}</div>
-    ${projStripHTML(prop)}
+  const pj = projFor(prop), lo = pj && distQ(pj.d, .1), hi = pj && distQ(pj.d, .9), mm = pj && prop.fair!=null ? marketMean(pj, prop.line, prop.fair) : null;
+  const rows = [
+    ["Pick", `<span class="lean ${prop.lean}">${sideTxt(m,prop.lean,pk.line)}</span> ${am(pk.price)}`],
+    ["Model vs price", `<span class="${edgePts>=5?"g":edgePts<0?"r":""}">${Math.round(prop.pModel*100)}% vs ${Math.round(prop.pImpl*100)}%</span>`],
+    pj && ["Projection", fmt(r1(pj.mean))],
+    pj && lo!=null && ["Likely range", `${Math.round(lo)} to ${Math.round(hi)}`],
+    mm!=null && ["Market expects", fmt(r1(mm))],
+    ["Edge", `<span class="${edgePts>=5?"g":edgePts<0?"r":""}">${edgePts>0?"+":""}${edgePts} pts</span>`]
+  ].filter(Boolean);
+  el.innerHTML = `<h3>Model</h3>
+    <div class="mrows">${rows.map(([k,v])=>`<div><span>${k}</span><b>${v}</b></div>`).join("")}</div>
+    <p class="mmsg">${msg}</p>
     <div class="fxl">${[...(prop.fx||[])].sort((a,b)=>Math.abs(b.d)-Math.abs(a.d)).map(f=>`<div class="fx"><span class="fxn">${FACTOR_LABEL[f.k]}</span>
       <span class="fxb"><i class="${f.d>=0?"g":"r"}" style="width:${Math.min(50,Math.abs(f.d)/.5*50).toFixed(1)}%;${f.d>=0?"left:50%":"right:50%"}"></i></span>
       <span class="fxt">${esc(f.txt)}</span></div>`).join("")}</div>`;
@@ -3044,9 +3483,10 @@ function renderVolume(){
       return `<rect class="bar" x="${i*(bw+6)}" y="${H-h}" width="${bw}" height="${h}" rx="3" fill="${i>=v.length-3?"var(--post)":"var(--surface3)"}" style="animation-delay:${i*30}ms"/>`; }).join("")}</svg>`;
 }
 function renderBooks(prop){
-  if(!prop){ $("books").innerHTML = ""; return; }
+  if(!prop){ $("books").innerHTML = ""; $("books").hidden = true; return; }
   const bo = prop.bestOver, bu = prop.bestUnder;
-  $("books").innerHTML = `<div class="books"><div class="bh"><span>Book</span><span style="text-align:center">Line</span><span style="text-align:center">Over</span><span style="text-align:center">Under</span></div>` +
+  $("books").hidden = false;
+  $("books").innerHTML = `<h3>Books</h3><div class="books"><div class="bh"><span>Book</span><span style="text-align:center">Line</span><span style="text-align:center">Over</span><span style="text-align:center">Under</span></div>` +
     prop.books.map(b=>{
       const onO = SLIP.some(l=>l.key===prop.key && l.side==="over" && l.title===b.title && l.line===b.line);
       const onU = SLIP.some(l=>l.key===prop.key && l.side==="under" && l.title===b.title && l.line===b.line);
@@ -3075,6 +3515,7 @@ $("minus").onclick = () => { P.line=Math.max(0.5,P.line-1); renderPlayer(false);
 $("plus").onclick  = () => { P.line+=1; renderPlayer(false); };
 $("line").onchange = e => { const v=parseFloat(e.target.value); if(!isNaN(v)&&v>=0) P.line=v; renderPlayer(false); };
 $("bets").onclick = e => { const b=e.target.closest("[data-bet]"); if(!b) return; const p=curProp(); toggleLeg(p.key, b.dataset.bet); renderPlayer(false); };
+$("pickPanel").onclick = () => { const p = curProp(), sd = $("pickPanel").dataset.side; if(!p || !sd) return; toggleLeg(p.key, sd); renderPlayer(false); };
 $("books").onclick = e => {
   const ln = e.target.closest("[data-l]");
   if(ln){ if(MARKETS[P.market].fixed==null){ P.line=+ln.dataset.l; renderPlayer(false); } return; }
@@ -3101,8 +3542,8 @@ function openSheet(id="sheet"){ closeSheet(); $("scrim").classList.add("open"); 
 function closeSheet(){ $("scrim").classList.remove("open"); document.querySelectorAll(".sheet.open").forEach(x=>x.classList.remove("open")); }
 $("infoBtn").onclick = () => openSheet("sheet"); $("scrim").onclick = closeSheet; $("sheet").onclick = closeSheet;
 $("filterBtn").onclick = () => openSheet("fsheet"); $("fDone").onclick = closeSheet;
-$("bwSeg").onclick = e => { const b=e.target.closest("[data-v]"); if(!b||b.dataset.v===S.bw) return;
-  S.bw=b.dataset.v; setSeg($("bwSeg"),S.bw); saveState(); renderBoard(true); };
+$("boardList").addEventListener("click", e => { const b=e.target.closest("#bwSeg [data-v]"); if(!b||b.dataset.v===S.bw) return;
+  S.bw=b.dataset.v; setSeg($("bwSeg"),S.bw); saveState(); renderBoard(true); });
 
 let scrollTick = false;
 addEventListener("scroll", () => { if(scrollTick) return; scrollTick = true; requestAnimationFrame(()=>{ scrollTick = false;
