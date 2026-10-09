@@ -644,7 +644,7 @@ body{font-size:15px}
 .gcolh{padding:0 14px 8px;margin-top:2px}
 .gcolh .ck{color:var(--faint)}
 #boardList .prow .kv small,.game-b .prow .kv small{display:none}
-#boardList .prow .kv b,.game-b .prow .kv b{margin-top:0;font-size:19px}
+#boardList .prow .kv b,.game-b .prow .kv b{margin-top:0}
 /* rows */
 .prow{padding:13px 0}
 .prow .av{width:46px;height:46px}
@@ -859,7 +859,7 @@ body{font-size:15px}
 .hc.tk .why .tag::before{width:6px;height:6px;margin-right:7px}
 /* board table */
 .list.flat{gap:0}
-.colh{display:grid;grid-template-columns:minmax(0,1fr) 66px 46px 70px;gap:8px;align-items:center;padding:10px 0 7px 6px;border:0;font-size:11px;font-weight:600;color:var(--muted)}
+.colh{display:grid;grid-template-columns:minmax(0,1fr) 66px 52px 70px;gap:8px;align-items:center;padding:10px 0 7px 6px;border:0;font-size:11px;font-weight:600;color:var(--muted)}
 .colh .ck{width:auto;justify-content:center;font-size:11px;color:var(--post)}
 .colh .cs{width:auto;text-align:right}
 .gcolh,.game-b .gcolh{padding:8px 14px 7px 17px;border-top:1px solid var(--line)}
@@ -868,7 +868,7 @@ body{font-size:15px}
 #boardList .prow{margin:0 -16px;padding:0 16px}
 .game-b .prow{padding:0 14px}
 .game-b .prow:last-child{box-shadow:inset 3px 0 0 var(--c,var(--surface3))}
-.prow .row-main{display:grid;grid-template-columns:minmax(0,1fr) 66px 46px 70px;gap:8px;align-items:center;min-height:58px;padding:7px 0 7px 6px}
+.prow .row-main{display:grid;grid-template-columns:minmax(0,1fr) 66px 52px 70px;gap:8px;align-items:center;min-height:58px;padding:7px 0 7px 6px}
 .prow .who{min-width:0}
 .prow .who b{display:block;font:600 15px/1.2 var(--body);letter-spacing:-.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .prow .who .l2{display:block;font-size:12px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -911,7 +911,7 @@ body{font-size:15px}
 /* ===== Prime Desk: mockup fidelity + polish ===== */
 :root{--bd:rgba(255,255,255,.06);--sh:inset 0 1px 0 rgba(255,255,255,.035),0 14px 30px -18px rgba(0,0,0,.75);--t:.18s}
 /* depth: one border + soft shadow on every raised surface */
-.card,.pcard,.hc.tk,.game,.stale,.evban,.iconbtn{border:1px solid var(--bd);box-shadow:var(--sh)}
+.card,.mcard,.pcard,.hc.tk,.game,.stale,.evban,.iconbtn{border:1px solid var(--bd);box-shadow:var(--sh)}
 .tabbar{border:1px solid rgba(255,255,255,.08);box-shadow:0 18px 40px -10px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.05)}
 /* spacing + type rhythm */
 .top{padding:10px 16px 8px}
@@ -940,12 +940,12 @@ body{font-size:15px}
 .hero p{margin:7px 0 0;font-size:13px;font-weight:600;color:rgba(255,255,255,.9)}
 #pMarkets{margin-top:14px}
 /* main card: line | pick, then hit strip */
-.pcard{margin:12px 0 10px;background:var(--surface);border-radius:20px;overflow:hidden}
-.pcard .deck{margin:0;border-radius:0;background:none;gap:0}
-.pcard .deck .panel{padding:14px}
-.pcard .pcells{margin:0;border-radius:0;background:none;box-shadow:inset 0 1px 0 var(--line)}
-.pcard .pcells .cell{padding:9px 2px 10px}
-.pcard .pcells .cell em{font-size:10.5px}
+.mcard{margin:12px 0 10px;background:var(--surface);border-radius:20px;overflow:hidden}
+.mcard .deck{margin:0;border-radius:0;background:none;gap:0}
+.mcard .deck .panel{padding:14px}
+.mcard .pcells{margin:0;border-radius:0;background:none;box-shadow:inset 0 1px 0 var(--line)}
+.mcard .pcells .cell{padding:9px 2px 10px}
+.mcard .pcells .cell em{font-size:10.5px}
 .pickp{display:flex;flex-direction:column;align-items:stretch;text-align:left;width:100%;min-width:0;transition:background-color var(--t),box-shadow var(--t)}
 .pickp:active{transform:none;background:rgba(255,255,255,.04)}
 .pickp:disabled{cursor:default}
@@ -1001,6 +1001,66 @@ body{font-size:15px}
 .stale{box-shadow:inset 3px 0 0 var(--post),var(--sh)}
 .evban{box-shadow:inset 3px 0 0 var(--over),var(--sh)}
 .thin{padding:0}
+
+/* ===== Record (Prime Desk) ===== */
+.rscope{margin:0 0 12px}
+.rsum{margin:0 0 4px}
+.rsum-h{display:flex;justify-content:space-between;align-items:baseline;padding:14px 16px 0}
+.rsum-h h3{margin:0;font:800 15px/1.2 var(--cond);font-stretch:112%;text-transform:uppercase}
+.rsum-h small{font-size:12.5px;color:var(--muted)}
+.rbig{display:grid;grid-template-columns:1.25fr 1fr 1fr 1fr;gap:0;margin-top:12px;border-top:1px solid var(--line);text-align:center}
+.rbig>div{padding:12px 4px 13px;min-width:0}
+.rbig>div+div{box-shadow:inset 1px 0 0 var(--line)}
+.rbig small{display:block;font-size:11px;font-weight:600;color:var(--muted);margin:0 0 3px}
+.rbig b{display:block;font:900 22px/1.1 var(--cond);letter-spacing:-.4px;white-space:nowrap}
+.rbig b.g{color:var(--over)} .rbig b.r{color:var(--under)}
+.rlast{display:flex;align-items:center;gap:10px;white-space:nowrap;padding:11px 16px 12px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+.rlast .dots{display:flex;gap:4px}
+.rlast .dots i{width:10px;height:10px;border-radius:3px;background:var(--surface3)}
+.rlast .dots i.g{background:var(--over)} .rlast .dots i.r{background:var(--under)}
+.rlast .be{margin-left:auto;font-size:11px;color:var(--faint)}
+/* pick rows: same table as the board */
+.rcolh{grid-template-columns:minmax(0,1fr) 104px 50px 28px}
+.rpk .row-main{grid-template-columns:minmax(0,1fr) 104px 50px 28px;cursor:default}
+#recordBody .prow{margin:0 -16px;padding:0 16px}
+.rpk .pk small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ract{display:flex;flex-direction:column;align-items:center;min-width:0}
+.ract b{font:900 18px/1.1 var(--cond);letter-spacing:-.3px;white-space:nowrap}
+.ract small{font-size:10px;font-weight:700;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.3px}
+.ract.g b{color:var(--over)} .ract.r b{color:var(--under)} .ract.m b{color:var(--muted)}
+.rpk .kv b{height:30px;font-size:15px}
+.rst{justify-self:end;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:800 13px/1 var(--body);background:var(--surface2);color:var(--muted)}
+.rst.g{background:rgba(34,227,155,.16);color:var(--over)} .rst.r{background:rgba(255,92,102,.16);color:var(--under)}
+/* breakdown tables */
+.rcard{padding:16px 16px 6px}
+.rcard .rnote{margin:0 0 10px}
+.rrow{display:grid;grid-template-columns:72px minmax(0,1fr) 44px 56px 52px;gap:8px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.rrow.rhead{padding:0 0 7px;border-top:0;font-size:11px;font-weight:600;color:var(--muted)}
+.rrow.rhead span:nth-child(n+3){text-align:right}
+.rl{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rbar{height:6px;border-radius:3px;background:var(--surface3);overflow:visible}
+.rbar i{border-radius:3px}
+.rbar b{top:-3px;bottom:-3px;width:2px;border-radius:1px;background:var(--text);opacity:.85}
+.rp,.rwl,.ru{display:block;text-align:right;white-space:nowrap;font:800 14px/1 var(--cond)}
+.rwl{font-weight:700;color:var(--text)}
+.ru{font-size:13px}
+.rp.g,.ru.g{color:var(--over)} .rp.r,.ru.r{color:var(--under)} .rp.y{color:var(--post)} .rp.m,.rwl.m,.ru.m{color:var(--muted)}
+.rfoot{text-align:center;margin:14px 8px 0;font-size:12px}
+.kv b{white-space:nowrap;overflow:hidden}
+.kv b.sm{font-size:14px;letter-spacing:-.4px}
+.kv b.xs{font-size:12px;letter-spacing:-.4px}
+
+/* team mark beside the name; bigger pick price */
+.prow .who b{display:flex;align-items:center;gap:8px;min-width:0;overflow:visible}
+.prow .who .nmx{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tlw{flex:none;width:22px;height:22px;display:grid;place-items:center}
+.tlw img{width:22px;height:22px;object-fit:contain}
+.tlw.fb::after{content:attr(data-t);font:800 9.5px/1 var(--cond);color:var(--muted)}
+.prow .who .l2{padding-left:30px}
+.prow .ij{flex:none;margin-left:0}
+.pk b{font-size:15px}
+.pk small{font-size:13.5px;font-weight:600;color:#B7C3D6;margin-top:4px}
+.rpk .pk small{font-size:12.5px}
 </style>
 </head>
 <body>
@@ -1041,7 +1101,7 @@ body{font-size:15px}
 
   <!-- RECORD -->
   <section id="v-record" hidden>
-    <div class="top"><div class="title"><h1>Record</h1><small id="recordSub"></small></div></div>
+    <div class="top"><div class="title bt"><div class="ttl"><h1>Record</h1><small id="recordSub"></small></div></div></div>
     <div id="recordBody"></div>
   </section>
 
@@ -1057,7 +1117,7 @@ body{font-size:15px}
     <div class="top"><div class="phead"><button class="back press" id="backBtn">Back</button><div class="pacts"><button class="star shr" id="shareBtn" aria-label="Share this play"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7.5 7.5L12 3l4.5 4.5"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg></button><button class="star" id="starBtn" aria-label="Add to watchlist">★</button></div></div></div>
     <div class="hero" id="hero"></div>
     <div class="chips" id="pMarkets" role="group" aria-label="Prop market"></div>
-    <div class="pcard">
+    <div class="mcard">
     <div class="deck">
       <div class="panel">
         <div class="k">Line</div>
@@ -1302,6 +1362,11 @@ function faceErr(img){
   const av = img.parentNode; img.remove(); av.classList.remove("hs");
   const b = av.querySelector("img.badge"); if(b) b.className = "logo"; else av.classList.add("fb");
 }
+function teamMark(t){
+  if(!t) return "";
+  const id = ({LA:"lar",WAS:"wsh"}[t]||t).toLowerCase(), u = v => `https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/${v}/${id}.png&h=48&w=48`;
+  return `<span class="tlw" data-t="${esc(t)}"><img src="${u("500-dark")}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='${u("500")}'}else logoErr(this)"></span>`;
+}
 function logoErr(img){ const av = img.parentNode; img.remove(); if(av && !av.querySelector("img")) av.classList.add("fb"); }
 function ring(score, size=46){
   if(score==null) return `<span class="ring na" style="width:${size}px;height:${size}px"><b>—</b></span>`;
@@ -1488,12 +1553,13 @@ function summ(list){
 }
 const uTxt = u => (u>=0 ? "+" : "−") + Math.abs(u).toFixed(1) + "u";
 function recRow(label, s){
-  if(!s.n) return `<div class="rrow"><span class="rl">${label}</span><span class="rbar"></span><span class="rs m">No graded picks</span></div>`;
+  if(!s.n) return `<div class="rrow"><span class="rl">${label}</span><span class="rbar"></span><span class="rp m">—</span><span class="rwl m">0-0</span><span class="ru m">—</span></div>`;
   const h = s.hit ?? 0, c = h >= .524 ? "g" : h < .476 ? "r" : "y";
   return `<div class="rrow"><span class="rl">${label}</span>
-    <span class="rbar"><i class="${c}" style="width:${(h*100).toFixed(1)}%"></i><b style="left:${(s.exp*100).toFixed(1)}%"></b></span>
-    <span class="rs"><b class="${c}">${Math.round(h*100)}%</b> ${s.w}-${s.l}${s.pu?`-${s.pu}`:""} · <span class="${s.u>=0?"g":"r"}">${uTxt(s.u)}</span></span></div>`;
+    <span class="rbar"><i class="${c}" style="width:${(h*100).toFixed(1)}%"></i>${s.exp!=null?`<b style="left:${(s.exp*100).toFixed(1)}%"></b>`:""}</span>
+    <span class="rp ${c}">${Math.round(h*100)}%</span><span class="rwl">${s.w}-${s.l}${s.pu?`-${s.pu}`:""}</span><span class="ru ${s.u>=0?"g":"r"}">${uTxt(s.u)}</span></div>`;
 }
+const recHead = (a, b="Hit", c="W-L", d="Units") => `<div class="rrow rhead"><span>${a}</span><span></span><span>${b}</span><span>${c}</span><span>${d}</span></div>`;
 function clvOf(r){
   if(r.fcl==null || r.cl==null) return null;
   const toward = r.sd==="over" ? r.cl - r.fcl : r.fcl - r.cl;
@@ -1502,64 +1568,85 @@ function clvOf(r){
   return 0;
 }
 function clvRow(label, list){
-  const m = list.map(clvOf).filter(x=>x!=null), up = m.filter(x=>x>0).length, dn = m.filter(x=>x<0).length, fl = m.length-up-dn;
-  if(!up && !dn) return `<div class="rrow"><span class="rl">${label}</span><span class="rbar"></span><span class="rs m">${m.length ? "No moves yet" : "No data yet"}</span></div>`;
+  const m = list.map(clvOf).filter(x=>x!=null), up = m.filter(x=>x>0).length, dn = m.filter(x=>x<0).length;
+  if(!up && !dn) return `<div class="rrow"><span class="rl">${label}</span><span class="rbar"></span><span class="rp m">—</span><span class="rwl m">${m.length ? "No moves" : "No data"}</span><span class="ru"></span></div>`;
   const f = up/(up+dn), c = f>=.55 ? "g" : f<.45 ? "r" : "y";
   return `<div class="rrow"><span class="rl">${label}</span><span class="rbar"><i class="${c}" style="width:${(f*100).toFixed(1)}%"></i><b style="left:50%"></b></span>
-    <span class="rs"><b class="${c}">${Math.round(f*100)}%</b> ${up}–${dn}</span></div>`;
+    <span class="rp ${c}">${Math.round(f*100)}%</span><span class="rwl">${up}-${dn}</span><span class="ru"></span></div>`;
 }
-function clvCard(all){
-  const locked = all.filter(r=>Date.parse(r.kick) <= Date.now());
+function clvCard(list){
+  const locked = list.filter(r=>Date.parse(r.kick) <= Date.now());
   if(!locked.some(r=>r.fcl!=null)) return "";
-  return `<div class="card"><h3>Line movement</h3>
-    <p class="rnote">Did the line move toward our pick between when we first saved it and kickoff? Beating the closing line is the earliest sign of a real edge, well before the win-loss record means much. Counts are our way–against; lines that didn't move are left out. The tick marks 50%.</p>
-    ${clvRow("Top plays", locked.filter(r=>r.top))}${clvRow("All picks", locked)}</div>`;
+  return `<div class="card rcard"><h3>Beat the closing line</h3>
+    <p class="rnote">Did the line move toward our pick before kickoff? It's the earliest sign of a real edge, long before the record settles. Tick marks 50%.</p>
+    ${recHead("", "Our way", "For-vs", "")}${clvRow("Top plays", locked.filter(r=>r.top))}${clvRow("All picks", locked)}</div>`;
+}
+const REC = Object.assign({scope:"top"}, store.get("pb2_rec")||{});
+function recPickRow(r){
+  const pend = r.res==="pending", side = r.sd==="over";
+  const sd = r.m==="atd" ? (side ? "Yes" : "No") : (side ? "O" : "U");
+  const mk = MARKETS[r.m], lab = mk?.ab || mk?.label || r.m;
+  const day = r.kick ? new Date(r.kick).toLocaleDateString("en-US", {month:"short", day:"numeric"}) : "";
+  const st = {win:["g","✓","Won"], loss:["r","✕","Lost"], push:["m","P","Push"], pending:["m","","Pending"]}[r.res] || ["m","","—"];
+  const res = pend
+    ? `<span class="kv"><b class="${r.sc>=70?"g":r.sc>=55?"y":""}">${r.sc ?? "—"}</b></span>`
+    : `<span class="ract ${st[0]}"><b>${fmt(r.v)}</b><small>${st[2]}</small></span>`;
+  return `<div class="row prow rpk" style="--c:${TEAM_COLOR[r.t]||"#3A4E70"}"><div class="row-main">
+    <span class="who"><b>${teamMark(r.t)}<span class="nmx">${esc(shortName(r.n))}</span></b><span class="l2">vs ${esc(r.o||"")}${day?` · ${day}`:""}</span></span>
+    <span class="pk"><b class="sd ${r.sd}">${sd}${r.m==="atd" ? "" : " " + fmt(r.l)}</b><small>${lab} ${am(r.pr)}</small></span>
+    ${res}
+    <span class="rst ${st[0]}${pend?" pend":""}" aria-label="${st[2]}">${pend ? `<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 5v3.2l2 1.3"/></svg>` : st[1]}</span>
+  </div></div>`;
 }
 function renderRecord(){
   const el = $("recordBody");
   if(!PICKS || !Object.keys(PICKS.picks||{}).length){
     $("recordSub").textContent = "";
-    el.innerHTML = accuracyHTML() + `<div class="empty">No saved picks yet.<br>The model's plays are saved automatically each time the props update runs, then graded once the box scores come in.</div>`;
+    el.innerHTML = `<div class="empty">No saved picks yet.<br>The model's plays are saved each time the props update runs, then graded once the box scores come in.</div>` + accuracyHTML();
     return;
   }
-  const all = gradePicks(), top = all.filter(r=>r.top), T = summ(top), A = summ(all);
-  const pend = all.filter(r=>r.res==="pending").length;
-  $("recordSub").innerHTML = `${A.n} graded<br>${pend} pending`;
+  const all = gradePicks(), top = all.filter(r=>r.top), base = REC.scope==="all" ? all : top, S1 = summ(base);
+  const pendAll = all.filter(r=>r.res==="pending").length;
+  $("recordSub").textContent = `${summ(all).n} graded · ${pendAll} pending`;
   const buckets = [["80+", r=>r.sc>=80], ["70–79", r=>r.sc>=70 && r.sc<80], ["60–69", r=>r.sc>=60 && r.sc<70], ["Under 60", r=>r.sc<60]];
-  const mks = [...new Set(all.map(r=>r.m))].filter(m=>MARKETS[m]);
-  const recent = top.filter(r=>r.res!=="void").sort((a,b)=>Date.parse(b.kick)-Date.parse(a.kick)).slice(0,25);
-  el.innerHTML = accuracyHTML() + `
-    <div class="card rhero">
-      <h3>Top plays</h3>
-      ${T.n ? `<div class="rbig"><div><b>${T.w}-${T.l}${T.pu?`-${T.pu}`:""}</b><small>Record</small></div>
-        <div><b class="${T.hit>=.524?"g":T.hit<.476?"r":""}">${Math.round(T.hit*100)}%</b><small>Hit rate</small></div>
-        <div><b class="${T.u>=0?"g":"r"}">${uTxt(T.u)}</b><small>Profit</small></div>
-        <div><b class="${T.roi>=0?"g":"r"}">${(T.roi>=0?"+":"")}${Math.round(T.roi*100)}%</b><small>ROI</small></div></div>`
-        : `<p class="m" style="margin:6px 0 2px;font-size:14px">No Top plays graded yet. ${top.length} waiting on results.</p>`}
+  const mks = [...new Set(base.map(r=>r.m))].filter(m=>MARKETS[m]);
+  const graded = base.filter(r=>r.res==="win"||r.res==="loss"||r.res==="push").sort((a,b)=>Date.parse(b.kick)-Date.parse(a.kick));
+  const pending = base.filter(r=>r.res==="pending").sort((a,b)=>Date.parse(a.kick)-Date.parse(b.kick) || b.sc-a.sc);
+  const last = graded.slice(0,10).reverse();
+  const nG = REC.more ? 60 : 20, nP = REC.morePend ? 60 : 8;
+  const scopeLbl = REC.scope==="all" ? "All picks" : "Top plays";
+  const list = (rows, n, more) => `<div class="colh rcolh"><span class="cn">Player</span><span class="cp">Pick</span><span class="ck">${rows===pending?"Score":"Result"}</span><span></span></div>
+    <div class="list flat">${rows.slice(0,n).map(recPickRow).join("")}</div>${rows.length>n?`<button class="more press" data-rmore="${more}">Show ${Math.min(40,rows.length-n)} more</button>`:""}`;
+  el.innerHTML = `
+    <div class="seg rscope" id="recScope" role="group" aria-label="Which picks"><button data-v="top" aria-pressed="${REC.scope==="top"}">Top plays</button><button data-v="all" aria-pressed="${REC.scope==="all"}">All picks</button></div>
+    <div class="mcard rsum">
+      <div class="rsum-h"><h3>${scopeLbl}</h3><small>${S1.n} graded</small></div>
+      ${S1.n ? `<div class="rbig">
+        <div><small>Record</small><b>${S1.w}-${S1.l}${S1.pu?`-${S1.pu}`:""}</b></div>
+        <div><small>Hit rate</small><b class="${S1.hit>=.524?"g":S1.hit<.476?"r":""}">${Math.round(S1.hit*100)}%</b></div>
+        <div><small>Profit</small><b class="${S1.u>=0?"g":"r"}">${uTxt(S1.u)}</b></div>
+        <div><small>ROI</small><b class="${S1.roi>=0?"g":"r"}">${S1.roi>=0?"+":"−"}${Math.abs(Math.round(S1.roi*100))}%</b></div></div>
+      <div class="rlast"><span>Last ${last.length}</span><span class="dots">${last.map(r=>`<i class="${r.res==="win"?"g":r.res==="loss"?"r":"m"}"></i>`).join("")}</span><span class="be">Break-even 52.4%</span></div>`
+      : `<p class="rnote" style="margin:4px 16px 16px">Nothing graded yet. ${pending.length} waiting on results.</p>`}
     </div>
+    ${pending.length ? `<div class="sec-t"><h2>Upcoming</h2><small>${pending.length} pending</small></div>${list(pending, nP, "pend")}` : ""}
+    ${graded.length ? `<div class="sec-t"><h2>Results</h2><small>Newest first</small></div>${list(graded, nG, "res")}` : ""}
+    <div class="sec-t"><h2>Breakdown</h2><small>${scopeLbl.toLowerCase()}</small></div>
+    <div class="card rcard"><h3>By score</h3>
+      <p class="rnote">Higher scores should hit more. The tick is the hit rate the model expected.</p>
+      ${recHead("Score")}${buckets.map(([l,f])=>recRow(l, summ(base.filter(f)))).join("")}</div>
+    <div class="card rcard"><h3>Over vs under</h3>${recHead("Side")}${recRow("Overs", summ(base.filter(r=>r.sd==="over")))}${recRow("Unders", summ(base.filter(r=>r.sd==="under")))}</div>
+    <div class="card rcard"><h3>By market</h3>${recHead("Market")}${mks.map(m=>recRow(MARKETS[m].ab || MARKETS[m].label, summ(base.filter(r=>r.m===m)))).join("")}</div>
     ${clvCard(all)}
-    <div class="card">
-      <h3>By score</h3>
-      <p class="rnote">Higher scores should hit more often. The tick on each bar is the hit rate the model expected.</p>
-      ${buckets.map(([l,f])=>recRow(l, summ(all.filter(f)))).join("")}
-    </div>
-    <div class="card">
-      <h3>Overs vs unders</h3>
-      ${recRow("Overs", summ(all.filter(r=>r.sd==="over")))}${recRow("Unders", summ(all.filter(r=>r.sd==="under")))}
-    </div>
-    <div class="card">
-      <h3>By market</h3>
-      ${mks.map(m=>recRow(MARKETS[m].ab || MARKETS[m].label, summ(all.filter(r=>r.m===m)))).join("")}
-    </div>
-    <div class="sec-t"><h2>Recent Top plays</h2><small>${recent.length}</small></div>
-    <div class="list flat">${recent.map(r=>{
-      const sd = r.m==="atd" ? (r.sd==="over" ? "Yes" : "No") : (r.sd==="over" ? "O" : "U");
-      const badge = r.res==="win" ? `<span class="rres g">✓</span>` : r.res==="loss" ? `<span class="rres r">✗</span>` : r.res==="push" ? `<span class="rres m">P</span>` : `<span class="rres m">…</span>`;
-      return `<div class="row prow rp">${avatar(r.t, r.pid)}<span class="who"><b>${esc(shortName(r.n))}<small>vs ${esc(r.o)}</small></b>
-        <span class="l2"><i class="sd ${r.sd}">${sd}</i> ${r.m==="atd"?"":fmt(r.l)+" "}${MARKETS[r.m]?.ab||r.m}<span class="px">${am(r.pr)}</span></span></span>
-        <span class="kv"><small>${r.res==="pending" ? "SCORE" : "ACTUAL"}</small><b>${r.res==="pending" ? r.sc : fmt(r.v)}</b></span>${badge}</div>`; }).join("")}</div>
-    <p class="rnote" style="margin-top:12px">Every pick is 1 unit at the price saved before kickoff. Players who didn't play are left out.</p>`;
+    ${accuracyHTML()}
+    <p class="rnote rfoot">Every pick is 1 unit at the price saved before kickoff. Players who didn't play are left out.</p>`;
 }
+$("recordBody").addEventListener("click", e => {
+  const sc = e.target.closest("#recScope [data-v]");
+  if(sc && sc.dataset.v !== REC.scope){ REC.scope = sc.dataset.v; REC.more = REC.morePend = false; store.set("pb2_rec", {scope:REC.scope}); renderRecord(); return; }
+  const mo = e.target.closest("[data-rmore]");
+  if(mo){ if(mo.dataset.rmore==="pend") REC.morePend = true; else REC.more = true; renderRecord(); }
+});
 /* ---------- line movement (from lines.json history) ---------- */
 function mvOf(p){
   const h = LINES?.props?.[p.key + "|" + p.kick]; if(!h || h.length < 2) return null;
@@ -1839,7 +1926,7 @@ async function sharePlay(){
 }
 $("shareBtn").onclick = sharePlay;
 /* ---------- home-screen app: offline support, pull to refresh, update notice ---------- */
-const BUILD = "2026.10.08-4";
+const BUILD = "2026.10.08-7";
 let SAVED_DATA = false, NEW_HTML = null, hiddenAt = 0, lastCheck = 0;
 if("serviceWorker" in navigator && (location.protocol==="https:" || ["localhost","127.0.0.1"].includes(location.hostname))){
   navigator.serviceWorker.register("sw.js").catch(()=>{});
@@ -2512,13 +2599,14 @@ function backtest(){
 function accuracyHTML(){
   const bt = backtest(), mks = Object.keys(bt).filter(k=>bt[k].n >= 20);
   if(!mks.length) return "";
-  const tot = mks.reduce((a,k)=>({n:a.n+bt[k].n}), {n:0});
-  return `<div class="card"><h3>Projection accuracy</h3>
-    <p class="rnote">Every past game since ${CUR-1} projected from only the games before it, then compared with what happened. "Average" is a plain last-10-game average. Lower miss is better. ${tot.n.toLocaleString()} projections tested.</p>
+  const tot = mks.reduce((a,k)=>a + bt[k].n, 0);
+  return `<div class="card rcard"><h3>Projection accuracy</h3>
+    <p class="rnote">Every past game projected from only the games before it, then checked against a plain 10-game average. ${tot.toLocaleString()} tested. Positive means our projection missed by less.</p>
+    ${recHead("Stat", "Better", "Miss", "Avg miss")}
     ${mks.map(k=>{ const r = bt[k], mp = r.ep/r.n, mn = r.en/r.n, imp = (1 - mp/mn)*100, c = imp >= 2 ? "g" : imp <= -2 ? "r" : "y";
       return `<div class="rrow"><span class="rl">${MARKETS[k].ab}</span><span class="rbar"><i class="${c}" style="width:${clamp(50+imp*2.5,4,100).toFixed(0)}%"></i><b style="left:50%"></b></span>
-        <span class="rs rs2"><b class="${c}">${imp>=0?"+":""}${imp.toFixed(1)}%</b><small>${fmt(r1(mp))} vs ${fmt(r1(mn))}</small></span></div>`; }).join("")}
-    <p class="rnote" style="margin-top:8px">Positive means the projection missed by less than the plain average (projection miss vs average miss shown under each). The model leans on the projection more for stats where it's winning here and less where it isn't. Past games use their closing spread and total but not their weather or injuries, so the live projections have more to work with.</p></div>`;
+        <span class="rp ${c}">${imp>=0?"+":"−"}${Math.abs(imp).toFixed(1)}%</span><span class="rwl">${fmt(r1(mp))}</span><span class="ru m">${fmt(r1(mn))}</span></div>`; }).join("")}
+    <p class="rnote" style="margin:10px 0 0">The model leans on the projection more where it's winning here.</p></div>`;
 }
 function projStripHTML(prop){
   const pj = projFor(prop); if(!pj) return "";
@@ -3063,7 +3151,8 @@ function statHTML(p){
   else if(S.sort==="move"){ k = "MOVE"; const m = mvOf(p); v = m ? (m.dir>0?"▲":"▼") + (m.txt || "") : "—"; c = m ? (m.good ? "g" : "r") : ""; }
   else { k = "SCORE"; v = p.score ?? "—"; c = p.score==null ? "" : p.score>=70 ? "g" : p.score>=55 ? "y" : ""; }
   const eb = EV_BEST.get(p.key + "|" + (p.lean||"over"));
-  return `<span class="kv"><small>${k}</small><b class="${c}">${v}</b>${eb && eb.ev >= .03 && S.sort!=="ev" ? `<em class="evb">+${Math.round(eb.ev*100)}% EV</em>` : ""}</span>`;
+  const len = String(v).replace(/<[^>]*>/g,"").length;
+  return `<span class="kv"><small>${k}</small><b class="${c}${len>=5?" xs":len>=4?" sm":""}">${v}</b>${eb && eb.ev >= .03 && S.sort!=="ev" ? `<em class="evb">+${Math.round(eb.ev*100)}% EV</em>` : ""}</span>`;
 }
 function pickTxt(p){
   const side = p.lean || "over", pk = p.pick || pickFor(p, side), mk = MARKETS[p.market], lab = mk?.ab || mk?.label || p.market;
@@ -3082,7 +3171,7 @@ function rowHTML(p){
   const mk = MARKETS[p.market], lab = mk?.ab || mk?.label || p.market, inj = injOf(p.pid);
   return `<div class="row prow" data-key="${esc(p.key)}" style="--c:${TEAM_COLOR[p.team]||"#3A4E70"}">
     <button class="row-main press" data-open="${esc(p.key)}" ${p.pl?"":"disabled"}>
-      <span class="who"><b>${star}${esc(shortName(p.name))}${inj?`<em class="ij">${INJ_SHORT[inj.st]}</em>`:""}</b><span class="l2">${esc(p.team||"")}${p.opp?` vs ${esc(p.opp)}`:""} · ${lab}</span></span>
+      <span class="who"><b>${teamMark(p.team)}<span class="nmx">${star}${esc(shortName(p.name))}</span>${inj?`<em class="ij">${INJ_SHORT[inj.st]}</em>`:""}</b><span class="l2">${p.opp?`vs ${esc(p.opp)}`:esc(p.team||"")} · ${lab}</span></span>
       ${pickCol(p)}
       ${statHTML(p)}
       ${sparkHTML(p)}
