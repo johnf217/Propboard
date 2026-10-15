@@ -13,7 +13,8 @@ GRAB = """() => {
     l: p.pick.line, pr: p.pick.price, bk: p.pick.title, sc: p.score, pm: Math.round(p.pModel*1000)/1000,
     ed: Math.round(p.edge*1000)/1000, top: top.has(p.key) ? 1 : 0, kick: p.kick,
     cl: p.line, cf: p.fair==null ? null : Math.round((p.lean==="over" ? p.fair : 1-p.fair)*1000)/1000,
-    af: p.pl.logs.length ? p.pl.logs.at(-1).s*100 + p.pl.logs.at(-1).w : 0 }));
+    af: p.pl.logs.length ? p.pl.logs.at(-1).s*100 + p.pl.logs.at(-1).w : 0,
+    sp: typeof simSide==="function" && simSide(p)!=null ? Math.round(simSide(p)*1000)/1000 : null }));
 }"""
 
 def ts(s):
@@ -21,6 +22,10 @@ def ts(s):
     return d if d.tzinfo else d.replace(tzinfo=timezone.utc)
 
 def main():
+    try: n_props = len(json.load(open("props.json")).get("props", []))
+    except Exception: n_props = 0
+    if not n_props:                                     # off weeks / failed props update: nothing to grade, don't time out
+        print("props.json has no props; skipping pick snapshot"); return
     class Quiet(http.server.SimpleHTTPRequestHandler):
         def log_message(self, *a): pass
     handler = functools.partial(Quiet, directory=".")
