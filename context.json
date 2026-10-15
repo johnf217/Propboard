@@ -1,14 +1,14 @@
 {
- "updated": "2026-10-15T18:10:12+00:00",
+ "updated": "2026-10-15T23:29:10+00:00",
  "games": {
   "SEA @ DEN": {
    "spread_home": 2.5,
    "total": 40.5,
    "tt_home": 19.5,
    "tt_away": 21.5,
-   "temp": 45,
-   "wind": 4,
-   "gust": 8,
+   "temp": 48,
+   "wind": 5,
+   "gust": 14,
    "pop": 0,
    "precip": 0.0
   },
@@ -20,24 +20,24 @@
    "temp": 70,
    "wind": 15,
    "gust": 26,
-   "pop": 4,
-   "precip": 0.0
+   "pop": 2,
+   "precip": 0.1
   },
   "CHI @ ATL": {
    "spread_home": 1.5,
-   "total": 51.0,
-   "tt_home": 24.5,
-   "tt_away": 25.5,
+   "total": 51.5,
+   "tt_home": 25.5,
+   "tt_away": 26.5,
    "dome": true
   },
   "BAL @ CLE": {
    "spread_home": 4.5,
-   "total": 42.0,
+   "total": 41.5,
    "tt_home": 18.5,
-   "tt_away": 23.5,
+   "tt_away": 22.5,
    "temp": 60,
    "wind": 10,
-   "gust": 15,
+   "gust": 13,
    "pop": 0,
    "precip": 0.0
   },
@@ -48,7 +48,7 @@
    "tt_away": 23.5,
    "temp": 58,
    "wind": 4,
-   "gust": 10,
+   "gust": 6,
    "pop": 1,
    "precip": 0.0
   },
@@ -59,18 +59,18 @@
    "tt_away": 20.5,
    "temp": 79,
    "wind": 20,
-   "gust": 24,
-   "pop": 2,
+   "gust": 27,
+   "pop": 1,
    "precip": 0.0
   },
   "CAR @ PHI": {
-   "spread_home": 3.0,
+   "spread_home": 3.5,
    "total": 39.5,
-   "tt_home": 18.25,
+   "tt_home": 17.5,
    "tt_away": 20.5,
    "temp": 59,
    "wind": 3,
-   "gust": 6,
+   "gust": 4,
    "pop": 1,
    "precip": 0.0
   },
@@ -88,7 +88,7 @@
    "tt_away": 17.5,
    "temp": 55,
    "wind": 4,
-   "gust": 14,
+   "gust": 6,
    "pop": 1,
    "precip": 0.0
   },
@@ -108,7 +108,7 @@
   },
   "LAC @ KC": {
    "spread_home": -8.5,
-   "total": 42.5,
+   "total": 42.0,
    "tt_home": 25.5,
    "tt_away": 16.5,
    "temp": 64,
@@ -130,12 +130,12 @@
   },
   "WAS @ SF": {
    "spread_home": -7.5,
-   "total": 51.0,
-   "tt_home": 29.5,
-   "tt_away": 20.5,
+   "total": 51.5,
+   "tt_home": 30.5,
+   "tt_away": 21.5,
    "temp": 64,
    "wind": 8,
-   "gust": 10,
+   "gust": 9,
    "pop": 2,
    "precip": 0.0
   }
