@@ -26,6 +26,11 @@ jobs:
         continue-on-error: true
       - run: python build_lines.py
         continue-on-error: true
+      - name: Simulate games
+        continue-on-error: true
+        run: |
+          pip install numpy
+          python build_sims.py
       - name: Save model picks
         continue-on-error: true
         run: |
@@ -40,4 +45,5 @@ jobs:
           git add injuries.json || true
           git add picks.json || true
           git add lines.json || true
-          git diff --staged --quiet || (git commit -m "Update context, injuries and picks" && git pull --rebase && git push)
+          git add sims.json || true
+          git diff --staged --quiet || (git commit -m "Update context, injuries, sims and picks" && git pull --rebase && git push)
