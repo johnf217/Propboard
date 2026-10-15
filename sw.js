@@ -2,7 +2,7 @@
    - The app itself opens instantly from the saved copy and quietly saves the newest version in the background.
    - Data files (*.json) always try the network first; with no signal they fall back to the last saved copy,
      marked with an X-PB-Saved header so the app can say it's offline. */
-const CACHE = "pb-v1";
+const CACHE = "pb-v2";   // bump when icons or the manifest change
 const FONTS = "pb-fonts";   // Archivo + Inter from Google Fonts, kept so the app looks right offline
 const SHELL = ["./", "index.html", "manifest.webmanifest", "apple-touch-icon.png", "icon-192.png", "icon-512.png"];
 
@@ -21,26 +21,27 @@ self.addEventListener("fetch", e => {
   }
   if (req.method !== "GET" || url.origin !== location.origin) return;   // headshots, logos: browser handles them
   if (url.searchParams.has("check")) return;                            // update checks go straight to the network
-  if (url.pathname.endsWith(".json")) { e.respondWith(dataFirst(req, url)); return; }
-  if (req.mode === "navigate" || url.pathname.endsWith("/") || url.pathname.endsWith("index.html")) { e.respondWith(appFirst()); return; }
+  if (url.pathname.endsWith(".json")) { e.respondWith(dataFirst(req, url, e)); return; }
+  if (req.mode === "navigate" || url.pathname.endsWith("/") || url.pathname.endsWith("index.html")) { e.respondWith(appFirst(e)); return; }
   e.respondWith(caches.match(req).then(r => r || fetch(req)));
 });
 
-async function appFirst() {
+async function appFirst(e) {
   const cache = await caches.open(CACHE);
   const saved = await cache.match("index.html");
   const fresh = fetch("index.html", {cache: "no-store"})
-    .then(r => { if (r.ok) cache.put("index.html", r.clone()); return r; }).catch(() => null);
+    .then(r => r.ok ? cache.put("index.html", r.clone()).then(() => r) : r).catch(() => null);
+  e.waitUntil(fresh);                                                    // let the background refresh finish on iOS
   return saved || (await fresh) || new Response("Offline and nothing saved yet.", {status: 503});
 }
 
 function withTimeout(p, ms) { return Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), ms))]); }
 
-async function dataFirst(req, url) {
+async function dataFirst(req, url, e) {
   const cache = await caches.open(CACHE), key = url.pathname;
   try {
     const r = await withTimeout(fetch(req, {cache: "no-store"}), 8000);
-    if (r.ok) { cache.put(key, r.clone()); return r; }
+    if (r.ok) { e.waitUntil(cache.put(key, r.clone())); return r; }
     if (r.status === 404) return r;                                      // file doesn't exist yet: not an offline case
     throw new Error("bad status");
   } catch (err) {
