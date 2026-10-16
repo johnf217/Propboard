@@ -1,5 +1,5 @@
 """
-backtest_sims.py  v1
+backtest_sims.py  v2
 Replays past weeks through build_sims.py and grades the sims against what actually happened.
 
 For every completed week (2025 week 5 on, plus this season), it:
@@ -140,7 +140,9 @@ def brier(ps, ys): return float(np.mean([(p - y) ** 2 for p, y in zip(ps, ys)]))
 
 
 def report(rows, real, weeks):
-    out = {"weeks": [f"{s}-{w}" for s, w in weeks], "markets": {}, "real": {}}
+    from datetime import datetime, timezone
+    out = {"updated": datetime.now(timezone.utc).isoformat(timespec="seconds"), "weeks": [f"{s}-{w}" for s, w in weeks],
+           "n": len(rows), "markets": {}, "real": {}}
     print("\n=== Calibration by market (ideal: bias 1.00, below 50%, mid50 50%, mid80 80%) ===")
     print(f"{'market':9s} {'n':>5s} {'bias':>6s} {'below':>6s} {'mid50':>6s} {'mid80':>6s} | {'Brier sims':>10s} {'50/50':>6s} {'L10':>6s}  sims' avg over% vs real over%")
     for mk in MARKETS:

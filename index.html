@@ -1941,6 +1941,7 @@ function renderRecord(){
     <div class="card rcard"><h3>Over vs under</h3>${recHead("Side")}${recRow("Overs", summ(base.filter(r=>r.sd==="over")))}${recRow("Unders", summ(base.filter(r=>r.sd==="under")))}</div>
     <div class="card rcard"><h3>By market</h3>${recHead("Market")}${mks.map(m=>recRow(MARKETS[m].ab || MARKETS[m].label, summ(base.filter(r=>r.m===m)))).join("")}</div>
     ${simVsModelCard(all)}
+    ${backtestCard()}
     ${clvCard(all)}
     ${accuracyHTML()}
     <p class="rnote rfoot">Every pick is 1 unit at the price saved before kickoff. Players who didn't play are left out.</p>`;
@@ -2252,7 +2253,7 @@ async function sharePlay(){
 }
 $("shareBtn").onclick = sharePlay;
 /* ---------- home-screen app: offline support, pull to refresh, update notice ---------- */
-const BUILD = "2026.10.15-1";
+const BUILD = "2026.10.15-2";
 let SAVED_DATA = false, NEW_HTML = null, hiddenAt = 0, lastCheck = 0;
 if("serviceWorker" in navigator && (location.protocol==="https:" || ["localhost","127.0.0.1"].includes(location.hostname))){
   navigator.serviceWorker.register("sw.js").catch(()=>{});
@@ -2513,6 +2514,7 @@ function dataStatusHTML(){
     ["Schedule", LOADED.sched, LOADED.sched ? `${(SCHED.games||[]).length} games` : "Missing. Run Update usage.", SCHED?.updated],
     ["Advanced stats", LOADED.adv, LOADED.adv ? `${Object.keys(ADV.players||{}).length} players, ${Object.keys(ADV.defense||{}).length} defenses` : "Missing. Run Update usage after adding build_advanced.py.", ADV?.updated],
     ["Line history", LOADED.lines, LOADED.lines ? `${Object.keys(LINES.props||{}).length} props tracked` : "Starts after the next props update.", LINES?.updated],
+    ["Sims backtest", LOADED.bt, LOADED.bt ? `${BKT.weeks.length} weeks replayed` : "Missing. Add backtest_sims.py and backtest.yml, then run Backtest sims in Actions.", BKT?.updated],
     ["Sims", LOADED.sims, LOADED.sims ? `${Object.keys(SIMS.games||{}).length} games, ${Object.keys(SIMS.props||{}).length} props simulated` : "Missing. Add build_sims.py to the Update game context workflow.", SIMS?.updated],
     ["Saved picks", LOADED.picks, LOADED.picks ? `${Object.keys(PICKS.picks||{}).length} picks` : "Starts after the next props update.", PICKS?.updated],
   ];
@@ -3304,9 +3306,9 @@ function oppOf(p){ const [a,h] = (p.game||"").split(" @ "); return p.team===a ? 
 /* ---------- load ---------- */
 async function getJSON(url){ const r = await fetch(url,{cache:"no-cache"}); if(!r.ok) throw 0; if(r.headers.get("X-PB-Saved")) SAVED_DATA = true; return r.json(); }
 async function load(){
-  const [d, pr, cx, us, ij, pk, ln, sc, ad, sm] = await Promise.all([getJSON("player_logs.json").catch(()=>null), getJSON("props.json").catch(()=>null), getJSON("context.json").catch(()=>null), getJSON("usage.json").catch(()=>null), getJSON("injuries.json").catch(()=>null), getJSON("picks.json").catch(()=>null), getJSON("lines.json").catch(()=>null), getJSON("schedule.json").catch(()=>null), getJSON("advanced.json").catch(()=>null), getJSON("sims.json").catch(()=>null)]);
+  const [d, pr, cx, us, ij, pk, ln, sc, ad, sm, bt] = await Promise.all([getJSON("player_logs.json").catch(()=>null), getJSON("props.json").catch(()=>null), getJSON("context.json").catch(()=>null), getJSON("usage.json").catch(()=>null), getJSON("injuries.json").catch(()=>null), getJSON("picks.json").catch(()=>null), getJSON("lines.json").catch(()=>null), getJSON("schedule.json").catch(()=>null), getJSON("advanced.json").catch(()=>null), getJSON("sims.json").catch(()=>null), getJSON("backtest.json").catch(()=>null)]);
   DATA = d || demoData(); PROPS = pr; CTX = cx; USAGE = us; INJ = ij; PICKS = pk; LINES = ln; SCHED = sc; ADV = ad;
-  SIMS = sm; LOADED = {sims:!!sm, logs:!!d, props:!!pr, ctx:!!cx, usage:!!us, inj:!!ij, picks:!!pk, lines:!!ln, sched:!!sc, adv:!!ad};
+  SIMS = sm; BKT = bt; LOADED = {bt:!!bt, sims:!!sm, logs:!!d, props:!!pr, ctx:!!cx, usage:!!us, inj:!!ij, picks:!!pk, lines:!!ln, sched:!!sc, adv:!!ad};
   DATA.players.forEach(p=>{ p.logs.sort((a,b)=>a.s-b.s||a.w-b.w); byId.set(p.id,p); });
   CUR = DATA.players.reduce((m,p)=>p.logs.reduce((mm,g)=>g.s>mm?g.s:mm, m), 0);
   buildDvp(); buildWeeks(); buildTeamEnv(); buildTeams();
@@ -4004,6 +4006,29 @@ document.addEventListener("click", e => {
 });
 
 /* record: the sims vs the main model on the same picks (shadow test before sims help set scores) */
+let BKT = null;
+const BT_MK = [["rec_yds","Rec yds"],["rush_yds","Rush yds"],["pass_yds","Pass yds"],["rec","Catches"],["atd","Any TD"]];
+function backtestCard(){
+  if(!BKT || !BKT.markets) return "";
+  const R = BKT.real || {}, wk = BKT.weeks || [], pct = x => x==null ? "—" : Math.round(x*100)+"%";
+  const span = wk.length ? `${wk[0].replace("-"," wk ")} to ${wk[wk.length-1].replace("-"," wk ")}` : "";
+  const missRow = (l, b, win) => `<div class="rrow"><span class="rl">${l}</span><span class="rbar"><i class="${win?"g":"y"}" style="width:${Math.max(4,(1-b*2)*100).toFixed(0)}%"></i></span><span class="rp ${win?"g":""}">${b.toFixed(3)}</span><span class="rwl">${R.n}</span><span class="ru"></span></div>`;
+  const edge = [["sims edge +5% or more","Edge 5%+"],["sims edge 0 to +5%","Edge <5%"],["sims say no value","No value"]].filter(([k])=>R[k]).map(([k,l])=>{
+    const e = R[k], c = e.roi >= 0 ? "g" : "r";
+    return `<div class="rrow"><span class="rl">${l}</span><span class="rbar"><i class="${c}" style="width:${(e.won*100).toFixed(1)}%"></i></span><span class="rp">${pct(e.won)}</span><span class="rwl">${e.n}</span><span class="ru ${c}">${e.roi>=0?"+":"−"}${Math.abs(Math.round(e.roi*100))}%</span></div>`;
+  }).join("");
+  const mk = BT_MK.filter(([k])=>BKT.markets[k]).map(([k,l])=>{
+    const m = BKT.markets[k], off = Math.abs(m.avg_p - m.hit), c = off <= .02 ? "g" : off <= .04 ? "y" : "r";
+    return `<div class="rrow"><span class="rl">${l}</span><span class="rbar"><i class="${c}" style="width:${(m.avg_p*100).toFixed(1)}%"></i><b style="left:${(m.hit*100).toFixed(1)}%"></b></span><span class="rp ${c}">${pct(m.avg_p)}</span><span class="rwl">${pct(m.hit)}</span><span class="ru m">${m.in80!=null?pct(m.in80):"—"}</span></div>`;
+  }).join("");
+  return `<div class="card rcard"><h3>Sims backtest</h3>
+    <p class="rnote">Past weeks replayed with only what was known before each game${span?` (${span})`:""}, then checked against what happened. Updated ${kickTime(BKT.updated)}.</p>
+    ${R.n ? `<div class="rrow rhead"><span>On real lines</span><span></span><span>Miss</span><span>Picks</span><span></span></div>
+    ${missRow("Model", R.brier_model, R.brier_model < R.brier_sims)}${missRow("Sims", R.brier_sims, R.brier_sims <= R.brier_model)}
+    <div class="rrow rhead" style="padding-top:12px"><span>Sims' edge</span><span></span><span>Won</span><span>Picks</span><span>ROI</span></div>${edge}` : ""}
+    <div class="rrow rhead" style="padding-top:12px"><span>Over hits</span><span></span><span>Sims</span><span>Real</span><span>In range</span></div>${mk}
+    <p class="rnote" style="margin-top:10px">Bar is how often the sims expected the over; the tick is how often it happened. In range should be near 80%. Replays use each week's actual inactives, so real-line results run a little better than live. The Model vs Sims card is the fair test.</p></div>`;
+}
 function simVsModelCard(list){
   const g = list.filter(r=>r.sp!=null && (r.res==="win" || r.res==="loss"));
   if(!list.some(r=>r.sp!=null)) return "";
