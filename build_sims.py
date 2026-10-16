@@ -1,4 +1,6 @@
-"""Writes sims.json: every game this week played 10,000 times as full box scores.
+"""
+build_sims.py  v3 (tuned by backtest on 2025 wk5 - 2026 wk5, 2026-10-15)
+Writes sims.json: every game this week played 10,000 times as full box scores.
 
 How one simulated game works (all draws happen together, so props inside a game move together):
   1. Game script  - final margin and total are drawn around the Vegas spread and total (the market's
@@ -7,7 +9,8 @@ How one simulated game works (all draws happen together, so props inside a game 
                     script: teams that trail throw more, teams that lead run more, high totals mean more plays.
   3. Who gets it  - targets and carries are split by each player's recent share (recency-weighted and
                     shrunk toward his position when the sample is small). Injured players are removed and
-                    their share flows to everyone else; Questionable players sit out 20% of sims.
+                    their share flows to everyone else; Questionable players sit out 20% of sims (but his
+                    own props are priced as if he plays, since books void them if he sits).
   4. What he does - catches, yards per catch, yards per carry are drawn from each player's own rates
                     (shrunk toward league norms) adjusted for the opponent's defense. Yards use skewed
                     draws, so big games and duds show up at realistic rates (alt lines need this).
@@ -15,6 +18,7 @@ How one simulated game works (all draws happen together, so props inside a game 
                     tendency and handed out by each player's volume that game times his scoring rate.
 QB passing yards and completions are the sum of his receivers' catches, so stacks are consistent.
 
+Backtest: python backtest_sims.py (replays past weeks; see that file).
 Reads: player_logs.json, props.json, context.json (spread/total; optional), injuries.json (optional).
 Writes: sims.json  -  per-prop chances from all 10,000 sims, plus 1,000 stored box scores per game
                       so the app can price any parlay or "what if" question on the phone.
@@ -26,6 +30,13 @@ from datetime import datetime, timezone
 import numpy as np
 
 N, NS = 10_000, 1_000            # sims per game, sims stored for parlay questions
+SHARE_CONC = (200, 50)            # how much a player's target / carry share swings game to game (higher = steadier)
+CATCH_SHAPE = 3.0                # yards per catch spread (gamma shape per catch; real WR catches ~ CV 0.8)
+RUSH_SHAPE = .5                  # yards per carry spread (gamma shape per carry)
+GAME_YPA_SD, GAME_YPC_SD = .22, .25   # whole-offense good/bad day: one shock shared by every receiver / runner
+OTHER_MIN = (0.0, 0.0)           # floor for the "everyone else" bucket (targets, carries)
+PTS_PER_TD = 8.4                 # team points per offensive touchdown
+TD_POW = .75                     # <1 spreads touchdowns more evenly (softens the top guys)
 rng = np.random.default_rng()
 
 POS_PRIOR = {  # catch rate, yards/catch, rec TD per target, yards/carry, rush TD per carry
@@ -55,12 +66,19 @@ def main():
         print("missing player_logs.json or props.json; skipping sims"); return
     ctx = (load("context.json", {}) or {}).get("games", {})
     inj = (load("injuries.json", {}) or {}).get("players", {})
+    out = simulate(data, props, ctx, inj)
+    json.dump(out, open("sims.json", "w"), separators=(",", ":"))
+    print(f"wrote sims.json: {len(out['games'])} games, {len(out['props'])} props, {len(out['players'])} players")
+
+def simulate(data, props, ctx, inj, raw=None, quiet=False):
+    """raw: optional dict filled with pid -> (pos, {stat: all N sims, "_av": played mask}) for backtests"""
     players = data["players"]
     for p in players: p["logs"].sort(key=lambda g: (g["s"], g["w"]))
     by_team = defaultdict(list)
     for p in players:
         if p.get("team"): by_team[p["team"]].append(p)
     season = max(g["s"] for p in players for g in p["logs"])
+    prop_pids = {q.get("pid") for q in props["props"]}
 
     # ---- defense: yards allowed to each position vs league, shrunk (recent two seasons) ----
     allow = defaultdict(lambda: defaultdict(lambda: defaultdict(float)))   # opp -> pos -> (s,w) -> yds
@@ -78,21 +96,32 @@ def main():
         return float(np.clip(1 + (r - 1) * len(mine) / (len(mine) + 8), .82, 1.18))
 
     # ---- team baselines from the current roster's game logs ----
+    # every team-game keyed by (season, week, opponent): a player's log against X in week w belongs to the team that
+    # played X that week, so traded players and departed QBs still count toward the right team's volume
+    games_all = defaultdict(lambda: defaultdict(float))
+    for p in players:
+        for g in p["logs"]:
+            if g.get("o"):
+                for k in ("pa", "ca", "ptd", "rtd"): games_all[(g["s"], g["w"], g["o"])][k] += g.get(k, 0)
+
     def team_model(team):
         roster = by_team.get(team, [])
-        weeks = defaultdict(lambda: defaultdict(float))
+        cnt = defaultdict(lambda: defaultdict(int))
         for p in roster:
             for g in p["logs"]:
-                for k in ("pa", "ca", "ptd", "rtd"): weeks[(g["s"], g["w"])][k] += g.get(k, 0)
-        tw = sorted((k for k, v in weeks.items() if v["pa"] >= 12))[-10:]
+                if g.get("o"): cnt[(g["s"], g["w"])][g["o"]] += 1
+        mine = {(s, w, max(c, key=c.get)) for (s, w), c in cnt.items() if max(c.values()) >= 2}
+        tw = sorted(k for k in mine if games_all[k]["pa"] >= 12)[-10:]
         if not tw: return None
         wts = {k: (.88 ** (len(tw) - 1 - i)) * (1 if k[0] == season else .7) for i, k in enumerate(tw)}
         W = sum(wts.values())
-        pa = sum(weeks[k]["pa"] * w for k, w in wts.items()) / W
-        ra = sum(weeks[k]["ca"] * w for k, w in wts.items()) / W
-        ptd = sum(weeks[k]["ptd"] * w for k, w in wts.items()); rtd = sum(weeks[k]["rtd"] * w for k, w in wts.items())
+        pa = sum(games_all[k]["pa"] * w for k, w in wts.items()) / W
+        ra = sum(games_all[k]["ca"] * w for k, w in wts.items()) / W
+        ptd = sum(games_all[k]["ptd"] * w for k, w in wts.items()); rtd = sum(games_all[k]["rtd"] * w for k, w in wts.items())
         pass_td_share = shrink(ptd, ptd + rtd, .6, 6)
-        return {"roster": roster, "weeks": weeks, "tw": set(tw), "pa": pa, "ra": ra, "pts": pass_td_share}
+        recent = {k[:2] for k in tw[-4:]}   # only players who've played in the team's last 4 games (or have a prop) take part
+        active = [p for p in roster if p["id"] in prop_pids or any((g["s"], g["w"]) in recent for g in p["logs"])]
+        return {"roster": active, "weeks": games_all, "tw": set(tw), "pa": pa, "ra": ra, "pts": pass_td_share}
 
     def player_model(p, team, opp):
         pos = p["pos"]; cr0, ypr0, rtd0, ypc0, rutd0 = POS_PRIOR.get(pos, POS_PRIOR["WR"])
@@ -103,11 +132,11 @@ def main():
         ry = sum(g.get("ry", 0) * w for g, w in R); retd = sum(g.get("retd", 0) * w for g, w in R)
         rutd = sum(g.get("rtd", 0) * w for g, w in R); pa = sum(g.get("pa", 0) * w for g, w in R)
         # shares of the team's volume in games he played
-        tden = sum(team["weeks"][(g["s"], g["w"])]["pa"] * .93 * w for g, w in R if (g["s"], g["w"]) in team["weeks"]) or 1
-        cden = sum(team["weeks"][(g["s"], g["w"])]["ca"] * w for g, w in R if (g["s"], g["w"]) in team["weeks"]) or 1
+        tden = sum(team["weeks"][(g["s"], g["w"], g.get("o"))]["pa"] * .96 * w for g, w in R if (g["s"], g["w"], g.get("o")) in team["weeks"]) or 1
+        cden = sum(team["weeks"][(g["s"], g["w"], g.get("o"))]["ca"] * w for g, w in R if (g["s"], g["w"], g.get("o")) in team["weeks"]) or 1
         games = len(R)
-        tsh = shrink(tgt, tden, .02, tden / max(games, 1) * 2) if pos != "QB" else 0
-        csh = shrink(ca, cden, .02, cden / max(games, 1) * 2)
+        tsh = shrink(tgt, tden, .03, tden / max(games, 1) * .25) if pos != "QB" else 0   # light pull toward a bit-part role
+        csh = shrink(ca, cden, .03, cden / max(games, 1) * .25)
         return {"p": p, "pos": pos, "tsh": max(tsh, 0), "csh": max(csh, 0), "pa_w": pa / sw,
                 "cr": shrink(rec, tgt, cr0, 20), "ypr": shrink(rey, rec, ypr0, 15) * dmult(opp, pos, "rec"),
                 "ypc": shrink(ry, ca, ypc0, 30) * dmult(opp, pos, "rush"),
@@ -116,7 +145,6 @@ def main():
 
     out = {"updated": datetime.now(timezone.utc).isoformat(timespec="seconds"), "n": N, "ns": NS,
            "games": {}, "players": {}, "props": {}}
-    prop_pids = {q.get("pid") for q in props["props"]}
 
     for gm in props.get("games", []):
         label = gm.get("label", "")
@@ -125,7 +153,9 @@ def main():
         c = ctx.get(label, {})
         total = float(c.get("total") or 44.5); spread_home = float(c.get("spread_home") if c.get("spread_home") is not None else -1.5)
         TM = {t: team_model(t) for t in (home, away)}
-        if not all(TM.values()): print("not enough data for", label); continue
+        if not all(TM.values()):
+            if not quiet: print("not enough data for", label)
+            continue
 
         # 1. game script, anchored to the market
         margin = rng.normal(-spread_home, 13.5, N)              # home minus away
@@ -135,7 +165,7 @@ def main():
         for team, opp in ((home, away), (away, home)):
             T = TM[team]; tm = pts[team] - pts[opp]
             # 2. volume bent by game script and pace
-            pa = np.maximum(rng.normal(T["pa"] * (1 - .011 * tm) * (total / 44.5) ** .35, 5.5), 14)
+            pa = np.maximum(rng.normal(T["pa"] * (1 - .011 * tm) * (total / 44.5) ** .35, 4.5), 14)
             ra = np.maximum(rng.normal(T["ra"] * (1 + .013 * tm) * (total / 44.5) ** .25, 4.5), 8)
             M = [player_model(p, T, opp) for p in T["roster"] if p["logs"]]
             M = [m for m in M if m["avail"] > 0]
@@ -146,35 +176,44 @@ def main():
             av = np.stack([rng.random(N) < m["avail"] for m in M], 1).astype(float) if M else np.zeros((N, 0))
             def split(key, conc, other_min):
                 base = np.array([m[key] for m in M] + [0.0]); base[-1] = max(other_min, 1 - base[:-1].sum())
+                ex = base.sum() - 1
+                if ex > 0 and len(M):
+                    # shares measured "when he played" overlap (one guy's big games came while another sat).
+                    # take the overlap mostly out of the secondary roles, not the lead guys
+                    s = base[:-1]; w = s * (1 - s / (s.max() + 1e-9)) + .15 * s
+                    cut = np.minimum(ex * w / w.sum(), .6 * s); base[:-1] = s - cut
                 base = base / base.sum()
                 g = rng.gamma(np.maximum(base * conc, 1e-3), size=(N, len(base)))
                 g[:, :-1] *= av
                 return g / g.sum(1, keepdims=True)
-            tsh, csh = split("tsh", 40, .08), split("csh", 25, .04)
-            tg = rng.poisson(pa[:, None] * .93 * tsh)
+            tsh, csh = split("tsh", SHARE_CONC[0], OTHER_MIN[0]), split("csh", SHARE_CONC[1], OTHER_MIN[1])
+            tg = rng.poisson(pa[:, None] * .96 * tsh)
             cr = np.array([m["cr"] for m in M] + [.66]); ypr = np.array([m["ypr"] for m in M] + [10.5])
             rec = rng.binomial(tg, cr)
-            rey = np.where(rec > 0, rng.gamma(np.maximum(1.3 * rec, 1e-6)) / 1.3, 0) * ypr
+            gy = np.exp(rng.normal(-GAME_YPA_SD ** 2 / 2, GAME_YPA_SD, N))[:, None] if GAME_YPA_SD else 1.0
+            rey = np.where(rec > 0, rng.gamma(np.maximum(CATCH_SHAPE * rec, 1e-6)) / CATCH_SHAPE, 0) * ypr * gy
             ca = rng.poisson(ra[:, None] * csh)
             ypc = np.array([m["ypc"] for m in M] + [4.2])
-            ry = np.where(ca > 0, rng.gamma(np.maximum(.75 * ca, 1e-6)) / .75, 0) * ypc - .15 * ca
+            gr = np.exp(rng.normal(-GAME_YPC_SD ** 2 / 2, GAME_YPC_SD, N))[:, None] if GAME_YPC_SD else 1.0
+            ry = np.where(ca > 0, rng.gamma(np.maximum(RUSH_SHAPE * ca, 1e-6)) / RUSH_SHAPE, 0) * (ypc + .15) * gr - .15 * ca   # a few stuffs for loss, same average
             # 5. touchdowns from points
-            ntd = rng.poisson(pts[team] / 7.7)
+            ntd = rng.poisson(pts[team] / PTS_PER_TD)
             npt = rng.binomial(ntd, T["pts"]); nrt = ntd - npt
             def hand_out(n, weights):
                 w = weights + 1e-9; w = w / w.sum(1, keepdims=True)
                 return rng.multinomial(n, w)
-            retd = hand_out(npt, tg * np.array([m["rtdr"] for m in M] + [.05]))
-            rutd = hand_out(nrt, ca * np.array([m["rutdr"] for m in M] + [.03]))
+            retd = hand_out(npt, (tg * np.array([m["rtdr"] for m in M] + [.05])) ** TD_POW)
+            rutd = hand_out(nrt, (ca * np.array([m["rutdr"] for m in M] + [.03])) ** TD_POW)
             for i, m in enumerate(M):
                 st = {"rec": rec[:, i], "rey": rey[:, i], "ca": ca[:, i], "ry": ry[:, i], "td": retd[:, i] + rutd[:, i],
-                      "tgt": tg[:, i]}
+                      "tgt": tg[:, i], "_av": av[:, i] > 0}
                 if m is starter:
                     st.update({"py": rey.sum(1), "ptd": npt.astype(float), "pa": np.round(pa)})
                 elif m["pos"] == "QB":
                     st.update({"py": np.zeros(N), "ptd": np.zeros(N), "pa": np.zeros(N)})
                 st["rr"] = st["ry"] + st["rey"]
                 res[m["p"]["id"]] = (m, st, team)
+                if raw is not None: raw[m["p"]["id"]] = (m["pos"], st, label)
 
         # outputs: game summary
         hm = pts[home] - pts[away]
@@ -191,6 +230,7 @@ def main():
             m, st, team = res[pid]
             if k not in st: continue
             v = st[k]; line = q.get("line") if q.get("market") != "atd" else .5
+            if st["_av"].any(): v = v[st["_av"]]       # props void if he sits, so price them as if he plays
             if line is None: continue
             out["props"][f'{pid}|{q["market"]}'] = {"po": round(float((v > line).mean()), 4),
                 "mean": round(float(v.mean()), 2), "q": [round(float(x), 1) for x in np.percentile(v, np.arange(0, 101, 5))]}
@@ -199,10 +239,8 @@ def main():
             keep = STATS.get(m["pos"], STATS["WR"])
             out["players"][pid] = {"g": label, "t": team,
                 "s": {k: ",".join(str(int(round(x))) for x in st[k][:NS]) for k in keep if k in st}}
-        print(f"{label}: home win {out['games'][label]['hw']:.0%}, median {out['games'][label]['med']}")
-
-    json.dump(out, open("sims.json", "w"), separators=(",", ":"))
-    print(f"wrote sims.json: {len(out['games'])} games, {len(out['props'])} props, {len(out['players'])} players")
+        if not quiet: print(f"{label}: home win {out['games'][label]['hw']:.0%}, median {out['games'][label]['med']}")
+    return out
 
 if __name__ == "__main__":
     main()
