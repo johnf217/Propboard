@@ -2281,7 +2281,7 @@ async function sharePlay(){
 }
 $("shareBtn").onclick = sharePlay;
 /* ---------- home-screen app: offline support, pull to refresh, update notice ---------- */
-const BUILD = "2026.10.15-4";
+const BUILD = "2026.10.15-5";
 let SAVED_DATA = false, NEW_HTML = null, hiddenAt = 0, lastCheck = 0;
 if("serviceWorker" in navigator && (location.protocol==="https:" || ["localhost","127.0.0.1"].includes(location.hostname))){
   navigator.serviceWorker.register("sw.js").catch(()=>{});
@@ -3337,7 +3337,7 @@ async function getJSON(url){ const r = await fetch(url,{cache:"no-cache"}); if(!
 async function load(){
   const [d, pr, cx, us, ij, pk, ln, sc, ad, sm, bt, gl] = await Promise.all([getJSON("player_logs.json").catch(()=>null), getJSON("props.json").catch(()=>null), getJSON("context.json").catch(()=>null), getJSON("usage.json").catch(()=>null), getJSON("injuries.json").catch(()=>null), getJSON("picks.json").catch(()=>null), getJSON("lines.json").catch(()=>null), getJSON("schedule.json").catch(()=>null), getJSON("advanced.json").catch(()=>null), getJSON("sims.json").catch(()=>null), getJSON("backtest.json").catch(()=>null), getJSON("game_lines.json").catch(()=>null)]);
   DATA = d || demoData(); PROPS = pr; CTX = cx; USAGE = us; INJ = ij; PICKS = pk; LINES = ln; SCHED = sc; ADV = ad;
-  SIMS = sm; BKT = bt; GL = gl; LOADED = {gl:!!gl, bt:!!bt, sims:!!sm, logs:!!d, props:!!pr, ctx:!!cx, usage:!!us, inj:!!ij, picks:!!pk, lines:!!ln, sched:!!sc, adv:!!ad};
+  SIMS = sm; BKT = bt; GL = decodeGL(gl); LOADED = {gl:!!gl, bt:!!bt, sims:!!sm, logs:!!d, props:!!pr, ctx:!!cx, usage:!!us, inj:!!ij, picks:!!pk, lines:!!ln, sched:!!sc, adv:!!ad};
   DATA.players.forEach(p=>{ p.logs.sort((a,b)=>a.s-b.s||a.w-b.w); byId.set(p.id,p); });
   CUR = DATA.players.reduce((m,p)=>p.logs.reduce((mm,g)=>g.s>mm?g.s:mm, m), 0);
   buildDvp(); buildWeeks(); buildTeamEnv(); buildTeams();
@@ -4047,12 +4047,20 @@ function gameCardHTML([label, g], i){
     <div class="sg-hist" aria-label="Margin of victory spread">${g.hist.map((h,j)=>`<i style="--h:${(h/mx).toFixed(3)};--j:${j}" class="${j<7?"a":"h"}"></i>`).join("")}</div>
     <div class="sg-hl"><span>${g.away} by 30+</span><span>even</span><span>${g.home} by 30+</span></div>
     <div class="sg-mk"><div><small>Spread</small><b>${fav} −${fmt(sl)}</b><em>covers ${Math.round(favCover*100)}%</em></div><div><small>Total</small><b>${fmt(g.total)}</b><em>over ${Math.round(g.over*100)}%</em></div></div>
-    ${open ? `<div class="sg-edges">${(()=>{ const ge = gameLineEdges(label).slice(0,5); return ge.length ? `<h4>Game line edges</h4><div class="list flat">${ge.map(x=>glRowHTML(x)).join("")}</div>` : GL?.games?.[label] ? `<p class="m">No spread, total or team total beats its price by 3%+ in the sims.</p>` : ""; })()}
+    ${open ? `<div class="sg-edges">${(()=>{ const ge = gameLineEdges(label).slice(0,5); return ge.length ? `<h4>Game line edges</h4><div class="list flat">${ge.map(x=>glRowHTML(x)).join("")}</div>` : GL?.games?.[label] ? `<p class="m">No spread, total or team total has an edge right now. These markets are sharp, so most weeks only a handful show up.</p>` : ""; })()}
       ${edges.length ? `<h4>Best prop edges</h4><div class="list flat">${edges.map(edgeRowHTML).join("")}</div>` : `<p class="m">No props in this game beat their price by 3+ points in the sims.</p>`}${ladderHTML(g)}</div>` : `<button class="sg-more" data-sg="${esc(label)}">Edges and score odds ›</button>`}
   </div>`;
 }
 /* game lines: price every book's spread, total and team total (main and alternate) against the simulated scores */
 let GL = null;
+function decodeGL(d){   // compact rows [book #, line, home/over, away/under, alt] -> objects
+  if(!d?.games || !d.books) return d;
+  const games = {};
+  for(const [label, g] of Object.entries(d.games)){ games[label] = {};
+    for(const [kind, rows] of Object.entries(g)) games[label][kind] = rows.map(([b, pt, x, y, alt])=>
+      kind==="spread" ? {title:d.books[b], pt, home:x, away:y, alt:!!alt} : {title:d.books[b], pt, over:x, under:y, alt:!!alt}); }
+  return {updated:d.updated, games};
+}
 function pmfGT(pm, x){ let gt = 0, eq = 0; if(!pm) return null;
   for(let i=0;i<pm.p.length;i++){ const v = pm.lo + i; if(v > x) gt += pm.p[i]; else if(v === x) eq += pm.p[i]; } return {gt, eq}; }
 function glChance(G, kind, pt, side){   // -> {win, push}; spread pt is the home team's number
@@ -4069,20 +4077,37 @@ function glText(G, kind, pt, side){
 function gameLineEdges(label, min=.03){
   const G = SIMS?.games?.[label], L = GL?.games?.[label]; if(!G || !L || !G.mp) return [];
   if(G.kick && Date.parse(G.kick) <= Date.now()) return [];      // lines are stale once it kicks off
-  const best = new Map();
+  const best = new Map(), mkt = new Map();
   for(const kind of ["spread","total","tt_home","tt_away"]) for(const r of (L[kind]||[])){
     if(PICKEM_RE.test(r.title||"")) continue;
-    for(const side of kind==="spread" ? ["home","away"] : ["over","under"]){
+    const sides = kind==="spread" ? ["home","away"] : ["over","under"];
+    if(r[sides[0]]!=null && r[sides[1]]!=null){     // two-way price: the book's no-vig chance, for a market consensus
+      const a = impl(r[sides[0]]), b = impl(r[sides[1]]), k = kind+"|"+r.pt;
+      if(!mkt.has(k)) mkt.set(k, []); mkt.get(k).push(a/(a+b)); }
+    for(const side of sides){
       const pr = r[side]; if(pr==null) continue;
       const k = kind+"|"+r.pt+"|"+side, cur = best.get(k);
       if(!cur || dec(pr) > dec(cur.price)) best.set(k, {label, kind, pt:r.pt, side, price:pr, title:r.title, alt:r.alt});
     } }
+  const med = a => { const v = [...a].sort((x,y)=>x-y), n = v.length; return n%2 ? v[(n-1)/2] : (v[n/2-1]+v[n/2])/2; };
   const out = [];
   best.forEach(x=>{ const c = glChance(G, x.kind, x.pt, x.side); if(!c) return;
-    x.win = c.win; x.push = c.push; x.ev = c.win*dec(x.price) + c.push - 1; x.txt = glText(G, x.kind, x.pt, x.side);
+    x.win = c.win; x.push = c.push; x.txt = glText(G, x.kind, x.pt, x.side);
     x.team = x.kind==="spread" ? (x.side==="home" ? G.home : G.away) : x.kind==="tt_home" ? G.home : x.kind==="tt_away" ? G.away : null;
-    if(x.ev >= min && x.win >= .12) out.push(x); });
-  return out.sort((a,b)=>b.ev-a.ev);
+    const m = mkt.get(x.kind+"|"+x.pt), first = x.kind==="spread" ? "home" : "over";
+    x.mkt = m && m.length >= 2 ? (x.side===first ? med(m) : 1 - med(m)) : null;     // books' consensus (no-vig), win-or-lose
+    const simNoPush = x.win / Math.max(1e-6, 1 - x.push);
+    // books price these well and the sims sit within a point or two of their moneylines, so lean on both:
+    // blend the sims with the books' consensus when 2+ books post the line, and want a real gap over the price
+    x.p = x.mkt!=null ? (simNoPush + x.mkt) / 2 : simNoPush;
+    x.win = x.p * (1 - x.push);       // what we show and bet on is the blended chance
+    x.edge = x.p - impl(x.price);
+    x.ev = (x.p*(1-x.push))*dec(x.price) + x.push - 1;
+    if(x.ev >= min && x.edge >= (x.mkt!=null ? .015 : .04) && x.win >= .2) out.push(x); });
+  // one row per bet type and side: the best of an alt ladder, not ten rungs of it
+  const top = new Map();
+  out.sort((a,b)=>b.ev-a.ev).forEach(x=>{ const k = x.kind+"|"+x.side; if(!top.has(k) || top.get(k).length < 2) (top.get(k) || top.set(k, []).get(k)).push(x); });
+  return [...top.values()].flat().sort((a,b)=>b.ev-a.ev);
 }
 function allGameLineEdges(){ return Object.keys(SIMS?.games||{}).flatMap(l=>gameLineEdges(l)).sort((a,b)=>b.ev-a.ev); }
 function glRowHTML(x, showGame){
@@ -4090,7 +4115,7 @@ function glRowHTML(x, showGame){
   return `<div class="row prow ser glr" style="--c:${TEAM_COLOR[x.team]||"#3A4E70"}"><div class="row-main">
     <span class="who"><b>${x.team ? teamMark(x.team) : ""}<span class="nmx">${esc(x.txt)}</span></b><span class="l2">${kindTxt}${showGame?` · ${esc(x.label)}`:""}${x.push>=.02?` · push ${Math.round(x.push*100)}%`:""}</span></span>
     <span class="pk"><b>${am(x.price)}</b><small>${esc(book(x.title))}</small></span>
-    <span class="kv"><b class="${x.win>=.6?"g":"go"}">${Math.round(x.win*100)}%</b><em class="evb">+${(x.ev*100).toFixed(0)}% EV</em></span></div></div>`;
+    <span class="kv"><b class="${x.win>=.6?"g":"go"}">${Math.round(x.win*100)}%</b><em class="evb">+${(x.ev*100).toFixed(0)}% EV${x.mkt!=null?` · books ${Math.round(x.mkt*100)}%`:""}</em></span></div></div>`;
 }
 function ladderHTML(G){
   if(!G.mp) return "";
@@ -4144,7 +4169,7 @@ function renderSims(animate){
     <div class="sgl">${games.map(gameCardHTML).join("")}</div>
     <div class="sec-t"><h2>Best sim edges</h2><small>sim chance vs price</small></div>
     ${edges.length ? `<div class="colh secolh"><span class="cn">Player</span><span class="cp">Price</span><span class="ck">Sims</span></div><div class="list flat">${edges.map(edgeRowHTML).join("")}</div>` : `<div class="empty">No prices beat the sims by 3+ points right now.</div>`}
-    ${(()=>{ if(!GL) return ""; const ge = allGameLineEdges().slice(0,8); return `<div class="sec-t"><h2>Game line edges</h2><small>spreads, totals, team totals</small></div>` + (ge.length ? `<div class="colh secolh"><span class="cn">Bet</span><span class="cp">Price</span><span class="ck">Sims</span></div><div class="list flat">${ge.map(x=>glRowHTML(x, true)).join("")}</div>` : `<div class="empty">No game lines beat the sims by 3%+ right now.</div>`); })()}
+    ${(()=>{ if(!GL) return ""; const ge = allGameLineEdges().slice(0,8); return `<div class="sec-t"><h2>Game line edges</h2><small>spreads, totals, team totals</small></div>` + (ge.length ? `<div class="colh secolh"><span class="cn">Bet</span><span class="cp">Price</span><span class="ck">Sims</span></div><div class="list flat">${ge.map(x=>glRowHTML(x, true)).join("")}</div>` : `<div class="empty">No game-line edges right now. Spreads and totals are the sharpest markets, so expect only a few a week, usually an alt line or team total where one book is off.</div>`); })()}
     ${howTo("Every game is played 10,000 times as full box scores. Scores are anchored to the Vegas spread and total and scored like real football (touchdowns, field goals, extra points, overtime), so games land on 3s and 7s as often as they really do — that's what makes alt spreads and team totals priceable; each team's pass and run volume bends with the score (trailing teams throw more); targets and carries follow recent shares with injured players removed; yards and touchdowns come from each player's own rates adjusted for the defense. Because every prop comes from the same simulated games, parlays get real joint chances instead of multiplying legs. The sims are being tracked against the main model in Record before they help set scores.", "How the sims work")}
     ${dataStatusHTML()}`;
   if(animate && !RM) el.querySelectorAll(".sg-sc b").forEach(b=>{ b.dataset.v = 0; countTo(b, +b.dataset.n); });

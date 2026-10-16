@@ -1,4 +1,4 @@
-"""build_context.py  v2
+"""build_context.py  v3
 Writes context.json for each game in props.json:
 - kickoff weather (Open-Meteo, free, no key)
 - consensus spread, total and team totals (PropLine, uses PROPLINE_API_KEY)
@@ -33,6 +33,10 @@ NAMES = {
  "Seattle Seahawks":"SEA","Tampa Bay Buccaneers":"TB","Tennessee Titans":"TEN","Washington Commanders":"WAS",
 }
 SKIP_BOOKS = {"prizepicks", "sleeper", "dabble", "underdog"}
+# game_lines.json only keeps US sportsbooks you can actually bet (the feed also has ~60 overseas books).
+# Edit this list to add or drop books.
+US_BOOKS = {"DraftKings", "FanDuel", "BetMGM", "Caesars", "Fanatics", "BetRivers", "Hard Rock Bet", "theScore Bet",
+            "ESPN BET", "Betway", "bet365", "Fliff", "Circa Sports"}   # sportsbooks only: exchange alt lines are thin and stale
 
 def abbr(name):
     if not name: return None
@@ -162,15 +166,33 @@ def main():
     json.dump(out, open("context.json", "w"), indent=1)
     print("wrote context.json with", len(out["games"]), "games")
     # every book's spreads, totals and team totals (incl. alternates) so the app can price them against the sims
-    gl = {}
+    # compact: rows are [book #, line, home/over price, away/under price, 1 if alternate], within 14 points of the
+    # main line (10 for team totals) and between -1500 and +1500, so the phone downloads a few hundred KB, not 3 MB
+    gl, books, bi = {}, [], {}
+    ok = lambda x: x if x is not None and -1500 <= x <= 1500 else None
     for g in props.get("games", []):
         label = g.get("label", "")
         if " @ " not in label: continue
         away, home = [ALIAS.get(x.strip(), x.strip()) for x in label.split(" @ ")]
-        if prices.get((away, home)): gl[label] = prices[(away, home)]
+        pr = prices.get((away, home)); ctx_row = out["games"].get(label, {})
+        if not pr: continue
+        rows = {}
+        for kind, lst in pr.items():
+            center = ctx_row.get({"spread": "spread_home"}.get(kind, kind)); width = 10 if kind.startswith("tt_") else 14
+            keep = []
+            for r in lst:
+                if r["title"] not in US_BOOKS: continue
+                if center is not None and abs(r["pt"] - center) > width: continue
+                a, b = (r.get("home"), r.get("away")) if kind == "spread" else (r.get("over"), r.get("under"))
+                a, b = ok(a), ok(b)
+                if a is None and b is None: continue
+                if r["title"] not in bi: bi[r["title"]] = len(books); books.append(r["title"])
+                keep.append([bi[r["title"]], r["pt"], a, b, 1 if r["alt"] else 0])
+            if keep: rows[kind] = keep
+        if rows: gl[label] = rows
     if gl:
-        json.dump({"updated": out["updated"], "games": gl}, open("game_lines.json", "w"), separators=(",", ":"))
-        print("wrote game_lines.json with", len(gl), "games")
+        json.dump({"updated": out["updated"], "books": books, "games": gl}, open("game_lines.json", "w"), separators=(",", ":"))
+        print("wrote game_lines.json with", len(gl), "games,", len(books), "books")
 
 if __name__ == "__main__":
     main()

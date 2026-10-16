@@ -1,5 +1,5 @@
 """
-build_sims.py  v5 (tuned by backtest on 2025 wk5 - 2026 wk5, 2026-10-15)
+build_sims.py  v6 (tuned by backtest on 2025 wk5 - 2026 wk5, 2026-10-15)
 Writes sims.json: every game this week played 10,000 times as full box scores.
 
 How one simulated game works (all draws happen together, so props inside a game move together):
@@ -36,9 +36,10 @@ CATCH_SHAPE = 3.0                # yards per catch spread (gamma shape per catch
 RUSH_SHAPE = .5                  # yards per carry spread (gamma shape per carry)
 GAME_YPA_SD, GAME_YPC_SD = .22, .25   # whole-offense good/bad day: one shock shared by every receiver / runner
 OTHER_MIN = (0.0, 0.0)           # floor for the "everyone else" bucket (targets, carries)
-DRIVES = 10                      # scoring chances per team (drive model gives real 3s and 7s)
+DRIVES = 9                       # scoring chances per team (drive model gives real 3s and 7s)
 TD_PTS_SHARE, FG_PTS_SHARE = .80, .19   # where points come from (tuned so anytime-TD chances match 2025-26)
-GAME_SHOCK = .10                 # shared pace / weather shock, so both teams' scores move together a little
+GAME_SHOCK = .05                 # shared pace / weather shock, so both teams' scores move together a little
+                                 # (9 drives + .05: final margins and totals spread like 2018-26 games around the closing line)
 # how much more (or less) often real NFL games end on each margin than raw drive-by-drive scoring gives
 # (2015-26 regular season, shrunk 20% toward 1). Whole simulated games are resampled with these weights,
 # so 3s and 7s show up as often as they really do and every player's box score stays consistent.
@@ -81,6 +82,35 @@ def main():
     out = simulate(data, props, ctx, inj)
     json.dump(out, open("sims.json", "w"), separators=(",", ":"))
     print(f"wrote sims.json: {len(out['games'])} games, {len(out['props'])} props, {len(out['players'])} players")
+
+def score_game(total, spread_home, home, away, n=None):
+    """N final scores scored like football (TDs, FGs, extra points, overtime), resampled so 3s and 7s come up as
+    often as in real games, then re-centred so the average margin and total match the spread and total."""
+    n = n or N
+    mu = {home: max((total - spread_home) / 2, 3), away: max((total + spread_home) / 2, 3)}
+    for it in range(3):      # the key-number resampling nudges the averages; two corrections put them back on the line
+        shock = np.exp(rng.normal(-GAME_SHOCK ** 2 / 2, GAME_SHOCK, n))
+        pts, tds = {}, {}
+        for t in (home, away):
+            ptd = np.clip(TD_PTS_SHARE * mu[t] / (6.99 * DRIVES) * shock, 0, .6)
+            pfg = np.clip(FG_PTS_SHARE * mu[t] / (3 * DRIVES) * shock, 0, .35)
+            td = rng.binomial(DRIVES, ptd); fg = rng.binomial(DRIVES - td, pfg / np.maximum(1 - ptd, .05))
+            pts[t] = 6 * td + rng.binomial(td, .91) + 2 * rng.binomial(td, .04) + 3 * fg + 2 * (rng.random(n) < .03)
+            tds[t] = td
+        tie = pts[home] == pts[away]
+        if tie.any():   # overtime: field goal most often, sometimes a touchdown, rarely still tied
+            k = int(tie.sum()); hwin = rng.random(k) < np.clip(.5 - spread_home * .03, .15, .85)
+            r = rng.random(k); add = np.where(r < .65, 3, np.where(r < .9, 6, 0))
+            ot_td = (add == 6).astype(int); idx = np.flatnonzero(tie)
+            pts[home][idx] += np.where(hwin, add, 0); pts[away][idx] += np.where(hwin, 0, add)
+            tds[home][idx] += np.where(hwin, ot_td, 0); tds[away][idx] += np.where(hwin, 0, ot_td)
+        w = np.vectorize(lambda m: MARGIN_W.get(abs(int(m)), 1.0))(pts[home] - pts[away])
+        pick = rng.choice(n, n, p=w / w.sum())
+        pts = {t: v[pick].astype(float) for t, v in pts.items()}; tds = {t: v[pick] for t, v in tds.items()}
+        em = (pts[home] - pts[away]).mean() + spread_home; et = (pts[home] + pts[away]).mean() - total
+        if it == 2 or (abs(em) < .15 and abs(et) < .3): break
+        mu[home] = max(mu[home] - em / 2 - et / 2, 2); mu[away] = max(mu[away] + em / 2 - et / 2, 2)
+    return pts, tds
 
 def simulate(data, props, ctx, inj, raw=None, quiet=False):
     """raw: optional dict filled with pid -> (pos, {stat: all N sims, "_av": played mask}) for backtests"""
@@ -173,26 +203,7 @@ def simulate(data, props, ctx, inj, raw=None, quiet=False):
         # 1. game script, anchored to the market: each team's expected points from the spread and total,
         #    then real football scoring (touchdowns and field goals drive by drive, extra points, overtime)
         #    so final margins land on 3s and 7s like real games
-        mu = {home: max((total - spread_home) / 2, 3), away: max((total + spread_home) / 2, 3)}
-        shock = np.exp(rng.normal(-GAME_SHOCK ** 2 / 2, GAME_SHOCK, N))
-        pts, tds = {}, {}
-        for t in (home, away):
-            ptd = np.clip(TD_PTS_SHARE * mu[t] / (6.99 * DRIVES) * shock, 0, .6)
-            pfg = np.clip(FG_PTS_SHARE * mu[t] / (3 * DRIVES) * shock, 0, .35)
-            td = rng.binomial(DRIVES, ptd); fg = rng.binomial(DRIVES - td, pfg / np.maximum(1 - ptd, .05))
-            pts[t] = 6 * td + rng.binomial(td, .91) + 2 * rng.binomial(td, .04) + 3 * fg + 2 * (rng.random(N) < .03)
-            tds[t] = td
-        tie = pts[home] == pts[away]
-        if tie.any():   # overtime: field goal most often, sometimes a touchdown, rarely still tied
-            k = int(tie.sum()); hwin = rng.random(k) < np.clip(.5 - spread_home * .03, .15, .85)
-            r = rng.random(k); add = np.where(r < .65, 3, np.where(r < .9, 6, 0))
-            ot_td = (add == 6).astype(int)
-            idx = np.flatnonzero(tie)
-            pts[home][idx] += np.where(hwin, add, 0); pts[away][idx] += np.where(hwin, 0, add)
-            tds[home][idx] += np.where(hwin, ot_td, 0); tds[away][idx] += np.where(hwin, 0, ot_td)
-        w = np.vectorize(lambda m: MARGIN_W.get(abs(int(m)), 1.0))(pts[home] - pts[away])
-        pick = rng.choice(N, N, p=w / w.sum())
-        pts = {t: v[pick].astype(float) for t, v in pts.items()}; tds = {t: v[pick] for t, v in tds.items()}
+        pts, tds = score_game(total, spread_home, home, away)
         tot = pts[home] + pts[away]
         res = {}
         for team, opp in ((home, away), (away, home)):
