@@ -1307,6 +1307,34 @@ body.scrolled .top .title.bt{margin-bottom:8px}
 @media (prefers-reduced-motion:reduce){.live{animation:none}}
 .sg::before{height:90px;-webkit-mask-image:linear-gradient(#000,transparent);mask-image:linear-gradient(#000,transparent)}
 .agr{font-style:normal;color:var(--over);font-weight:800;margin-left:2px}
+/* game lines + score odds */
+.glr .row-main{cursor:default}
+.glr .pk b{font:800 15px var(--cond)}
+.sg-edges h4+.list{margin-bottom:10px}
+.sg-edges h4 small,.ladder h4 small,.glstrip h4 small{font:500 11.5px var(--body);color:var(--muted);margin-left:6px}
+.ladder{margin:6px 0 10px}
+.ladder h4{margin:4px 0 8px;font:800 15px var(--cond)}
+.lad{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px;margin-bottom:6px}
+.lad>div{background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:8px 8px 7px;min-width:0}
+.lad span{display:block;font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lad b{display:block;font:900 17px/1.1 var(--cond);margin-top:3px}
+.lad small{display:block;font-size:11px;color:var(--muted);margin-top:1px}
+.glstrip{padding:4px 0 6px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.glstrip h4{margin:6px 14px 4px;font:800 14px var(--cond)}
+.ans-c{margin:6px 0 10px;font-size:13.5px;color:var(--muted);line-height:1.45}
+.mov{display:flex;flex-direction:column}
+.mv{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.mv>span:first-child{display:flex;align-items:center;gap:7px;min-width:0;font-size:14px}
+.mv>span:first-child small{color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mv .tlw,.mv .tlw img{width:20px;height:20px}
+.mvp{display:flex;align-items:center;gap:6px;font:800 15px var(--cond);white-space:nowrap}
+.mvp s{color:var(--muted);text-decoration:none;font-weight:600}
+.mvp i{font-style:normal;font-size:10px}
+.mvp .g,.ans-legs b.g{color:var(--over)} .mvp .r,.ans-legs b.r{color:var(--under)}
+.mvn{display:flex;flex-direction:column;min-width:0}
+.mvn b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mvn small{display:block}
+.ans-legs b small{display:block;font:500 11.5px var(--body);color:var(--muted);margin-top:3px;text-align:right;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -2253,7 +2281,7 @@ async function sharePlay(){
 }
 $("shareBtn").onclick = sharePlay;
 /* ---------- home-screen app: offline support, pull to refresh, update notice ---------- */
-const BUILD = "2026.10.15-2";
+const BUILD = "2026.10.15-4";
 let SAVED_DATA = false, NEW_HTML = null, hiddenAt = 0, lastCheck = 0;
 if("serviceWorker" in navigator && (location.protocol==="https:" || ["localhost","127.0.0.1"].includes(location.hostname))){
   navigator.serviceWorker.register("sw.js").catch(()=>{});
@@ -2514,6 +2542,7 @@ function dataStatusHTML(){
     ["Schedule", LOADED.sched, LOADED.sched ? `${(SCHED.games||[]).length} games` : "Missing. Run Update usage.", SCHED?.updated],
     ["Advanced stats", LOADED.adv, LOADED.adv ? `${Object.keys(ADV.players||{}).length} players, ${Object.keys(ADV.defense||{}).length} defenses` : "Missing. Run Update usage after adding build_advanced.py.", ADV?.updated],
     ["Line history", LOADED.lines, LOADED.lines ? `${Object.keys(LINES.props||{}).length} props tracked` : "Starts after the next props update.", LINES?.updated],
+    ["Game lines", LOADED.gl, LOADED.gl ? `${Object.keys(GL.games||{}).length} games, every book's spreads, totals and team totals` : "Missing. Upload the new build_context.py; the Update game context workflow writes it.", GL?.updated],
     ["Sims backtest", LOADED.bt, LOADED.bt ? `${BKT.weeks.length} weeks replayed` : "Missing. Add backtest_sims.py and backtest.yml, then run Backtest sims in Actions.", BKT?.updated],
     ["Sims", LOADED.sims, LOADED.sims ? `${Object.keys(SIMS.games||{}).length} games, ${Object.keys(SIMS.props||{}).length} props simulated` : "Missing. Add build_sims.py to the Update game context workflow.", SIMS?.updated],
     ["Saved picks", LOADED.picks, LOADED.picks ? `${Object.keys(PICKS.picks||{}).length} picks` : "Starts after the next props update.", PICKS?.updated],
@@ -3306,9 +3335,9 @@ function oppOf(p){ const [a,h] = (p.game||"").split(" @ "); return p.team===a ? 
 /* ---------- load ---------- */
 async function getJSON(url){ const r = await fetch(url,{cache:"no-cache"}); if(!r.ok) throw 0; if(r.headers.get("X-PB-Saved")) SAVED_DATA = true; return r.json(); }
 async function load(){
-  const [d, pr, cx, us, ij, pk, ln, sc, ad, sm, bt] = await Promise.all([getJSON("player_logs.json").catch(()=>null), getJSON("props.json").catch(()=>null), getJSON("context.json").catch(()=>null), getJSON("usage.json").catch(()=>null), getJSON("injuries.json").catch(()=>null), getJSON("picks.json").catch(()=>null), getJSON("lines.json").catch(()=>null), getJSON("schedule.json").catch(()=>null), getJSON("advanced.json").catch(()=>null), getJSON("sims.json").catch(()=>null), getJSON("backtest.json").catch(()=>null)]);
+  const [d, pr, cx, us, ij, pk, ln, sc, ad, sm, bt, gl] = await Promise.all([getJSON("player_logs.json").catch(()=>null), getJSON("props.json").catch(()=>null), getJSON("context.json").catch(()=>null), getJSON("usage.json").catch(()=>null), getJSON("injuries.json").catch(()=>null), getJSON("picks.json").catch(()=>null), getJSON("lines.json").catch(()=>null), getJSON("schedule.json").catch(()=>null), getJSON("advanced.json").catch(()=>null), getJSON("sims.json").catch(()=>null), getJSON("backtest.json").catch(()=>null), getJSON("game_lines.json").catch(()=>null)]);
   DATA = d || demoData(); PROPS = pr; CTX = cx; USAGE = us; INJ = ij; PICKS = pk; LINES = ln; SCHED = sc; ADV = ad;
-  SIMS = sm; BKT = bt; LOADED = {bt:!!bt, sims:!!sm, logs:!!d, props:!!pr, ctx:!!cx, usage:!!us, inj:!!ij, picks:!!pk, lines:!!ln, sched:!!sc, adv:!!ad};
+  SIMS = sm; BKT = bt; GL = gl; LOADED = {gl:!!gl, bt:!!bt, sims:!!sm, logs:!!d, props:!!pr, ctx:!!cx, usage:!!us, inj:!!ij, picks:!!pk, lines:!!ln, sched:!!sc, adv:!!ad};
   DATA.players.forEach(p=>{ p.logs.sort((a,b)=>a.s-b.s||a.w-b.w); byId.set(p.id,p); });
   CUR = DATA.players.reduce((m,p)=>p.logs.reduce((mm,g)=>g.s>mm?g.s:mm, m), 0);
   buildDvp(); buildWeeks(); buildTeamEnv(); buildTeams();
@@ -3616,8 +3645,8 @@ function renderGames(animate){
 }
 function gameProps(label){ return PROPS.props.filter(p=>p.game===label && visible(p) && (!S.market || p.market===S.market)).sort((a,b)=>(b.score??-1)-(a.score??-1)); }
 function gameBody(props, all){
-  const n = all ? props.length : 10;
-  return `<div class="colh gcolh"><span class="cn">Player</span><span class="cp">Pick</span><span class="ck">Score</span><span class="cs">${BW_LBL[S.bw]==="SZN"?"Season":BW_LBL[S.bw]}</span></div><div class="list flat">${props.slice(0,n).map(rowHTML).join("")}</div>` + (props.length>n ? `<button class="more press" data-all="1" style="margin:0 8px 8px;width:calc(100% - 16px)">Show all ${props.length}</button>` : "");
+  const n = all ? props.length : 10, ge = props[0] && GL ? gameLineEdges(props[0].game).slice(0,3) : [];
+  return (ge.length ? `<div class="glstrip"><h4>Game line edges <small>from the sims</small></h4><div class="list flat">${ge.map(x=>glRowHTML(x)).join("")}</div></div>` : "") + `<div class="colh gcolh"><span class="cn">Player</span><span class="cp">Pick</span><span class="ck">Score</span><span class="cs">${BW_LBL[S.bw]==="SZN"?"Season":BW_LBL[S.bw]}</span></div><div class="list flat">${props.slice(0,n).map(rowHTML).join("")}</div>` + (props.length>n ? `<button class="more press" data-all="1" style="margin:0 8px 8px;width:calc(100% - 16px)">Show all ${props.length}</button>` : "");
 }
 $("gamesList").addEventListener("click", e => {
   const all = e.target.closest("[data-all]");
@@ -3810,7 +3839,7 @@ function slipSimRow(d){
 const NICK = {cardinals:"ARI",falcons:"ATL",ravens:"BAL",bills:"BUF",panthers:"CAR",bears:"CHI",bengals:"CIN",browns:"CLE",cowboys:"DAL",broncos:"DEN",lions:"DET",packers:"GB",texans:"HOU",colts:"IND",jaguars:"JAX",jags:"JAX",chiefs:"KC",raiders:"LV",chargers:"LAC",rams:"LA",dolphins:"MIA",vikings:"MIN",patriots:"NE",pats:"NE",saints:"NO",giants:"NYG",jets:"NYJ",eagles:"PHI",steelers:"PIT","49ers":"SF",niners:"SF",seahawks:"SEA",buccaneers:"TB",bucs:"TB",titans:"TEN",commanders:"WAS"};
 const STAT_RX = [[/pass(ing)?\s*(td|tds|touchdowns?)/,"pass_td"],[/pass(ing)?\s*(att|attempts)/,"pass_att"],[/rush(ing)?\s*(\+|and|&)\s*rec|scrimmage/,"rr_yds"],
   [/carries|rush(ing)?\s*att(empts)?/,"carries"],[/rec(eiving)?\s*(yds|yards)|receiving/,"rec_yds"],[/receptions|catches|\brecs?\b/,"rec"],
-  [/rush(ing)?/,"rush_yds"],[/pass(ing)?/,"pass_yds"],[/\btds?\b|touchdowns?|scores?|anytime/,"atd"]];
+  [/rush(ing)?/,"rush_yds"],[/pass(ing)?/,"pass_yds"],[/\btds?\b|touchdowns?|scores?|anytime/,"atd"],[/\b(yds|yards|yardage)\b/,"_yds"]];
 let SIM_NAMES = null;
 function simNameIndex(){
   if(SIM_NAMES) return SIM_NAMES;
@@ -3827,13 +3856,17 @@ function parseClause(c){
   const t = c.toLowerCase().trim(); if(!t) return null;
   const numIn = x => x.match(/(over|under|o|u)?\s*(\d+(?:\.\d+)?)\s*(\+)?/);
   let num = numIn(t);
+  // same last name (Josh vs Braelon Allen): the full name wins, then whoever fits the stat asked about, then the bigger role
+  const wantPos = /pass/.test(t) ? ["QB"] : /rush|carr/.test(t) ? ["RB","QB"] : /rec|catch|target/.test(t) ? ["WR","TE","RB"] : null;
+  const role = x => Math.max(0, ...(BY_PID.get(x.pl.id)||[]).filter(p=>p.market!=="atd").map(p=>p.line||0));
   const pl = simNameIndex().filter(x=>t.includes(x.full) || new RegExp(`\\b${x.last.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")}\\b`).test(t))
-    .sort((a,b)=>(t.includes(b.full)?1:0)-(t.includes(a.full)?1:0) || (BY_PID.get(b.pl.id)?.length||0)-(BY_PID.get(a.pl.id)?.length||0))[0];
+    .sort((a,b)=>(t.includes(b.full)?1:0)-(t.includes(a.full)?1:0) || (wantPos ? (wantPos.includes(b.pl.pos)?1:0)-(wantPos.includes(a.pl.pos)?1:0) : 0)
+      || (b.pl.pos==="QB")-(a.pl.pos==="QB") || role(b)-role(a))[0];
   if(pl){
     const rest = t.replace(pl.full,"").replace(new RegExp(`\\b${pl.last.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")}\\b`),"");
     num = numIn(rest);
     const pos = pl.pl.pos, st = STAT_RX.find(([rx])=>rx.test(rest));
-    let market = st ? st[1] : (num ? {QB:"pass_yds", RB:"rush_yds"}[pos] || "rec_yds" : null);
+    let market = st && st[1]!=="_yds" ? st[1] : (num || st ? {QB:"pass_yds", RB:"rush_yds"}[pos] || "rec_yds" : null);
     if(market==="pass_yds" && pos!=="QB" && !/pass/.test(t)) market = pos==="RB" ? "rush_yds" : "rec_yds";
     if(!market){ const pr = (BY_PID.get(pl.pl.id)||[]).find(x=>x.ok) || BY_PID.get(pl.pl.id)?.[0]; if(pr) market = pr.market; }
     if(!market) return {err:`Which stat for ${pl.pl.name}?`};
@@ -3855,19 +3888,81 @@ function parseClause(c){
     return {err: any ? `${any.name} isn't in this week's sims (no props, or ruled out).` : `Couldn't find a player or team in “${c.trim()}”.`}; }
   const ge = gameOfTeam(team); if(!ge) return {err:`${team} isn't on this week's slate.`};
   const [label, G] = ge, P = simPts(label), n = P.a.length, mask = new Uint8Array(n), home = G.home===team;
-  let txt;
-  if(/total|game/.test(t) && num){ const v = +num[2], under = /^u/.test(num[1]||""), ln = num[3] || !num[1] ? v-.5 : v;
+  const mine = i => home ? P.h[i] : P.a[i], theirs = i => home ? P.a[i] : P.h[i];
+  const lineOf = () => { const v = +num[2]; return num[3] || !num[1] ? v-.5 : v; };
+  const byN = t.match(/by\s+(\d+)\s*(\+|or more)?/), losing = /\blos(e|es|ing|t)\b|trail|behind|falls? short|upset/.test(t);
+  let txt, full = null;      // full: chance from all 10,000 sims when we have it
+  if(/blow(n)?\s*out|blowout|rout/.test(t) && !byN){ const lose = /blown out|get(s)? blown|losing/.test(t);
+    for(let i=0;i<n;i++){ const m = mine(i)-theirs(i); mask[i] = lose ? m <= -14 : m >= 14; } txt = `${team} ${lose?"loses":"wins"} by 14+`; }
+  else if(/close|one.score|within\s+\d/.test(t)){ const k = +(t.match(/within\s+(\d+)/)?.[1] || 8);
+    for(let i=0;i<n;i++) mask[i] = Math.abs(P.h[i]-P.a[i]) <= k; txt = `${label} decided by ${k} or less`; }
+  else if(/shoot.?out|high.scoring/.test(t)){ const ln = Math.round(G.total)+9.5; for(let i=0;i<n;i++) mask[i] = P.a[i]+P.h[i] > ln; txt = `${label} goes over ${fmt(ln)} (shootout)`; }
+  else if(/low.scoring|defensive|slugfest|rock fight/.test(t)){ const ln = Math.round(G.total)-9.5; for(let i=0;i<n;i++) mask[i] = P.a[i]+P.h[i] < ln; txt = `${label} under ${fmt(ln)} (low scoring)`; }
+  else if(/total|game\s+(goes\s+)?(over|under)|\bover\b|\bunder\b/.test(t) && num && !/pts|points|score/.test(t)){ const under = /under|^u/.test(num[1]||"") || /\bunder\b/.test(t), ln = lineOf();
     for(let i=0;i<n;i++){ const s = P.a[i]+P.h[i]; mask[i] = under ? s < ln : s > ln; } txt = `${label} ${under?"under":"over"} ${fmt(ln)} total`; }
-  else if(/cover/.test(t)){ for(let i=0;i<n;i++){ const m = P.h[i]-P.a[i]; mask[i] = home ? m + G.spread > 0 : m + G.spread < 0; } txt = `${team} covers ${home ? (G.spread>0?"+":"")+fmt(G.spread) : (G.spread<0?"+":"")+fmt(-G.spread)}`; }
-  else if(num && /pts|points|score/.test(t)){ const v = +num[2], ln = num[3] || !num[1] ? v-.5 : v; for(let i=0;i<n;i++) mask[i] = (home?P.h[i]:P.a[i]) > ln; txt = `${team} ${fmt(ln+.5)}+ points`; }
-  else { for(let i=0;i<n;i++) mask[i] = home ? P.h[i] > P.a[i] : P.a[i] > P.h[i]; txt = `${team} wins`; }
-  const p = /cover/.test(t) ? (home ? G.cover : 1-G.cover) : /total|game|pts|points|score/.test(t) && num ? mask.reduce((a,b)=>a+b,0)/n : (home ? G.hw : 1-G.hw);
-  return {game:label, mask, p, txt, team};
+  else if(/cover/.test(t)){ const sp = home ? G.spread : -G.spread; for(let i=0;i<n;i++){ const m = mine(i)-theirs(i); mask[i] = losing ? m + sp < 0 : m + sp > 0; }
+    txt = `${team} ${losing?"doesn't cover":"covers"} ${sp>0?"+":""}${fmt(sp)}`; full = losing ? null : home ? G.cover : 1-G.cover; }
+  else if(num && /pts|points|score|put up|held|under/.test(t)){ const under = /under|held|less than|fewer/.test(t), v = +num[2], ln = under ? (Number.isInteger(v) ? v-.5 : v) : lineOf();
+    for(let i=0;i<n;i++) mask[i] = under ? mine(i) < ln : mine(i) > ln; txt = `${team} ${under ? `under ${fmt(ln)}` : `${fmt(ln+.5)}+`} points`; }
+  else if(byN){ const k = +byN[1]; for(let i=0;i<n;i++){ const m = mine(i)-theirs(i); mask[i] = losing ? m <= -k : m >= k; } txt = `${team} ${losing?"loses":"wins"} by ${k}+`; }
+  else if(losing){ for(let i=0;i<n;i++) mask[i] = mine(i) < theirs(i); txt = `${team} loses`; full = home ? 1-G.hw : G.hw; }
+  else { for(let i=0;i<n;i++) mask[i] = mine(i) > theirs(i); txt = `${team} wins`; full = home ? G.hw : 1-G.hw; }
+  const k = mask.reduce((a,b)=>a+b,0);
+  return {game:label, mask, p: full ?? k/n, txt, team};
+}
+const COND_RX = /\b(if|when|whenever|given|assuming|in games where)\b/i;
+const FILLER = /\b(how many|how much|how often|how does|how do|how will|what does|what do|what happens to|what happens|what changes|what if|show me|what about|what's|what is|what are|does|will|do|chance|odds|have|get|gets|go|the|of|to)\b|\?/gi;
+function splitCond(t){
+  const m = t.match(COND_RX); if(!m) return null;
+  const before = t.slice(0, m.index).trim(), after = t.slice(m.index + m[0].length).trim();
+  if(!before.replace(FILLER, "").replace(/\b(what|how|so|and|ok|then|but)\b|[,.!]/gi, "").trim()){            // "if Bengals lose, Chase 100+ yds" or "what happens if Bengals lose"
+    const c = after.match(/^(.*?)(?:,|\bthen\b|\bwhat\b|\bhow\b)\s*(.*)$/i);
+    return c && c[2].replace(FILLER, "").trim() ? {cond:c[1], target:c[2]} : {cond:after, target:""};
+  }
+  return {cond:after, target:before};
+}
+const CLAUSE_SPLIT = /\s+(?:and|&|with|plus)\s+|\s*,\s*|\s*;\s*/i;
+const normQ = x => x.replace(/rush(ing)?\s*(and|&)\s*rec(eiving)?/gi,"rush+rec");
+function maskAnd(ms){ const n = ms[0].length, out = new Uint8Array(n); for(let i=0;i<n;i++){ let ok = 1; for(const m of ms) if(!m[i]){ ok = 0; break; } out[i] = ok; } return out; }
+function statSummary(L, cmask){   // a player's stat in all stored sims vs only the ones where the condition happened
+  const a = simArr(L.pid, SIM_KEY[L.market]); if(!a) return null;
+  const pick = m => { const v = []; for(let i=0;i<a.length;i++) if(!m || m[i]) v.push(a[i]); return v.sort((x,y)=>x-y); };
+  const q = (v, f) => v.length ? v[Math.min(v.length-1, Math.floor(f*v.length))] : null;
+  const all = pick(null), c = pick(cmask);
+  return {med:q(c,.5), lo:q(c,.1), hi:q(c,.9), med0:q(all,.5), unit: L.market==="atd" ? "TDs" : MARKETS[L.market].short};
+}
+function askIf(sp){
+  const hasT = !!sp.target.replace(FILLER,"").trim();
+  const tl = hasT ? normQ(sp.target).split(CLAUSE_SPLIT).filter(Boolean).map(x=>parseClause(x.replace(FILLER," "))) : [];
+  const tTeam = tl.find(x=>x && !x.err)?.team;
+  const cl = normQ(sp.cond).split(CLAUSE_SPLIT).filter(Boolean).map(c=>{ const r = parseClause(c); return r?.err && tTeam ? parseClause(c+" "+tTeam) : r; });
+  const err = cl.find(x=>!x || x.err); if(err) return {err: err?.err || "Couldn't read the “if” part. Try “if Bengals lose” or “if Chase gets 100+ yds”."};
+  const games = new Set(cl.map(x=>x.game));
+  if(games.size > 1) return {err:"Keep the “if” part to one game. Players in different games don't affect each other in the sims."};
+  const cmask = maskAnd(cl.map(x=>x.mask)), nC = cmask.reduce((a,b)=>a+b,0), n = cmask.length, game = [...games][0];
+  const cond = {txt: cl.map(x=>x.txt).join(" and "), p: nC/n, nC, n};
+  if(!nC) return {err:`That never happened in the stored sims (${cond.txt}). Try something less extreme.`};
+  if(!hasT){        // no target: who gains and who loses in that game
+    const rows = [];
+    PROPS?.props.forEach(p=>{ if(p.game!==game || !p.pid || !SIMS.players[p.pid]) return;
+      const L = {pid:p.pid, market:p.market, side:"over", line:p.market==="atd" ? .5 : p.line}, m = legMask(L); if(!m) return;
+      let a = 0, b = 0; for(let i=0;i<n;i++){ a += m[i]; if(cmask[i]) b += m[i]; }
+      rows.push({p, L, base:a/n, now:b/nC}); });
+    rows.sort((x,y)=>Math.abs(y.now-y.base)-Math.abs(x.now-x.base));
+    return {cond, movers: rows.slice(0,8)};
+  }
+  const terr = tl.find(x=>!x || x.err); if(terr) return {err: terr?.err || "Couldn't read what to check. Try “Chase 100+ rec yds if Bengals lose”."};
+  if(tl.some(x=>x.game!==game)) return {err:"The “if” and the question need to be in the same game for the sims to connect them."};
+  const tmask = maskAnd(tl.map(x=>x.mask));
+  let base = 0, hit = 0; for(let i=0;i<n;i++){ base += tmask[i]; if(cmask[i]) hit += tmask[i]; }
+  const stat = tl.length===1 && tl[0].L ? statSummary(tl[0].L, cmask) : null;
+  return {cond, legs: tl, joint: hit/nC, base: base/n, stat, conditional: true};
 }
 function askSims(q){
   const t = q.trim(); if(!t) return null;
   const best = t.match(/^best\s+(.*?)\s*props?$/i);
   if(best) return {best: best[1].trim()};
+  const sp = splitCond(t); if(sp) return askIf(sp);
   const parts = t.replace(/rush(ing)?\s*(and|&)\s*rec(eiving)?/gi,"rush+rec").split(/\s+(?:and|&|with|plus)\s+|\s*,\s*|\s*;\s*/i).filter(Boolean);
   const legs = parts.map(parseClause);
   const err = legs.find(x=>!x || x.err); if(err) return {err: err?.err || "Try a player and a number, like Chase 80+ rec yds."};
@@ -3885,10 +3980,29 @@ function ringSVG(p){ const r = 46, c = +(2*Math.PI*r).toFixed(1);
   return `<svg class="aring" viewBox="0 0 108 108" aria-hidden="true"><circle cx="54" cy="54" r="${r}" fill="none" stroke="var(--surface3)" stroke-width="9"/>
     <circle class="arc" cx="54" cy="54" r="${r}" fill="none" stroke="${p>=.5?"var(--over)":"var(--under)"}" stroke-width="9" stroke-linecap="round" stroke-dasharray="${c}" style="--c:${c};--o:${(c*(1-p)).toFixed(1)}" transform="rotate(-90 54 54)"/></svg>`; }
 function answerHTML(res, q){
-  if(res.err) return `<div class="ans err"><b>Not sure what to sim.</b><p>${esc(res.err)}</p><p class="m">Try “Chase 80+ rec yds”, “Allen 2+ pass TDs and Bills win”, or “best Henry props”.</p></div>`;
+  if(res.err) return `<div class="ans err"><b>Not sure what to sim.</b><p>${esc(res.err)}</p><p class="m">Try “Chase 80+ rec yds”, “Allen 2+ pass TDs and Bills win”, “Chase 100+ yds if Bengals lose”, “what happens if the Bills win by 10+”, or “best Henry props”.</p></div>`;
   if(res.best!=null){ const want = res.best.toLowerCase(), rows = simEdges().filter(x=>{ const nm = x.p.name.toLowerCase();
       return !want || nm===want || nm.split(" ").includes(want) || (want.includes(" ") && nm.includes(want)) || x.p.team.toLowerCase()===want; }).slice(0,8);
     return `<div class="ans"><div class="ans-h"><span class="live"></span>Best sim edges${want?` · ${esc(res.best)}`:""}</div>${rows.length ? `<div class="list flat">${rows.map(edgeRowHTML).join("")}</div>` : `<p class="m">No sim edges for “${esc(res.best)}” this week.</p>`}</div>`; }
+  if(res.movers) return `<div class="ans"><div class="ans-h"><span class="live"></span>If ${esc(res.cond.txt)}</div>
+    <p class="ans-c">Happens in ${res.cond.nC.toLocaleString()} of ${res.cond.n.toLocaleString()} sims (${Math.round(res.cond.p*100)}%). Here's how the props in that game move:</p>
+    ${res.movers.length ? `<div class="mov">${res.movers.map(r=>{ const up = r.now >= r.base, nm = r.L.market==="atd" ? "scores" : `over ${fmt(r.L.line)} ${MARKETS[r.L.market].short}`;
+      return `<div class="mv"><span>${teamMark(r.p.team)}<span class="mvn"><b>${esc(shortName(r.p.name))}</b><small>${nm}</small></span></span><span class="mvp"><s>${Math.round(r.base*100)}%</s><i class="${up?"g":"r"}">${up?"▲":"▼"}</i><b class="${up?"g":"r"}">${Math.round(r.now*100)}%</b></span></div>`; }).join("")}</div>` : `<p class="m">No props in that game to compare.</p>`}
+    ${res.cond.nC < 60 ? `<p class="m">Only ${res.cond.nC} sims match, so treat these as rough.</p>` : ""}</div>`;
+  if(res.conditional){ const p = res.joint, d = p - res.base, st = res.stat, L = res.legs[0];
+    const bk = res.legs.length===1 && L.L ? bookFor(L.L) : null;
+    return `<div class="ans">
+    <div class="ans-h"><span class="live"></span>If ${esc(res.cond.txt)}</div>
+    <div class="ans-main">${ringSVG(p)}<div class="ans-n"><b class="ans-p" data-p="${(p*100).toFixed(1)}">0%</b><small>${esc(res.legs.map(l=>l.txt).join(" + "))}</small></div></div>
+    <div class="ans-legs">
+      <div><span>Normally</span><b>${(res.base*100).toFixed(1)}%</b></div>
+      <div><span>If ${esc(res.cond.txt)}</span><b class="${d>=0?"g":"r"}">${(p*100).toFixed(1)}% <small>${d>=0?"▲":"▼"} ${Math.abs(d*100).toFixed(1)}</small></b></div>
+      ${st && st.med!=null ? `<div><span>Median ${esc(st.unit)}</span><b>${fmt(st.med)} <small>normally ${fmt(st.med0)} · most sims ${fmt(st.lo)}–${fmt(st.hi)}</small></b></div>` : ""}
+      <div><span>The “if” happens</span><b>${Math.round(res.cond.p*100)}% <small>${res.cond.nC} of ${res.cond.n.toLocaleString()} sims</small></b></div>
+    </div>
+    ${bk ? `<div class="ans-bk"><span>Best price now <b>${am(bk.price)}</b> ${esc(book(bk.title))}</span><span>Fair if it happens <b>${am(toAm(1/Math.max(p,.001)))}</b></span></div>` : ""}
+    ${res.cond.nC < 60 ? `<p class="m" style="margin:8px 0 0">Only ${res.cond.nC} sims match the “if”, so this one is rough.</p>` : ""}
+    <div class="ans-d"><small>Out of 100 sims where it happens</small>${dots(p)}</div></div>`; }
   const one = res.legs.length===1, L = res.legs[0], p = res.joint;
   const bk = one && L.L ? bookFor(L.L) : null, ev = bk ? p*dec(bk.price)-1 : null;
   const rel = res.legs.length>1 ? (p > res.indep*1.06 ? `These legs help each other` : p < res.indep*.94 ? `These legs work against each other` : `These legs barely affect each other`) : "";
@@ -3933,8 +4047,63 @@ function gameCardHTML([label, g], i){
     <div class="sg-hist" aria-label="Margin of victory spread">${g.hist.map((h,j)=>`<i style="--h:${(h/mx).toFixed(3)};--j:${j}" class="${j<7?"a":"h"}"></i>`).join("")}</div>
     <div class="sg-hl"><span>${g.away} by 30+</span><span>even</span><span>${g.home} by 30+</span></div>
     <div class="sg-mk"><div><small>Spread</small><b>${fav} −${fmt(sl)}</b><em>covers ${Math.round(favCover*100)}%</em></div><div><small>Total</small><b>${fmt(g.total)}</b><em>over ${Math.round(g.over*100)}%</em></div></div>
-    ${open ? `<div class="sg-edges">${edges.length ? `<h4>Best sim edges</h4><div class="list flat">${edges.map(edgeRowHTML).join("")}</div>` : `<p class="m">No props in this game beat their price by 3+ points in the sims.</p>`}</div>` : `<button class="sg-more" data-sg="${esc(label)}">Best sim edges ›</button>`}
+    ${open ? `<div class="sg-edges">${(()=>{ const ge = gameLineEdges(label).slice(0,5); return ge.length ? `<h4>Game line edges</h4><div class="list flat">${ge.map(x=>glRowHTML(x)).join("")}</div>` : GL?.games?.[label] ? `<p class="m">No spread, total or team total beats its price by 3%+ in the sims.</p>` : ""; })()}
+      ${edges.length ? `<h4>Best prop edges</h4><div class="list flat">${edges.map(edgeRowHTML).join("")}</div>` : `<p class="m">No props in this game beat their price by 3+ points in the sims.</p>`}${ladderHTML(g)}</div>` : `<button class="sg-more" data-sg="${esc(label)}">Edges and score odds ›</button>`}
   </div>`;
+}
+/* game lines: price every book's spread, total and team total (main and alternate) against the simulated scores */
+let GL = null;
+function pmfGT(pm, x){ let gt = 0, eq = 0; if(!pm) return null;
+  for(let i=0;i<pm.p.length;i++){ const v = pm.lo + i; if(v > x) gt += pm.p[i]; else if(v === x) eq += pm.p[i]; } return {gt, eq}; }
+function glChance(G, kind, pt, side){   // -> {win, push}; spread pt is the home team's number
+  if(kind==="spread"){ const r = pmfGT(G.mp, -pt); if(!r) return null; return side==="home" ? {win:r.gt, push:r.eq} : {win:1-r.gt-r.eq, push:r.eq}; }
+  const r = pmfGT(kind==="total" ? G.tp : kind==="tt_home" ? G.hp : G.ap, pt); if(!r) return null;
+  return side==="over" ? {win:r.gt, push:r.eq} : {win:1-r.gt-r.eq, push:r.eq};
+}
+const sgn = x => (x>0?"+":x<0?"−":"")+fmt(Math.abs(x));
+function glText(G, kind, pt, side){
+  if(kind==="spread") return side==="home" ? `${G.home} ${pt===0?"PK":sgn(pt)}` : `${G.away} ${pt===0?"PK":sgn(-pt)}`;
+  const o = side==="over" ? "Over" : "Under";
+  return kind==="total" ? `${o} ${fmt(pt)}` : `${kind==="tt_home"?G.home:G.away} ${o.toLowerCase()} ${fmt(pt)}`;
+}
+function gameLineEdges(label, min=.03){
+  const G = SIMS?.games?.[label], L = GL?.games?.[label]; if(!G || !L || !G.mp) return [];
+  if(G.kick && Date.parse(G.kick) <= Date.now()) return [];      // lines are stale once it kicks off
+  const best = new Map();
+  for(const kind of ["spread","total","tt_home","tt_away"]) for(const r of (L[kind]||[])){
+    if(PICKEM_RE.test(r.title||"")) continue;
+    for(const side of kind==="spread" ? ["home","away"] : ["over","under"]){
+      const pr = r[side]; if(pr==null) continue;
+      const k = kind+"|"+r.pt+"|"+side, cur = best.get(k);
+      if(!cur || dec(pr) > dec(cur.price)) best.set(k, {label, kind, pt:r.pt, side, price:pr, title:r.title, alt:r.alt});
+    } }
+  const out = [];
+  best.forEach(x=>{ const c = glChance(G, x.kind, x.pt, x.side); if(!c) return;
+    x.win = c.win; x.push = c.push; x.ev = c.win*dec(x.price) + c.push - 1; x.txt = glText(G, x.kind, x.pt, x.side);
+    x.team = x.kind==="spread" ? (x.side==="home" ? G.home : G.away) : x.kind==="tt_home" ? G.home : x.kind==="tt_away" ? G.away : null;
+    if(x.ev >= min && x.win >= .12) out.push(x); });
+  return out.sort((a,b)=>b.ev-a.ev);
+}
+function allGameLineEdges(){ return Object.keys(SIMS?.games||{}).flatMap(l=>gameLineEdges(l)).sort((a,b)=>b.ev-a.ev); }
+function glRowHTML(x, showGame){
+  const kindTxt = x.kind==="spread" ? (x.alt ? "Alt spread" : "Spread") : x.kind==="total" ? (x.alt ? "Alt total" : "Total") : "Team total";
+  return `<div class="row prow ser glr" style="--c:${TEAM_COLOR[x.team]||"#3A4E70"}"><div class="row-main">
+    <span class="who"><b>${x.team ? teamMark(x.team) : ""}<span class="nmx">${esc(x.txt)}</span></b><span class="l2">${kindTxt}${showGame?` · ${esc(x.label)}`:""}${x.push>=.02?` · push ${Math.round(x.push*100)}%`:""}</span></span>
+    <span class="pk"><b>${am(x.price)}</b><small>${esc(book(x.title))}</small></span>
+    <span class="kv"><b class="${x.win>=.6?"g":"go"}">${Math.round(x.win*100)}%</b><em class="evb">+${(x.ev*100).toFixed(0)}% EV</em></span></div></div>`;
+}
+function ladderHTML(G){
+  if(!G.mp) return "";
+  const fav = G.spread<=0 ? "home" : "away", T = fav==="home" ? G.home : G.away, D = fav==="home" ? G.away : G.home;
+  const by = (side, k) => side==="home" ? pmfGT(G.mp, k-1).gt : 1 - pmfGT(G.mp, -k).gt;   // P(side wins by k or more)
+  const cell = (t, p) => `<div><span>${t}</span><b>${Math.round(p*100)}%</b><small>${am(toAm(1/Math.max(p,.001)))}</small></div>`;
+  const dog = fav==="home" ? "away" : "home";
+  const tl = Math.round(G.total), tots = [-10,-7,-3,0,3,7,10].map(d=>tl+d-.5);
+  return `<div class="ladder"><h4>Score odds <small>sims chance · fair price</small></h4>
+    <div class="lad">${cell(`${T} wins`, by(fav,1))}${[3,4,7,10,14].map(k=>cell(`${T} by ${k}+`, by(fav,k))).join("")}</div>
+    <div class="lad">${cell(`${D} wins`, by(dog,1))}${[3,7].map(k=>cell(`${D} by ${k}+`, by(dog,k))).join("")}${cell(`${D} +3.5`, 1 - by(fav,4))}${cell(`${D} +7.5`, 1 - by(fav,8))}</div>
+    <div class="lad">${tots.map(t=>cell(`Over ${fmt(t)}`, pmfGT(G.tp, t).gt)).join("")}</div>
+    <div class="lad">${[G.away, G.home].flatMap(t=>{ const pm = t===G.home ? G.hp : G.ap; return [17.5,20.5,23.5,27.5].map(x=>cell(`${t} o${fmt(x)}`, pmfGT(pm, x).gt)); }).join("")}</div></div>`;
 }
 const SIMV = {open:null, q:"", res:null};
 function simSuggestions(){
@@ -3942,8 +4111,13 @@ function simSuggestions(){
   if(e[0]){ const x = e[0], ln = x.p.market==="atd" ? "" : ` ${x.side==="over"?Math.ceil(x.b.line)+"+":"under "+fmt(x.b.line)}`; s.push(`${lastName(x.p.name)}${ln} ${x.p.market==="atd"?"TD":MARKETS[x.p.market].short}`); }
   const g = Object.values(SIMS?.games||{})[0]; if(g){ const qb = Object.keys(SIMS.players).map(id=>byId.get(id)).find(pl=>pl && pl.pos==="QB" && pl.team===g.home);
     s.push(qb ? `${lastName(qb.name)} 2+ pass TDs and ${g.home} wins` : `${g.home} wins`); }
+  const G = Object.values(SIMS?.games||{}).sort((a,b)=>Math.abs(b.spread)-Math.abs(a.spread))[0];
+  if(G){ const dog = G.spread<=0 ? G.away : G.home, fav = dog===G.home ? G.away : G.home;
+    const wr = PROPS?.props.filter(p=>p.team===fav && p.market==="rec_yds" && SIMS.players[p.pid]).sort((a,b)=>b.line-a.line)[0];
+    if(wr) s.push(`${lastName(wr.name)} ${Math.ceil(wr.line)}+ rec yds if ${fav} loses`);
+    s.push(`what happens if ${dog} wins`); }
   if(e[1]) s.push(`best ${lastName(e[1].p.name)} props`);
-  return s.slice(0,3);
+  return s.slice(0,5);
 }
 function renderSims(animate){
   const el = $("simsBody");
@@ -3970,7 +4144,8 @@ function renderSims(animate){
     <div class="sgl">${games.map(gameCardHTML).join("")}</div>
     <div class="sec-t"><h2>Best sim edges</h2><small>sim chance vs price</small></div>
     ${edges.length ? `<div class="colh secolh"><span class="cn">Player</span><span class="cp">Price</span><span class="ck">Sims</span></div><div class="list flat">${edges.map(edgeRowHTML).join("")}</div>` : `<div class="empty">No prices beat the sims by 3+ points right now.</div>`}
-    ${howTo("Every game is played 10,000 times as full box scores. Scores are anchored to the Vegas spread and total; each team's pass and run volume bends with the score (trailing teams throw more); targets and carries follow recent shares with injured players removed; yards and touchdowns come from each player's own rates adjusted for the defense. Because every prop comes from the same simulated games, parlays get real joint chances instead of multiplying legs. The sims are being tracked against the main model in Record before they help set scores.", "How the sims work")}
+    ${(()=>{ if(!GL) return ""; const ge = allGameLineEdges().slice(0,8); return `<div class="sec-t"><h2>Game line edges</h2><small>spreads, totals, team totals</small></div>` + (ge.length ? `<div class="colh secolh"><span class="cn">Bet</span><span class="cp">Price</span><span class="ck">Sims</span></div><div class="list flat">${ge.map(x=>glRowHTML(x, true)).join("")}</div>` : `<div class="empty">No game lines beat the sims by 3%+ right now.</div>`); })()}
+    ${howTo("Every game is played 10,000 times as full box scores. Scores are anchored to the Vegas spread and total and scored like real football (touchdowns, field goals, extra points, overtime), so games land on 3s and 7s as often as they really do — that's what makes alt spreads and team totals priceable; each team's pass and run volume bends with the score (trailing teams throw more); targets and carries follow recent shares with injured players removed; yards and touchdowns come from each player's own rates adjusted for the defense. Because every prop comes from the same simulated games, parlays get real joint chances instead of multiplying legs. The sims are being tracked against the main model in Record before they help set scores.", "How the sims work")}
     ${dataStatusHTML()}`;
   if(animate && !RM) el.querySelectorAll(".sg-sc b").forEach(b=>{ b.dataset.v = 0; countTo(b, +b.dataset.n); });
   animAnswer();
@@ -4027,7 +4202,9 @@ function backtestCard(){
     ${missRow("Model", R.brier_model, R.brier_model < R.brier_sims)}${missRow("Sims", R.brier_sims, R.brier_sims <= R.brier_model)}
     <div class="rrow rhead" style="padding-top:12px"><span>Sims' edge</span><span></span><span>Won</span><span>Picks</span><span>ROI</span></div>${edge}` : ""}
     <div class="rrow rhead" style="padding-top:12px"><span>Over hits</span><span></span><span>Sims</span><span>Real</span><span>In range</span></div>${mk}
-    <p class="rnote" style="margin-top:10px">Bar is how often the sims expected the over; the tick is how often it happened. In range should be near 80%. Replays use each week's actual inactives, so real-line results run a little better than live. The Model vs Sims card is the fair test.</p></div>`;
+    ${BKT.games?.by3 ? `<div class="rrow rhead" style="padding-top:12px"><span>Final margins</span><span></span><span>Sims</span><span>Real</span><span>Games</span></div>
+      ${[["By exactly 3", BKT.games.by3], ["By exactly 7", BKT.games.by7]].map(([l,v])=>`<div class="rrow"><span class="rl">${l}</span><span class="rbar"><i class="${Math.abs(v[0]-v[1])<=.015?"g":"y"}" style="width:${(v[0]*400).toFixed(1)}%"></i><b style="left:${(v[1]*400).toFixed(1)}%"></b></span><span class="rp">${(v[0]*100).toFixed(1)}%</span><span class="rwl">${(v[1]*100).toFixed(1)}%</span><span class="ru m">${BKT.games.n}</span></div>`).join("")}` : ""}
+    <p class="rnote" style="margin-top:10px">Bar is how often the sims expected the over; the tick is how often it happened. In range should be near 80%. ${BKT.pregame ? "Replays only use the roster and injury report from before each game, like the live sims." : "Replays use each week's actual inactives, so real-line results run a little better than live."} Two slates of real lines so far, so ROI swings a lot; the Model vs Sims card keeps score going forward.</p></div>`;
 }
 function simVsModelCard(list){
   const g = list.filter(r=>r.sp!=null && (r.res==="win" || r.res==="loss"));

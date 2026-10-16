@@ -1,6 +1,8 @@
-"""Writes context.json for each game in props.json:
+"""build_context.py  v2
+Writes context.json for each game in props.json:
 - kickoff weather (Open-Meteo, free, no key)
-- consensus spread, total and team totals (PropLine free tier, 1 request per run, uses PROPLINE_API_KEY)"""
+- consensus spread, total and team totals (PropLine, uses PROPLINE_API_KEY)
+Also writes game_lines.json: every book's spreads, totals and team totals, main and alternate lines."""
 import json, os, statistics, urllib.request, urllib.parse
 from datetime import datetime, timedelta, timezone
 
@@ -39,40 +41,68 @@ def abbr(name):
     up = name.upper()
     return ALIAS.get(up, up) if len(up) <= 3 else None
 
+def collect(ev, home, away, book_lines):
+    """every book's spreads, totals and team totals (main and alternate) for one game -> book_lines dict"""
+    sp, tot, tth, tta = [], [], [], []
+    for bk in ev.get("bookmakers", []):
+        if bk.get("key") in SKIP_BOOKS: continue
+        title = bk.get("title", bk.get("key"))
+        for m in bk.get("markets", []):
+            if m.get("period"): continue
+            oc = m.get("outcomes", []); alt = m.get("line_type") not in (None, "main")
+            if m.get("key") == "spreads":
+                for o in oc:
+                    t, pt, pr = abbr(o.get("name")), o.get("point"), o.get("price")
+                    if pt is None or t not in (home, away): continue
+                    if t == home and not alt: sp.append(float(pt))
+                    if pr is None: continue
+                    hp = float(pt) if t == home else -float(pt)            # always store the home team's number
+                    row = book_lines["spread"].setdefault((bk["key"], hp), {"book": bk["key"], "title": title, "pt": hp, "alt": alt})
+                    row["home" if t == home else "away"] = int(pr)
+            elif m.get("key") == "totals":
+                t = abbr(m.get("team")); kind = "total" if t is None else "tt_home" if t == home else "tt_away" if t == away else None
+                if not kind: continue
+                for o in oc:
+                    side, pt, pr = str(o.get("name", "")).lower(), o.get("point"), o.get("price")
+                    if side not in ("over", "under") or pt is None: continue
+                    if side == "over" and not alt: (tot if kind == "total" else tth if kind == "tt_home" else tta).append(float(pt))
+                    if pr is None: continue
+                    row = book_lines[kind].setdefault((bk["key"], float(pt)), {"book": bk["key"], "title": title, "pt": float(pt), "alt": alt})
+                    row[side] = int(pr)
+    row = {}
+    if sp: row["spread_home"] = statistics.median(sp)
+    if tot: row["total"] = statistics.median(tot)
+    if tth: row["tt_home"] = statistics.median(tth)
+    if tta: row["tt_away"] = statistics.median(tta)
+    return row
+
 def game_lines():
-    """{(away, home): {spread_home, total, tt_home, tt_away}} from consensus (median) across books."""
+    """({(away, home): {spread_home, total, tt_home, tt_away}} consensus of main lines,
+        {(away, home): every book's main + alternate prices})"""
     key = os.environ.get("PROPLINE_API_KEY")
     if not key:
-        print("no PROPLINE_API_KEY, skipping game lines"); return {}
+        print("no PROPLINE_API_KEY, skipping game lines"); return {}, {}
     from propline import PropLine
-    res = PropLine(key).get_odds("football_nfl", markets=["spreads", "totals"])
+    client = PropLine(key)
+    res = client.get_odds("football_nfl", markets=["spreads", "totals"])
     events = res if isinstance(res, list) else (res.get("events") or res.get("data") or [res])
-    out = {}
+    has_alt = any(m.get("line_type") == "alternate" for ev in events for bk in ev.get("bookmakers", []) for m in bk.get("markets", []))
+    out, prices = {}, {}
     for ev in events:
         home, away = abbr(ev.get("home_team")), abbr(ev.get("away_team"))
         if not home or not away: continue
-        sp, tot, tth, tta = [], [], [], []
-        for bk in ev.get("bookmakers", []):
-            if bk.get("key") in SKIP_BOOKS: continue
-            for m in bk.get("markets", []):
-                if m.get("period"): continue
-                oc = m.get("outcomes", [])
-                if m.get("key") == "spreads":
-                    for o in oc:
-                        if abbr(o.get("name")) == home and o.get("point") is not None: sp.append(float(o["point"]))
-                elif m.get("key") == "totals":
-                    over = next((o for o in oc if str(o.get("name", "")).lower() == "over" and o.get("point") is not None), None)
-                    if not over: continue
-                    t = abbr(m.get("team"))
-                    (tot if t is None else tth if t == home else tta if t == away else []).append(float(over["point"]))
-        row = {}
-        if sp: row["spread_home"] = statistics.median(sp)
-        if tot: row["total"] = statistics.median(tot)
-        if tth: row["tt_home"] = statistics.median(tth)
-        if tta: row["tt_away"] = statistics.median(tta)
+        if not has_alt and ev.get("id"):   # the all-games call skipped alternates: ask for this game on its own
+            try:
+                one = client.get_odds("football_nfl", event_id=ev["id"], markets=["spreads", "totals"])
+                ev = (one[0] if isinstance(one, list) and one else one) or ev
+            except Exception as e:
+                print("alt lines failed for", away, "@", home, e)
+        book_lines = {"spread": {}, "total": {}, "tt_home": {}, "tt_away": {}}
+        row = collect(ev, home, away, book_lines)
         if row: out[(away, home)] = row
-    print("game lines for", len(out), "games")
-    return out
+        prices[(away, home)] = {k: sorted(v.values(), key=lambda r: (r["pt"], r["book"])) for k, v in book_lines.items() if v}
+    print("game lines for", len(out), "games;", sum(len(r) for g in prices.values() for r in g.values()), "book prices")
+    return out, prices
 
 def parse_kick(k):
     d = datetime.fromisoformat(k.replace("Z", "+00:00"))
@@ -102,15 +132,20 @@ def main():
     props = json.load(open("props.json"))
     out = {"updated": datetime.now(timezone.utc).isoformat(timespec="seconds"), "games": {}}
     cache = {}
+    try: prev = json.load(open("context.json")).get("games", {})
+    except Exception: prev = {}
+    WEATHER = {"temp", "wind", "gust", "pop", "precip", "dome"}
     try:
-        lines = game_lines()
+        lines, prices = game_lines()
     except Exception as e:
-        print("game lines failed:", e); lines = {}
+        print("game lines failed:", e); lines, prices = {}, {}
     for g in props.get("games", []):
         label = g.get("label", ""); kick = g.get("kick")
         if " @ " not in label or not kick: continue
         away, home = [ALIAS.get(x.strip(), x.strip()) for x in label.split(" @ ")]
         row = dict(lines.get((away, home), {}))
+        if not row:   # the odds call failed or missed this game: keep last run's spread/total instead of dropping them
+            row = {k: v for k, v in prev.get(label, {}).items() if k not in WEATHER}
         v = VENUES.get(home)
         if v:
             lat, lon, indoors = v
@@ -126,6 +161,16 @@ def main():
         if row: out["games"][label] = row
     json.dump(out, open("context.json", "w"), indent=1)
     print("wrote context.json with", len(out["games"]), "games")
+    # every book's spreads, totals and team totals (incl. alternates) so the app can price them against the sims
+    gl = {}
+    for g in props.get("games", []):
+        label = g.get("label", "")
+        if " @ " not in label: continue
+        away, home = [ALIAS.get(x.strip(), x.strip()) for x in label.split(" @ ")]
+        if prices.get((away, home)): gl[label] = prices[(away, home)]
+    if gl:
+        json.dump({"updated": out["updated"], "games": gl}, open("game_lines.json", "w"), separators=(",", ":"))
+        print("wrote game_lines.json with", len(gl), "games")
 
 if __name__ == "__main__":
     main()

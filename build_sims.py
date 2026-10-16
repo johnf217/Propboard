@@ -1,10 +1,11 @@
 """
-build_sims.py  v3 (tuned by backtest on 2025 wk5 - 2026 wk5, 2026-10-15)
+build_sims.py  v5 (tuned by backtest on 2025 wk5 - 2026 wk5, 2026-10-15)
 Writes sims.json: every game this week played 10,000 times as full box scores.
 
 How one simulated game works (all draws happen together, so props inside a game move together):
-  1. Game script  - final margin and total are drawn around the Vegas spread and total (the market's
-                    read on the game), so scores are anchored to what books already price well.
+  1. Game script  - each team's expected points come from the Vegas spread and total (the market's read
+                    on the game), then the game is scored like football: touchdowns, field goals, extra
+                    points and overtime, so margins land on 3s and 7s and alt lines price correctly.
   2. Volume       - each team's pass attempts and carries come from its recent averages, bent by the
                     script: teams that trail throw more, teams that lead run more, high totals mean more plays.
   3. Who gets it  - targets and carries are split by each player's recent share (recency-weighted and
@@ -35,8 +36,19 @@ CATCH_SHAPE = 3.0                # yards per catch spread (gamma shape per catch
 RUSH_SHAPE = .5                  # yards per carry spread (gamma shape per carry)
 GAME_YPA_SD, GAME_YPC_SD = .22, .25   # whole-offense good/bad day: one shock shared by every receiver / runner
 OTHER_MIN = (0.0, 0.0)           # floor for the "everyone else" bucket (targets, carries)
-PTS_PER_TD = 8.4                 # team points per offensive touchdown
-TD_POW = .75                     # <1 spreads touchdowns more evenly (softens the top guys)
+DRIVES = 10                      # scoring chances per team (drive model gives real 3s and 7s)
+TD_PTS_SHARE, FG_PTS_SHARE = .80, .19   # where points come from (tuned so anytime-TD chances match 2025-26)
+GAME_SHOCK = .10                 # shared pace / weather shock, so both teams' scores move together a little
+# how much more (or less) often real NFL games end on each margin than raw drive-by-drive scoring gives
+# (2015-26 regular season, shrunk 20% toward 1). Whole simulated games are resampled with these weights,
+# so 3s and 7s show up as often as they really do and every player's box score stays consistent.
+MARGIN_W = {0: 1.04, 1: .93, 2: 1.1, 3: 1.8, 4: .85, 5: 1.16, 6: 1.14, 7: 1.5, 8: 1.07, 9: .55, 10: .91, 11: .59,
+            12: .74, 13: .59, 14: 1.14, 15: .73, 16: .86, 17: 1.0, 18: .9, 19: .69, 20: .86}
+OTHER_TD = (0.0, 0.0)            # TD rate per target / carry for the "everyone else" bucket
+OFF_TD = .97                     # share of touchdowns scored by the offense (rest: defense / special teams)
+DEF_STRENGTH = {"rec": 1.0, "rush": 0.0}   # how hard the opponent's yards-allowed record bends yards per catch / carry
+                                 # (backtest: helps receiving, hurts rushing, so rushing ignores it)
+TD_POW = .9                      # <1 spreads touchdowns more evenly (softens the top guys)
 rng = np.random.default_rng()
 
 POS_PRIOR = {  # catch rate, yards/catch, rec TD per target, yards/carry, rush TD per carry
@@ -79,6 +91,7 @@ def simulate(data, props, ctx, inj, raw=None, quiet=False):
         if p.get("team"): by_team[p["team"]].append(p)
     season = max(g["s"] for p in players for g in p["logs"])
     prop_pids = {q.get("pid") for q in props["props"]}
+    pass_prop = {q.get("pid") for q in props["props"] if q.get("market") in ("pass_yds", "pass_td", "pass_att")}  # books only post these for the starter
 
     # ---- defense: yards allowed to each position vs league, shrunk (recent two seasons) ----
     allow = defaultdict(lambda: defaultdict(lambda: defaultdict(float)))   # opp -> pos -> (s,w) -> yds
@@ -93,7 +106,7 @@ def simulate(data, props, ctx, inj, raw=None, quiet=False):
         mine = vals.get(opp, [])
         if not lg or not mine: return 1.0
         r = (sum(mine) / len(mine)) / max(1e-6, sum(lg) / len(lg))
-        return float(np.clip(1 + (r - 1) * len(mine) / (len(mine) + 8), .82, 1.18))
+        return float(np.clip(1 + DEF_STRENGTH[kind] * (r - 1) * len(mine) / (len(mine) + 8), .82, 1.18))
 
     # ---- team baselines from the current roster's game logs ----
     # every team-game keyed by (season, week, opponent): a player's log against X in week w belongs to the team that
@@ -157,10 +170,30 @@ def simulate(data, props, ctx, inj, raw=None, quiet=False):
             if not quiet: print("not enough data for", label)
             continue
 
-        # 1. game script, anchored to the market
-        margin = rng.normal(-spread_home, 13.5, N)              # home minus away
-        tot = np.maximum(rng.normal(total, 9.5, N), 6)
-        pts = {home: np.maximum((tot + margin) / 2, 0), away: np.maximum((tot - margin) / 2, 0)}
+        # 1. game script, anchored to the market: each team's expected points from the spread and total,
+        #    then real football scoring (touchdowns and field goals drive by drive, extra points, overtime)
+        #    so final margins land on 3s and 7s like real games
+        mu = {home: max((total - spread_home) / 2, 3), away: max((total + spread_home) / 2, 3)}
+        shock = np.exp(rng.normal(-GAME_SHOCK ** 2 / 2, GAME_SHOCK, N))
+        pts, tds = {}, {}
+        for t in (home, away):
+            ptd = np.clip(TD_PTS_SHARE * mu[t] / (6.99 * DRIVES) * shock, 0, .6)
+            pfg = np.clip(FG_PTS_SHARE * mu[t] / (3 * DRIVES) * shock, 0, .35)
+            td = rng.binomial(DRIVES, ptd); fg = rng.binomial(DRIVES - td, pfg / np.maximum(1 - ptd, .05))
+            pts[t] = 6 * td + rng.binomial(td, .91) + 2 * rng.binomial(td, .04) + 3 * fg + 2 * (rng.random(N) < .03)
+            tds[t] = td
+        tie = pts[home] == pts[away]
+        if tie.any():   # overtime: field goal most often, sometimes a touchdown, rarely still tied
+            k = int(tie.sum()); hwin = rng.random(k) < np.clip(.5 - spread_home * .03, .15, .85)
+            r = rng.random(k); add = np.where(r < .65, 3, np.where(r < .9, 6, 0))
+            ot_td = (add == 6).astype(int)
+            idx = np.flatnonzero(tie)
+            pts[home][idx] += np.where(hwin, add, 0); pts[away][idx] += np.where(hwin, 0, add)
+            tds[home][idx] += np.where(hwin, ot_td, 0); tds[away][idx] += np.where(hwin, 0, ot_td)
+        w = np.vectorize(lambda m: MARGIN_W.get(abs(int(m)), 1.0))(pts[home] - pts[away])
+        pick = rng.choice(N, N, p=w / w.sum())
+        pts = {t: v[pick].astype(float) for t, v in pts.items()}; tds = {t: v[pick] for t, v in tds.items()}
+        tot = pts[home] + pts[away]
         res = {}
         for team, opp in ((home, away), (away, home)):
             T = TM[team]; tm = pts[team] - pts[opp]
@@ -169,7 +202,7 @@ def simulate(data, props, ctx, inj, raw=None, quiet=False):
             ra = np.maximum(rng.normal(T["ra"] * (1 + .013 * tm) * (total / 44.5) ** .25, 4.5), 8)
             M = [player_model(p, T, opp) for p in T["roster"] if p["logs"]]
             M = [m for m in M if m["avail"] > 0]
-            qbs = sorted([m for m in M if m["pos"] == "QB"], key=lambda m: -m["pa_w"])
+            qbs = sorted([m for m in M if m["pos"] == "QB"], key=lambda m: (m["p"]["id"] not in pass_prop, -m["pa_w"]))
             starter = qbs[0] if qbs else None
             for m in qbs[1:]: m["csh"] = 0                       # backups don't run in the sim
             # 3. availability per sim, then volume shares (with an "everyone else" bucket)
@@ -197,13 +230,13 @@ def simulate(data, props, ctx, inj, raw=None, quiet=False):
             gr = np.exp(rng.normal(-GAME_YPC_SD ** 2 / 2, GAME_YPC_SD, N))[:, None] if GAME_YPC_SD else 1.0
             ry = np.where(ca > 0, rng.gamma(np.maximum(RUSH_SHAPE * ca, 1e-6)) / RUSH_SHAPE, 0) * (ypc + .15) * gr - .15 * ca   # a few stuffs for loss, same average
             # 5. touchdowns from points
-            ntd = rng.poisson(pts[team] / PTS_PER_TD)
+            ntd = rng.binomial(tds[team], OFF_TD)
             npt = rng.binomial(ntd, T["pts"]); nrt = ntd - npt
             def hand_out(n, weights):
                 w = weights + 1e-9; w = w / w.sum(1, keepdims=True)
                 return rng.multinomial(n, w)
-            retd = hand_out(npt, (tg * np.array([m["rtdr"] for m in M] + [.05])) ** TD_POW)
-            rutd = hand_out(nrt, (ca * np.array([m["rutdr"] for m in M] + [.03])) ** TD_POW)
+            retd = hand_out(npt, (tg * np.array([m["rtdr"] for m in M] + [OTHER_TD[0]])) ** TD_POW)
+            rutd = hand_out(nrt, (ca * np.array([m["rutdr"] for m in M] + [OTHER_TD[1]])) ** TD_POW)
             for i, m in enumerate(M):
                 st = {"rec": rec[:, i], "rey": rey[:, i], "ca": ca[:, i], "ry": ry[:, i], "td": retd[:, i] + rutd[:, i],
                       "tgt": tg[:, i], "_av": av[:, i] > 0}
@@ -215,14 +248,19 @@ def simulate(data, props, ctx, inj, raw=None, quiet=False):
                 res[m["p"]["id"]] = (m, st, team)
                 if raw is not None: raw[m["p"]["id"]] = (m["pos"], st, label)
 
-        # outputs: game summary
+        # outputs: game summary, plus exact score odds so the app can price any spread, total or team total
         hm = pts[home] - pts[away]
         hist, _ = np.histogram(np.clip(hm, -35, 35), bins=np.arange(-35, 36, 5))
+        def pmf(v):
+            v = v.astype(int); lo, hi = int(v.min()), int(v.max()); c = np.bincount(v - lo, minlength=hi - lo + 1) / N
+            return {"lo": lo, "p": [round(float(x), 5) for x in c]}
         out["games"][label] = {"home": home, "away": away, "kick": gm.get("kick"), "spread": spread_home, "total": total,
             "hw": round(float((hm > 0).mean() + (hm == 0).mean() / 2), 4), "cover": round(float((hm + spread_home > 0).mean()), 4),
+            "push": round(float((hm + spread_home == 0).mean()), 4),
             "over": round(float((tot > total).mean()), 4), "med": [round(float(np.median(pts[away])), 1), round(float(np.median(pts[home])), 1)],
             "hist": [round(float(x) / N, 4) for x in hist],
-            "pts": [[int(round(a)), int(round(h))] for a, h in zip(pts[away][:NS], pts[home][:NS])]}
+            "mp": pmf(hm), "tp": pmf(tot), "ap": pmf(pts[away]), "hp": pmf(pts[home]),
+            "pts": [[int(a), int(h)] for a, h in zip(pts[away][:NS], pts[home][:NS])]}
         # per-prop chances from all sims, plus stored box scores for players with props
         for q in props["props"]:
             pid = q.get("pid"); k = MKT.get(q.get("market"))
