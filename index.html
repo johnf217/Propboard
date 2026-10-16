@@ -2281,7 +2281,7 @@ async function sharePlay(){
 }
 $("shareBtn").onclick = sharePlay;
 /* ---------- home-screen app: offline support, pull to refresh, update notice ---------- */
-const BUILD = "2026.10.15-5";
+const BUILD = "2026.10.15-6";
 let SAVED_DATA = false, NEW_HTML = null, hiddenAt = 0, lastCheck = 0;
 if("serviceWorker" in navigator && (location.protocol==="https:" || ["localhost","127.0.0.1"].includes(location.hostname))){
   navigator.serviceWorker.register("sw.js").catch(()=>{});
@@ -3333,7 +3333,19 @@ function topPlays(list){
 function oppOf(p){ const [a,h] = (p.game||"").split(" @ "); return p.team===a ? h : p.team===h ? a : null; }
 
 /* ---------- load ---------- */
-async function getJSON(url){ const r = await fetch(url,{cache:"no-cache"}); if(!r.ok) throw 0; if(r.headers.get("X-PB-Saved")) SAVED_DATA = true; return r.json(); }
+// Data comes straight from the GitHub repo, so the workflows' hourly data commits don't need a Netlify deploy
+// (each deploy costs 15 Netlify credits). Netlify's own copy is the backup if GitHub can't be reached.
+const DATA_BASE = "https://raw.githubusercontent.com/johnf217/propboard/main/";
+async function getJSON(url){
+  let r = null;
+  try { r = await fetch(DATA_BASE + url, {cache:"no-cache"}); } catch(e) { r = null; }
+  if(!r || !r.ok || r.headers.get("X-PB-Saved")){
+    try { const loc = await fetch(url, {cache:"no-cache"}); if(loc.ok && !loc.headers.get("X-PB-Saved")) r = loc; else if(!r || !r.ok) r = loc; } catch(e) {}
+  }
+  if(!r || !r.ok) throw 0;
+  if(r.headers.get("X-PB-Saved")) SAVED_DATA = true;
+  return r.json();
+}
 async function load(){
   const [d, pr, cx, us, ij, pk, ln, sc, ad, sm, bt, gl] = await Promise.all([getJSON("player_logs.json").catch(()=>null), getJSON("props.json").catch(()=>null), getJSON("context.json").catch(()=>null), getJSON("usage.json").catch(()=>null), getJSON("injuries.json").catch(()=>null), getJSON("picks.json").catch(()=>null), getJSON("lines.json").catch(()=>null), getJSON("schedule.json").catch(()=>null), getJSON("advanced.json").catch(()=>null), getJSON("sims.json").catch(()=>null), getJSON("backtest.json").catch(()=>null), getJSON("game_lines.json").catch(()=>null)]);
   DATA = d || demoData(); PROPS = pr; CTX = cx; USAGE = us; INJ = ij; PICKS = pk; LINES = ln; SCHED = sc; ADV = ad;

@@ -1,0 +1,5 @@
+# Only deploy when the app itself changes. The GitHub workflows commit data files (props, sims, picks...)
+# many times a day; the app reads those straight from GitHub, so they don't need a Netlify deploy, and
+# skipping them saves 15 credits each. "git diff --quiet" exits 0 (= skip) when none of these files changed.
+[build]
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- index.html sw.js manifest.webmanifest netlify.toml '*.png'"

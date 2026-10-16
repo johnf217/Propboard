@@ -1,6 +1,6 @@
 /* Prop Board offline support.
    - The app itself opens instantly from the saved copy and quietly saves the newest version in the background.
-   - Data files (*.json) always try the network first; with no signal they fall back to the last saved copy,
+   - Data files (*.json, from the GitHub repo or this site) always try the network first; with no signal they fall back to the last saved copy,
      marked with an X-PB-Saved header so the app can say it's offline. */
 const CACHE = "pb-v2";   // bump when icons or the manifest change
 const FONTS = "pb-fonts";   // Archivo + Inter from Google Fonts, kept so the app looks right offline
@@ -18,6 +18,9 @@ self.addEventListener("fetch", e => {
   if (req.method === "GET" && (url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com")) {
     e.respondWith(caches.open(FONTS).then(c => c.match(req).then(hit => hit || fetch(req).then(r => { if (r.ok || r.type === "opaque") c.put(req, r.clone()); return r; }))));
     return;
+  }
+  if (req.method === "GET" && url.hostname === "raw.githubusercontent.com" && url.pathname.endsWith(".json")) {
+    e.respondWith(dataFirst(req, url, e)); return;                      // data files straight from the GitHub repo
   }
   if (req.method !== "GET" || url.origin !== location.origin) return;   // headshots, logos: browser handles them
   if (url.searchParams.has("check")) return;                            // update checks go straight to the network
