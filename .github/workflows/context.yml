@@ -46,4 +46,5 @@ jobs:
           git add picks.json || true
           git add lines.json || true
           git add sims.json || true
+          git add game_lines.json || true
           git diff --staged --quiet || (git commit -m "Update context, injuries, sims and picks" && git pull --rebase && git push)
