@@ -1,0 +1,27 @@
+name: Backtest sims
+
+on:
+  schedule:
+    - cron: "17 14 * * 2"   # Tuesdays ~10am Eastern, after Monday night is in the logs
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install numpy
+      - name: Replay past weeks
+        run: python backtest_sims.py
+      - name: Commit
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add backtest.json || true
+          git diff --staged --quiet || (git commit -m "Update sims backtest" && git pull --rebase && git push)
