@@ -1,15 +1,15 @@
 {
- "updated": "2026-10-16T17:55:15+00:00",
+ "updated": "2026-10-17T00:07:52+00:00",
  "games": {
   "HOU @ JAX": {
    "spread_home": -2.5,
    "total": 42.5,
    "tt_home": 22.5,
    "tt_away": 20.5,
-   "temp": 60,
-   "wind": 14,
-   "gust": 22,
-   "pop": 2,
+   "temp": 58,
+   "wind": 16,
+   "gust": 31,
+   "pop": 5,
    "precip": 0.0
   },
   "CHI @ ATL": {
@@ -24,9 +24,9 @@
    "total": 40.5,
    "tt_home": 18.5,
    "tt_away": 21.5,
-   "temp": 60,
-   "wind": 6,
-   "gust": 6,
+   "temp": 59,
+   "wind": 8,
+   "gust": 12,
    "pop": 0,
    "precip": 0.0
   },
@@ -36,8 +36,8 @@
    "tt_home": 22.5,
    "tt_away": 23.5,
    "temp": 57,
-   "wind": 7,
-   "gust": 17,
+   "wind": 6,
+   "gust": 11,
    "pop": 0,
    "precip": 0.0
   },
@@ -45,21 +45,16 @@
    "spread_home": 2.5,
    "total": 39.5,
    "tt_home": 18.5,
-   "tt_away": 20.5,
-   "temp": 77,
-   "wind": 19,
-   "gust": 20,
-   "pop": 1,
-   "precip": 0.0
+   "tt_away": 20.5
   },
   "CAR @ PHI": {
    "spread_home": 3.5,
    "total": 39.0,
    "tt_home": 17.5,
    "tt_away": 20.5,
-   "temp": 58,
-   "wind": 10,
-   "gust": 18,
+   "temp": 57,
+   "wind": 7,
+   "gust": 13,
    "pop": 0,
    "precip": 0.0
   },
@@ -75,9 +70,9 @@
    "total": 43.5,
    "tt_home": 26.5,
    "tt_away": 17.5,
-   "temp": 51,
-   "wind": 6,
-   "gust": 14,
+   "temp": 52,
+   "wind": 5,
+   "gust": 10,
    "pop": 0,
    "precip": 0.0
   },
@@ -100,8 +95,8 @@
    "total": 41.5,
    "tt_home": 25.0,
    "tt_away": 16.5,
-   "temp": 63,
-   "wind": 10,
+   "temp": 64,
+   "wind": 11,
    "gust": 17,
    "pop": 0,
    "precip": 0.0
@@ -110,12 +105,7 @@
    "spread_home": -1.5,
    "total": 53.0,
    "tt_home": 26.5,
-   "tt_away": 26.5,
-   "temp": 51,
-   "wind": 14,
-   "gust": 33,
-   "pop": 0,
-   "precip": 0.0
+   "tt_away": 26.5
   },
   "WAS @ SF": {
    "spread_home": -7.5,
@@ -133,10 +123,10 @@
    "total": 48.5,
    "tt_home": 24.5,
    "tt_away": 23.5,
-   "temp": 65,
-   "wind": 5,
+   "temp": 64,
+   "wind": 4,
    "gust": 8,
-   "pop": 2,
+   "pop": 1,
    "precip": 0.0
   }
  }
