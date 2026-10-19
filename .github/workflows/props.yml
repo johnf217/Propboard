@@ -1,9 +1,12 @@
 name: Update prop lines
 on:
   schedule:
-    - cron: "0 14 * * *"    # every day, 10 AM Eastern
-    - cron: "0 22 * * *"    # every day, 6 PM Eastern
-    - cron: "15 16 * * 0"   # Sundays, 12:15 PM Eastern (right before 1 PM kickoffs)
+    # Times are UTC. Odd minutes on purpose: GitHub starts runs scheduled on the hour late (1-3 hrs) when it's busy.
+    - cron: "41 13 * * *"   # every day, 9:41 AM Eastern (8:41 after Nov 1)
+    - cron: "47 21 * * *"   # every day, 5:47 PM Eastern (4:47 after Nov 1)
+    - cron: "37 14 * * 0"   # Sundays, 10:37 AM Eastern (9:37 after Nov 1)
+    - cron: "43 15 * * 0"   # Sundays, 11:43 AM Eastern: injury news and inactives (10:43 after Nov 1)
+    - cron: "23 16 * * 0"   # Sundays, 12:23 PM Eastern, last look before 1 PM kickoffs (11:23 after Nov 1)
   workflow_dispatch:
 permissions:
   contents: write

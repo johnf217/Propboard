@@ -1,7 +1,7 @@
 name: Update player logs
 on:
   schedule:
-    - cron: "0 12 * * 2"   # every Tuesday morning
+    - cron: "23 11 * * 2"  # Tuesdays, 7:23 AM Eastern (odd minute so GitHub starts it on time)
   workflow_dispatch:        # adds a manual "Run workflow" button
 permissions:
   contents: write
@@ -19,4 +19,5 @@ jobs:
           git config user.email "github-actions@users.noreply.github.com"
           git add player_logs.json
           git commit -m "Update player logs" || echo "No changes"
+          git pull --rebase
           git push

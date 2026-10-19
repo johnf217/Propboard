@@ -1,8 +1,9 @@
 name: Backtest sims
 
 on:
-  schedule:
-    - cron: "17 14 * * 2"   # Tuesdays ~10am Eastern, after Monday night is in the logs
+  workflow_run:                  # right after Tuesday's player logs update, so Monday night is included
+    workflows: ["Update player logs"]
+    types: [completed]
   workflow_dispatch:
 
 permissions:

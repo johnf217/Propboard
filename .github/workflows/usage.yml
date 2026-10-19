@@ -5,7 +5,7 @@ on:
     workflows: ["Update player logs"]
     types: [completed]
   schedule:
-    - cron: "0 15 * * 2,4"
+    - cron: "29 15 * * 2,4"
   workflow_dispatch:
 
 permissions:
