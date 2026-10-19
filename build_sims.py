@@ -1,5 +1,5 @@
 """
-build_sims.py  v6 (tuned by backtest on 2025 wk5 - 2026 wk5, 2026-10-15)
+build_sims.py  v7 (tuned by backtest on 2025 wk5 - 2026 wk5, 2026-10-15)
 Writes sims.json: every game this week played 10,000 times as full box scores.
 
 How one simulated game works (all draws happen together, so props inside a game move together):
@@ -21,7 +21,7 @@ QB passing yards and completions are the sum of his receivers' catches, so stack
 
 Backtest: python backtest_sims.py (replays past weeks; see that file).
 Reads: player_logs.json, props.json, context.json (spread/total; optional), injuries.json (optional).
-Writes: sims.json  -  per-prop chances from all 10,000 sims, plus 1,000 stored box scores per game
+Writes: sims.json + sims_box.json (the 1,000 stored box scores, loaded only when needed)  -  per-prop chances from all 10,000 sims, plus 1,000 stored box scores per game
                       so the app can price any parlay or "what if" question on the phone.
 Needs: pip install numpy
 """
@@ -80,7 +80,12 @@ def main():
     ctx = (load("context.json", {}) or {}).get("games", {})
     inj = (load("injuries.json", {}) or {}).get("players", {})
     out = simulate(data, props, ctx, inj)
-    json.dump(out, open("sims.json", "w"), separators=(",", ":"))
+    # the stored box scores (most of the size) go in their own file, which the app only loads for the Sims tab,
+    # parlays and questions; sims.json keeps each player's game and team so everything else works without it
+    box = {"updated": out["updated"], "players": {pid: {"s": v["s"]} for pid, v in out["players"].items()}}
+    light = dict(out, players={pid: {"g": v["g"], "t": v["t"]} for pid, v in out["players"].items()})
+    json.dump(light, open("sims.json", "w"), separators=(",", ":"))
+    json.dump(box, open("sims_box.json", "w"), separators=(",", ":"))
     print(f"wrote sims.json: {len(out['games'])} games, {len(out['props'])} props, {len(out['players'])} players")
 
 def score_game(total, spread_home, home, away, n=None):

@@ -1356,6 +1356,32 @@ body.scrolled .top .title.bt{margin-bottom:8px}
 .game-b .prow .row-main,.game-b .gcolh{grid-template-columns:minmax(0,1fr) 62px 52px 56px}
 .game-b .gcolh{padding-left:12px;padding-right:10px}
 .game-b .prow .spark{width:56px;max-width:100%;justify-self:end}
+/* parlay check */
+.pcheck{margin:12px 0 0;padding:12px 14px;border-radius:14px;background:var(--surface2);border:1px solid var(--line)}
+.pch{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.pch b{font:800 15px var(--cond)} .pch small{font-size:12px;color:var(--muted)}
+.pcrow{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px}
+.pcrow label{font-size:13.5px;color:var(--muted)}
+.pcrow input{width:110px;min-height:44px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--text);font:800 17px var(--cond);text-align:center}
+.pcout{margin-top:10px;font-size:13px;line-height:1.45}
+.pcres{display:flex;gap:10px;align-items:flex-start}
+.pcres b{font:900 22px/1 var(--cond);flex:none;min-width:58px}
+.pcres.g b{color:var(--over)} .pcres.r b{color:var(--under)}
+.pcres span{color:var(--muted)}
+/* parlay ideas */
+.ideas{display:flex;flex-direction:column;gap:10px}
+.idea{background:var(--surface);border:1px solid var(--bd);border-radius:18px;padding:12px 14px}
+.idh{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;color:var(--muted);font-weight:600}
+.idh b{font:900 22px var(--cond);color:var(--text)}
+.idea ul{list-style:none;margin:8px 0;padding:0}
+.idea li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--line);font-size:14px}
+.idea li>span{display:flex;align-items:center;gap:6px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.idea li em{font-style:normal;font:700 13px var(--cond);color:var(--muted);white-space:nowrap}
+.idea .tlw,.idea .tlw img{width:20px;height:20px}
+.idf{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12.5px;color:var(--muted)}
+.idf b{color:var(--text)} .idf i{font-style:normal}
+.addc{flex:none;min-height:40px;padding:0 16px;border-radius:999px;background:#fff;color:var(--ink);font-weight:700;font-size:13.5px}
+.ideanote{margin:2px 2px 0;font-size:12.5px;line-height:1.45}
 </style>
 </head>
 <body>
@@ -1840,7 +1866,15 @@ function scriptFx(p, mk){
   return {d, txt:`${role}, ${fmt(r1(tt))} implied pts`};
 }
 /* ---------- pick tracking: grade saved snapshots against box scores ---------- */
-let PICKS = null;
+let PICKS = null, PICKS_STATE = "idle";
+// picks.json (every saved pick, ~0.5 MB and growing all season) loads only when you open Record
+function ensurePicks(){
+  if(PICKS_STATE !== "idle") return PICKS_P || Promise.resolve();
+  PICKS_STATE = "loading";
+  PICKS_P = getJSON("picks.json").then(pk=>{ PICKS = pk; LOADED.picks = !!pk; PICKS_STATE = "done"; }).catch(()=>{ PICKS_STATE = "done"; });
+  return PICKS_P;
+}
+let PICKS_P = null;
 function gradePicks(){
   const byId = new Map(DATA.players.map(x=>[x.id, x])), now = Date.now();
   return Object.values(PICKS?.picks || {}).map(r=>{
@@ -1953,6 +1987,12 @@ function renderMyBets(el){
 }
 function renderRecord(){
   const el = $("recordBody");
+  if(PICKS_STATE !== "done" && REC.scope !== "mine"){
+    $("recordSub").textContent = "";
+    el.innerHTML = scopeSegHTML() + `<div class="empty">Loading your record…</div>`;
+    ensurePicks().then(()=>{ if(S.tab==="record" && $("v-player").hidden) renderRecord(); });
+    return;
+  }
   if(REC.scope==="mine"){ $("recordSub").textContent = `${MYBETS.length} logged`; renderMyBets(el); return; }
   if(!PICKS || !Object.keys(PICKS.picks||{}).length){
     $("recordSub").textContent = "";
@@ -2306,7 +2346,7 @@ async function sharePlay(){
 }
 $("shareBtn").onclick = sharePlay;
 /* ---------- home-screen app: offline support, pull to refresh, update notice ---------- */
-const BUILD = "2026.10.18-1";
+const BUILD = "2026.10.18-2";
 let SAVED_DATA = false, NEW_HTML = null, hiddenAt = 0, lastCheck = 0;
 if("serviceWorker" in navigator && (location.protocol==="https:" || ["localhost","127.0.0.1"].includes(location.hostname))){
   navigator.serviceWorker.register("sw.js").catch(()=>{});
@@ -2584,7 +2624,7 @@ function dataStatusHTML(){
     ["Game lines", LOADED.gl, LOADED.gl ? `${Object.keys(GL.games||{}).length} games, every book's spreads, totals and team totals` : "Missing. Upload the new build_context.py; the Update game context workflow writes it.", GL?.updated],
     ["Sims backtest", LOADED.bt, LOADED.bt ? `${BKT.weeks.length} weeks replayed` : "Missing. Add backtest_sims.py and backtest.yml, then run Backtest sims in Actions.", BKT?.updated],
     ["Sims", LOADED.sims, LOADED.sims ? `${Object.keys(SIMS.games||{}).length} games, ${Object.keys(SIMS.props||{}).length} props simulated` : "Missing. Add build_sims.py to the Update game context workflow.", SIMS?.updated],
-    ["Saved picks", LOADED.picks, LOADED.picks ? `${Object.keys(PICKS.picks||{}).length} picks` : "Starts after the next props update.", PICKS?.updated],
+    ["Saved picks", LOADED.picks || PICKS_STATE !== "done", LOADED.picks ? `${Object.keys(PICKS.picks||{}).length} picks` : PICKS_STATE !== "done" ? "Loads when you open Record." : "Starts after the next props update.", PICKS?.updated],
   ];
   const okN = rows.filter(r=>r[1]).length, crit = !LOADED.logs || !LOADED.props;
   return `<details class="card dstat"${crit?" open":""}><summary><h3>Data status</h3><span class="${okN===rows.length?"g":okN>=rows.length-2?"y":"r"}">${okN} of ${rows.length} feeds OK</span></summary>${rows.map(([n,ok,txt,t])=>`<div class="ds"><i class="${ok?"g":"r"}">${ok?"✓":"!"}</i><span><b>${n}</b><small>${esc(txt)}${ok && ago(t) ? ` · updated ${ago(t)}` : ""}</small></span></div>`).join("")}</details>`;
@@ -3389,7 +3429,7 @@ async function getJSON(url){
   return r.json();
 }
 async function load(){
-  const [d, pr, cx, us, ij, pk, ln, sc, ad, sm, bt, gl] = await Promise.all([getJSON("player_logs.json").catch(()=>null), getJSON("props.json").catch(()=>null), getJSON("context.json").catch(()=>null), getJSON("usage.json").catch(()=>null), getJSON("injuries.json").catch(()=>null), getJSON("picks.json").catch(()=>null), getJSON("lines.json").catch(()=>null), getJSON("schedule.json").catch(()=>null), getJSON("advanced.json").catch(()=>null), getJSON("sims.json").catch(()=>null), getJSON("backtest.json").catch(()=>null), getJSON("game_lines.json").catch(()=>null)]);
+  const [d, pr, cx, us, ij, pk, ln, sc, ad, sm, bt, gl] = await Promise.all([getJSON("player_logs.json").catch(()=>null), getJSON("props.json").catch(()=>null), getJSON("context.json").catch(()=>null), getJSON("usage.json").catch(()=>null), getJSON("injuries.json").catch(()=>null), Promise.resolve(null), getJSON("lines.json").catch(()=>null), getJSON("schedule.json").catch(()=>null), getJSON("advanced.json").catch(()=>null), getJSON("sims.json").catch(()=>null), getJSON("backtest.json").catch(()=>null), getJSON("game_lines.json").catch(()=>null)]);
   DATA = d || demoData(); PROPS = pr; CTX = cx; USAGE = us; INJ = ij; PICKS = pk; LINES = ln; SCHED = sc; ADV = ad;
   SIMS = sm; BKT = bt; GL = decodeGL(gl); LOADED = {gl:!!gl, bt:!!bt, sims:!!sm, logs:!!d, props:!!pr, ctx:!!cx, usage:!!us, inj:!!ij, picks:!!pk, lines:!!ln, sched:!!sc, adv:!!ad};
   DATA.players.forEach(p=>{ p.logs.sort((a,b)=>a.s-b.s||a.w-b.w); byId.set(p.id,p); });
@@ -3738,6 +3778,7 @@ function updateSlipBadge(bump){
 }
 function toggleLeg(key, side, line, price, title){
   const p = propByKey.get(key); if(!p) return;
+  PC_ODDS = "";                                      // a different parlay needs the book's new price
   const i = SLIP.findIndex(l=>l.key===key);
   if(i>=0 && SLIP[i].side===side && (line==null || SLIP[i].line===line)){ SLIP.splice(i,1); toast("Removed from slip"); }
   else {
@@ -3760,8 +3801,9 @@ function legsTogether(){
   return {hits, n:keys.length};
 }
 function renderSlip(){
+  if(SIMS && BOX === "idle") ensureBox().then(()=>{ if(S.tab==="slip" && $("v-player").hidden) renderSlip(); });
   $("slipSub").textContent = SLIP.length ? `${SLIP.length} leg${SLIP.length>1?"s":""}` : "";
-  if(!SLIP.length){ $("slipBody").innerHTML = `<div class="empty">Your slip is empty.<br>Tap the O/U button on any prop to add it.</div>`; return; }
+  if(!SLIP.length){ $("slipBody").innerHTML = `<div class="empty">Your slip is empty.<br>Tap the O/U button on any prop to add it.</div>` + ideasHTML(); return; }
   const d = SLIP.reduce((a,l)=>a*dec(l.price),1), odds = toAm(d), tog = legsTogether();
   $("slipBody").innerHTML = `<div class="list" style="margin-top:12px">` + SLIP.map((l,i)=>{
     const p = propByKey.get(l.key);
@@ -3778,6 +3820,7 @@ function renderSlip(){
       <div class="rowx"><span>To win</span><b id="toWin" class="g">$${(stake*(d-1)).toFixed(2)}</b></div>
       ${tog ? `<div class="rowx"><span>All legs hit together</span><b class="${tog.hits/tog.n>=.5?"g":tog.hits?"y":"r"}">${tog.hits} of last ${tog.n} shared games</b></div>` : ""}
       ${slipSimRow(d)}
+      ${parlayCheckHTML()}
       <div class="logbet">
         ${SLIP.length>1 ? `<div class="mini" id="logMode"><button data-lm="parlay" aria-pressed="${logMode==="parlay"}">As a parlay</button><button data-lm="singles" aria-pressed="${logMode==="singles"}">Each as a single</button></div>` : ""}
         ${SLIP.length===1 || logMode==="parlay" ? `<div class="rowx"><span>Odds you got</span><input id="gotOdds" inputmode="text" value="${am(odds)}" aria-label="Odds you got"></div>` : ""}
@@ -3789,8 +3832,11 @@ function renderSlip(){
     <p class="note">Prices are the best found at any book, so a real parlay at one sportsbook may pay a little less. Same-game legs are often correlated, which books price differently. This is a research tool, so bet only what you'd be fine losing.</p>
     <button class="clear" id="clearSlip">Clear slip</button>`;
   $("stake").oninput = e => { const v = parseFloat(e.target.value); if(!isNaN(v)&&v>=0){ stake=v; store.set("pb2_stake",v); $("toWin").textContent = "$"+(v*(d-1)).toFixed(2); } };
-  $("clearSlip").onclick = () => { SLIP = []; updateSlipBadge(false); renderSlip(); };
+  $("clearSlip").onclick = () => { SLIP = []; PC_ODDS = ""; updateSlipBadge(false); renderSlip(); };
   if($("logMode")) $("logMode").onclick = e => { const b = e.target.closest("[data-lm]"); if(!b) return; logMode = b.dataset.lm; renderSlip(); };
+  if($("bookOdds")){ const upd = () => { $("pcOut").innerHTML = parlayCheckOut($("bookOdds").value);
+      const v = parseOdds($("bookOdds").value); if(v!=null && $("gotOdds")) $("gotOdds").value = am(v); PC_ODDS = $("bookOdds").value; };
+    $("bookOdds").oninput = upd; if(PC_ODDS) upd(); }
   $("logBet").onclick = () => {
     const got = $("gotOdds") ? parseOdds($("gotOdds").value) : null;
     if($("gotOdds") && got==null){ toast("Enter odds like -110 or +250"); $("gotOdds").focus(); return; }
@@ -3843,10 +3889,24 @@ const money = (v, short) => { const a = Math.abs(v), c = Math.round(a*100)/100;
 /* ---------- sims: 10,000 simulated games per matchup (built by build_sims.py) ---------- */
 let SIMS = null;
 const SIMC = new Map();
+// The 1,000 stored box scores per game live in sims_box.json (~0.5 MB) and load only when something needs them:
+// the Sims tab, the slip, or a question. Everything else runs off sims.json.
+let BOX = "idle", BOX_P = null;
+function ensureBox(){
+  if(BOX !== "idle") return BOX_P || Promise.resolve();
+  if(!SIMS?.players) return Promise.resolve();
+  if(Object.values(SIMS.players).some(v=>v.s)){ BOX = "done"; return Promise.resolve(); }   // older single-file sims.json
+  BOX = "loading";
+  BOX_P = getJSON("sims_box.json").then(b=>{
+    for(const [pid, v] of Object.entries(b.players||{})) if(SIMS.players[pid]) SIMS.players[pid].s = v.s;
+    SIMC.clear(); BOX = "done";
+  }).catch(()=>{ BOX = "none"; });
+  return BOX_P;
+}
 const SIM_KEY = {pass_yds:"py", pass_td:"ptd", pass_att:"pa", rush_yds:"ry", carries:"ca", rec:"rec", rec_yds:"rey", rr_yds:"rr", atd:"td"};
 const walkAway = p => toAm(1/Math.max(.02, Math.min(.98, p - .02)));     // worst price still worth taking (2-pt cushion)
 function simArr(pid, k){
-  const pl = SIMS?.players?.[pid]; if(!pl) return null;
+  const pl = SIMS?.players?.[pid]; if(!pl || !pl.s) return null;     // box scores not loaded (yet): callers fall back
   const ck = pid+"|"+k; if(SIMC.has(ck)) return SIMC.get(ck);
   let a = null;
   if(k==="rr"){ const r = simArr(pid,"ry"), c = simArr(pid,"rey"); if(r && c) a = r.map((v,i)=>v+c[i]); }
@@ -3890,20 +3950,94 @@ function jointChance(legs){   // legs: [{game, mask, p}] -> chance all hit, and 
     ls.forEach(l=>indep *= l.p); });
   return {joint, indep};
 }
+// the books' own read of a leg: no-vig consensus at the main line, else the price minus a typical 4.5% hold
+function mktSide(p, side, line, price){
+  if(p.fair!=null && line===p.line) return side==="over" ? p.fair : 1-p.fair;
+  return price!=null ? Math.min(.97, impl(price)/1.045) : null;
+}
+// For betting a parlay, lean on both: each leg's chance = half sims, half market; the sims add how the legs move together.
+function blendedJoint(legs){
+  const {joint, indep} = jointChance(legs), corr = indep > 0 ? joint/indep : 1;
+  const legP = legs.map(l=> l.mk!=null ? (l.p + l.mk)/2 : l.p), prod = legP.reduce((a,b)=>a*b,1);
+  return {joint: Math.min(.97, prod*corr), raw: joint, corr};
+}
 function slipLegs(){
   return SLIP.map(l=>{ const p = propByKey.get(l.key); if(!p?.pid) return null;
     const sp = SIMS?.players?.[p.pid]; if(!sp) return null;
     const L = {pid:p.pid, market:p.market, side:l.side, line: p.market==="atd" ? .5 : l.line};
     const mask = legMask(L); if(!mask) return null;
     const o = simOver(p.pid, p.market, L.line);
-    return {game: sp.g, mask, p: o==null ? mask.reduce((a,b)=>a+b,0)/mask.length : l.side==="over" ? o : 1-o};
+    return {game: sp.g, mask, p: o==null ? mask.reduce((a,b)=>a+b,0)/mask.length : l.side==="over" ? o : 1-o, mk: mktSide(p, l.side, L.line, l.price)};
   });
+}
+
+
+/* parlay ideas: same-game combos the sims like, built only from legs priced at your books */
+let IDEAS = [];
+function parlayIdeas(){
+  if(BOX !== "done" || !SIMS || !PROPS) return [];
+  const now = Date.now(), byG = new Map();
+  for(const x of simEdges()){
+    if(!x.p.kick || Date.parse(x.p.kick) <= now || !MY_BOOKS.has(x.b.title)) continue;
+    const L = {pid:x.p.pid, market:x.p.market, side:x.side, line: x.p.market==="atd" ? .5 : x.b.line}, mask = legMask(L); if(!mask) continue;
+    const mk = mktSide(x.p, x.side, L.line, x.b.price);
+    if(mk!=null && Math.abs(x.sp - mk) > .15) continue;      // a 15+ point gap usually means news the sims missed, not value
+    if(!byG.has(x.p.game)) byG.set(x.p.game, []);
+    const g = byG.get(x.p.game); if(g.some(y=>y.x.p.pid===x.p.pid) || g.length >= 6) continue;      // one leg per player, best 6 per game
+    g.push({x, L, mask, p:x.sp, mk, game:x.p.game});
+  }
+  const out = [];
+  byG.forEach(legs=>{
+    const combos = [];
+    for(let i=0;i<legs.length;i++) for(let j=i+1;j<legs.length;j++){ combos.push([legs[i],legs[j]]);
+      for(let k=j+1;k<legs.length;k++) combos.push([legs[i],legs[j],legs[k]]); }
+    const rated = combos.map(c=>{ const {joint, corr} = blendedJoint(c), d = c.reduce((a,l)=>a*dec(l.x.b.price),1);
+      return {legs:c, joint, corr, d, ev: joint*d - 1, game:c[0].game}; }).filter(r=>r.joint >= .12 && r.ev > .05).sort((a,b)=>b.ev-a.ev);
+    out.push(...rated.slice(0,2));
+  });
+  return out.sort((a,b)=>b.ev-a.ev).slice(0,5);
+}
+function ideasHTML(){
+  if(!SIMS) return "";
+  if(BOX !== "done") return BOX === "none" ? "" : `<div class="ideas"><p class="m">Loading parlay ideas from the sims…</p></div>`;
+  IDEAS = parlayIdeas(); if(!IDEAS.length) return "";
+  const legTxt = l => { const p = l.x.p, sd = p.market==="atd" ? "TD" : (l.x.side==="over" ? "O" : "U") + " " + fmt(l.x.b.line) + " " + MARKETS[p.market].short;
+    return `<li><span>${teamMark(p.team)}<b>${esc(shortName(p.name))}</b> ${esc(sd)}</span><em>${am(l.x.b.price)} ${esc(book(l.x.b.title))}</em></li>`; };
+  return `<div class="sec-t"><h2>Parlay ideas</h2><small>from the sims, at your books</small></div><div class="ideas">${IDEAS.map((r,i)=>`<div class="idea">
+      <div class="idh"><span>${esc(r.game)} · ${r.legs.length} legs</span><b>${(r.joint*100).toFixed(1)}%</b></div>
+      <ul>${r.legs.map(legTxt).join("")}</ul>
+      <div class="idf"><span>Fair <b>${am(toAm(1/r.joint))}</b> · legs multiplied <b>${am(toAm(r.d))}</b>${r.corr > 1.06 ? ` · <i class="g">legs help each other</i>` : ""}</span><button class="addc press" data-idea="${i}">Add all</button></div>
+    </div>`).join("")}<p class="m ideanote">Each leg's chance is half sims, half the books' consensus; the sims add how the legs move together. Books price same-game parlays their own way, usually below the legs multiplied, so add one and type the book's price in the slip.</p></div>`;
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-idea]"); if(!b) return;
+  const r = IDEAS[+b.dataset.idea]; if(!r) return;
+  r.legs.forEach(l=>{ const x = l.x; if(!inSlip(x.p.key, x.side)) toggleLeg(x.p.key, x.side, x.b.line, x.b.price, x.b.title); });
+  renderSlip();
+});
+/* parlay check: the book's own price for this parlay vs the sims' fair price.
+   Books price same-game parlays their own way (not leg odds multiplied), so this is where the sims can find value. */
+let PC_ODDS = "";
+function parlayCheckHTML(){
+  if(!SIMS || SLIP.length < 2) return "";
+  const legs = slipLegs(); if(legs.some(x=>!x)) return BOX === "done" || BOX === "none" ? "" : `<div class="pcheck"><p class="m">Loading the sims for this parlay…</p></div>`;
+  const {joint} = blendedJoint(legs), same = new Set(legs.map(l=>l.game)).size === 1;
+  return `<div class="pcheck"><div class="pch"><b>Check the book's price</b><small>${same ? "same-game parlay" : "parlay"} · fair ${am(toAm(1/Math.max(joint,.001)))}</small></div>
+    <div class="pcrow"><label for="bookOdds">${esc(book([...MY_BOOKS][0]||"Book"))} or ${esc(book([...MY_BOOKS][1]||"another book"))} pays</label><input id="bookOdds" inputmode="text" placeholder="+450" value="${esc(PC_ODDS)}" autocomplete="off" aria-label="The book's odds for this parlay"></div>
+    <div id="pcOut" class="pcout">${PC_ODDS ? "" : `<span class="m">Type the odds the book shows for this exact parlay.</span>`}</div></div>`;
+}
+function parlayCheckOut(txt){
+  const v = parseOdds(txt); if(v==null) return `<span class="m">Type the odds the book shows for this exact parlay, like +450.</span>`;
+  const legs = slipLegs(); if(legs.some(x=>!x)) return "";
+  const {joint} = blendedJoint(legs), ev = joint*dec(v) - 1, fair = toAm(1/Math.max(joint,.001)), legsOnly = SLIP.reduce((a,l)=>a*dec(l.price),1);
+  const shade = dec(v) < legsOnly - .05 ? ` The book pays less than the legs multiplied (${am(toAm(legsOnly))}), which is normal for legs that go together.` : "";
+  return `<div class="pcres ${ev>0?"g":"r"}"><b>${ev>0?"+":""}${(ev*100).toFixed(0)}%</b><span>${ev>0 ? `Value: this hits about ${(joint*100).toFixed(1)}% of the time (sims and market blended), and ${am(v)} only needs ${(100/dec(v)).toFixed(1)}%.` : `No value: ${am(v)} needs ${(100/dec(v)).toFixed(1)}%, and this hits about ${(joint*100).toFixed(1)}% (sims and market blended).`} Fair price ${am(fair)}; to leave room for error, look for ${am(walkAway(joint))} or better.${shade}</span></div>`;
 }
 function slipSimRow(d){
   if(!SIMS || !SLIP.length) return "";
   const legs = slipLegs(); if(legs.some(x=>!x)) return "";
-  const {joint} = jointChance(legs), ev = joint*d - 1;
-  return `<div class="rowx simrow"><span>Sims chance</span><b class="${ev>0?"g":"r"}">${(joint*100).toFixed(1)}% <small>fair ${am(toAm(1/Math.max(joint,.001)))}</small></b></div>`;
+  const {joint} = blendedJoint(legs), ev = joint*d - 1;
+  return `<div class="rowx simrow"><span>Fair chance <small class="m">sims + market</small></span><b class="${ev>0?"g":"r"}">${(joint*100).toFixed(1)}% <small>fair ${am(toAm(1/Math.max(joint,.001)))}</small></b></div>`;
 }
 
 /* ask the sims: plain-English questions -> masks over the stored games */
@@ -4218,6 +4352,7 @@ function simSuggestions(){
 }
 function renderSims(animate){
   const el = $("simsBody");
+  if(SIMS && BOX === "idle") ensureBox().then(()=>{ if(S.tab==="sims" && $("v-player").hidden && !SIMV.busy) renderSims(false); });
   if(!SIMS || !Object.keys(SIMS.games||{}).length){
     $("simsSub").textContent = "";
     el.innerHTML = `<div class="empty"><b>No sims yet.</b><br>Add build_sims.py to the Update game context workflow. Once it runs, every game this week is played 10,000 times and shows up here.</div>` + dataStatusHTML();
@@ -4248,7 +4383,7 @@ function renderSims(animate){
   animAnswer();
 }
 function slipSimCard(){
-  const legs = slipLegs(), {joint, indep} = jointChance(legs), d = SLIP.reduce((a,l)=>a*dec(l.price),1), ev = joint*d-1;
+  const legs = slipLegs(), {indep} = jointChance(legs), {joint} = blendedJoint(legs), d = SLIP.reduce((a,l)=>a*dec(l.price),1), ev = joint*d-1;
   return `<div class="card simslip"><div class="ssh"><h3>Your slip, simulated</h3><small>${SLIP.length} leg${SLIP.length>1?"s":""} · ${am(toAm(d))}</small></div>
     <div class="ssb"><div><small>Sims chance</small><b>${(joint*100).toFixed(1)}%</b></div><div><small>If unrelated</small><b class="m">${(indep*100).toFixed(1)}%</b></div><div><small>Value at ${am(toAm(d))}</small><b class="${ev>0?"g":"r"}">${ev>0?"+":""}${(ev*100).toFixed(0)}%</b></div></div></div>`;
 }
@@ -4261,7 +4396,12 @@ function animAnswer(){
   requestAnimationFrame(step);
 }
 function runAsk(q){
-  SIMV.q = q; SIMV.res = askSims(q);
+  SIMV.q = q;
+  if(BOX !== "done" && BOX !== "none"){
+    $("askOut").innerHTML = `<div class="ans"><div class="ans-h"><span class="live"></span>Loading the simulated games…</div></div>`;
+    SIMV.busy = true; ensureBox().then(()=>{ SIMV.busy = false; runAsk(q); }); return;
+  }
+  SIMV.res = askSims(q);
   $("askOut").innerHTML = SIMV.res ? answerHTML(SIMV.res, q) : "";
   animAnswer();
   if(SIMV.res) $("askOut").scrollIntoView({block:"nearest", behavior: RM ? "auto" : "smooth"});
