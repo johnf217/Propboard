@@ -43,7 +43,7 @@ function withTimeout(p, ms) { return Promise.race([p, new Promise((_, rej) => se
 async function dataFirst(req, url, e) {
   const cache = await caches.open(CACHE), key = url.pathname;
   try {
-    const r = await withTimeout(fetch(req, {cache: "no-store"}), 8000);
+    const r = await withTimeout(fetch(req, {cache: "no-cache"}), 8000);   // revalidate: an unchanged file comes back as a quick 304, not a full download
     if (r.ok) { e.waitUntil(cache.put(key, r.clone())); return r; }
     if (r.status === 404) return r;                                      // file doesn't exist yet: not an offline case
     throw new Error("bad status");

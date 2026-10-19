@@ -1323,10 +1323,10 @@ body.scrolled .top .title.bt{margin-bottom:8px}
 .glstrip h4{margin:6px 14px 4px;font:800 14px var(--cond)}
 .ans-c{margin:6px 0 10px;font-size:13.5px;color:var(--muted);line-height:1.45}
 .mov{display:flex;flex-direction:column}
-.mv{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
-.mv>span:first-child{display:flex;align-items:center;gap:7px;min-width:0;font-size:14px}
-.mv>span:first-child small{color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mv .tlw,.mv .tlw img{width:20px;height:20px}
+.mvr{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.mvr>span:first-child{display:flex;align-items:center;gap:7px;min-width:0;font-size:14px}
+.mvr>span:first-child small{color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mvr .tlw,.mvr .tlw img{width:20px;height:20px}
 .mvp{display:flex;align-items:center;gap:6px;font:800 15px var(--cond);white-space:nowrap}
 .mvp s{color:var(--muted);text-decoration:none;font-weight:600}
 .mvp i{font-style:normal;font-size:10px}
@@ -1335,6 +1335,27 @@ body.scrolled .top .title.bt{margin-bottom:8px}
 .mvn b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mvn small{display:block}
 .ans-legs b small{display:block;font:500 11.5px var(--body);color:var(--muted);margin-top:3px;text-align:right;white-space:nowrap}
+/* my books */
+.bkchips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+.bkchips .chip{height:40px;padding:0 14px}
+.bkchips .chip.on{background:#fff;color:var(--ink);border-color:#fff}
+.books .br.other{opacity:.55}
+.books .br .mytag{font-style:normal;font:700 10px var(--body);letter-spacing:.04em;text-transform:uppercase;color:var(--over);margin-left:4px;vertical-align:1px}
+.prow .pk b{white-space:nowrap}
+.prow .pk small{white-space:nowrap}
+.prow .pk small .mv{margin-left:4px;font-size:10px;vertical-align:1px}
+/* 44px tap targets on the player page */
+#backBtn{min-height:44px;padding:0 12px 0 0}
+.pacts button.star{min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+.stepper input{min-height:44px}
+.books .px{min-height:40px;display:flex;align-items:center;justify-content:center}
+.books .ln{min-height:36px;display:flex;align-items:center;justify-content:center}
+.rsmall{margin:0;padding:10px 16px 14px;font-size:12.5px;line-height:1.45;color:var(--muted);border-top:1px solid var(--line)}
+/* Games: more room for names inside the game boxes */
+.game-b .prow{padding:12px 10px 12px 12px}
+.game-b .prow .row-main,.game-b .gcolh{grid-template-columns:minmax(0,1fr) 62px 52px 56px}
+.game-b .gcolh{padding-left:12px;padding-right:10px}
+.game-b .prow .spark{width:56px;max-width:100%;justify-self:end}
 </style>
 </head>
 <body>
@@ -1488,6 +1509,8 @@ body.scrolled .top .title.bt{margin-bottom:8px}
   </div>
   <p class="fl">Side</p>
   <div class="mini fview" id="sideSeg" role="group" aria-label="Side"><button data-side="">Both</button><button data-side="over">Overs only</button><button data-side="under">Unders only</button></div>
+  <p class="fl">My books <span class="flh">picks, prices and EV use these</span></p>
+  <div class="bkchips" id="bookChips" role="group" aria-label="My books"></div>
   <p class="fl">Show only <span class="flh">stack as many as you like</span></p>
   <div id="qChips" role="group" aria-label="Filters"></div>
   <div class="fbtns"><button class="linkbtn" id="fClear" hidden>Clear all</button></div>
@@ -1957,7 +1980,7 @@ function renderRecord(){
         <div><small>Hit rate</small><b class="${S1.hit>=.524?"g":S1.hit<.476?"r":""}">${Math.round(S1.hit*100)}%</b></div>
         <div><small>Profit</small><b class="${S1.u>=0?"g":"r"}">${uTxt(S1.u)}</b></div>
         <div><small>ROI</small><b class="${S1.roi>=0?"g":"r"}">${S1.roi>=0?"+":"−"}${Math.abs(Math.round(S1.roi*100))}%</b></div></div>
-      <div class="rlast"><span>Last ${last.length}</span><span class="dots">${last.map(r=>`<i class="${r.res==="win"?"g":r.res==="loss"?"r":"m"}"></i>`).join("")}</span><span class="be">Break-even 52.4%</span></div>`
+      <div class="rlast"><span>Last ${last.length}</span><span class="dots">${last.map(r=>`<i class="${r.res==="win"?"g":r.res==="loss"?"r":"m"}"></i>`).join("")}</span><span class="be">Break-even 52.4%</span></div>${S1.n < 100 ? `<p class="rsmall">Small sample: ${S1.n} graded pick${S1.n===1?"":"s"}. Results swing a lot this early, so trust the hit rate and ROI after 100 or more.</p>` : ""}`
       : `<p class="rnote" style="margin:4px 16px 16px">Nothing graded yet. ${pending.length} waiting on results.</p>`}
     </div>
     ${pending.length ? `<div class="sec-t"><h2>Upcoming</h2><small>${pending.length} pending</small></div>${list(pending, nP, "pend")}` : ""}
@@ -2162,7 +2185,9 @@ function renderStale(){
   const now = Date.now(), msgs = [];
   const pa = PROPS?.updated ? now - Date.parse(PROPS.updated) : null;
   const ca = CTX?.updated ? now - Date.parse(CTX.updated) : null;
-  if(pa!=null && pa > 18*36e5) msgs.push(`Lines are ${ageTxt(pa)} old`);
+  // on a game day (a kickoff in the next 14 hours) lines go stale fast: warn after 6 hours instead of 18
+  const gameDay = (PROPS?.games||[]).some(g=>{ const t = Date.parse(g.kick) - now; return t > 0 && t < 14*36e5; });
+  if(pa!=null && pa > (gameDay ? 6 : 18)*36e5) msgs.push(`Lines are ${ageTxt(pa)} old`);
   if(ca!=null && ca > 30*36e5) msgs.push(`weather, game lines and injuries are ${ageTxt(ca)} old`);
   const el = $("stale");
   el.hidden = !msgs.length;
@@ -2281,7 +2306,7 @@ async function sharePlay(){
 }
 $("shareBtn").onclick = sharePlay;
 /* ---------- home-screen app: offline support, pull to refresh, update notice ---------- */
-const BUILD = "2026.10.15-6";
+const BUILD = "2026.10.18-1";
 let SAVED_DATA = false, NEW_HTML = null, hiddenAt = 0, lastCheck = 0;
 if("serviceWorker" in navigator && (location.protocol==="https:" || ["localhost","127.0.0.1"].includes(location.hostname))){
   navigator.serviceWorker.register("sw.js").catch(()=>{});
@@ -2483,6 +2508,20 @@ function slipCorrHTML(sc, d){
 }
 /* ---------- +EV board: book prices vs a sharp-weighted, no-vig fair line ---------- */
 const PICKEM_RE = /prizepicks|underdog|sleeper|dabble|\bbetr\b|parlayplay/i;
+// Books shown in lists (the big US sportsbooks). Picks, best price and EV use only MY_BOOKS.
+// Every book in the feed still counts toward the fair price: more books = a sharper read of the market.
+const MAJOR_BOOKS = ["FanDuel","DraftKings","BetMGM","Caesars","Fanatics","BetRivers","ESPN BET","theScore Bet","Hard Rock Bet","bet365"];
+let MY_BOOKS = new Set((()=>{ const v = store.get("pb2_books"); return Array.isArray(v) && v.length ? v : ["FanDuel","DraftKings"]; })());
+function applyBooks(p){
+  if(!p.allBooks) p.allBooks = p.books || [];
+  p.books = p.allBooks.filter(b=>MAJOR_BOOKS.includes(b.title));
+  const mine = p.books.filter(b=>MY_BOOKS.has(b.title));
+  const best = side => { const c = mine.filter(b=>b[side]!=null); if(!c.length) return null;
+    c.sort((a,b)=> side==="over" ? (a.line-b.line || dec(b.over)-dec(a.over)) : (b.line-a.line || dec(b.under)-dec(a.under)));
+    return {book:c[0].book, title:c[0].title, line:c[0].line, price:c[0][side]}; };
+  p.bestOver = best("over"); p.bestUnder = best("under");
+  p.notMine = !p.bestOver && !p.bestUnder;
+}
 function bookWeight(t){
   const s = (t||"").toLowerCase();
   if(/pinnacle|circa/.test(s)) return 3;
@@ -2737,12 +2776,12 @@ function bookTrend(p, title){
 function buildEV(){
   EVS = []; EV_BEST = new Map();
   for(const p of PROPS?.props || []){
-    const books = (p.books || []).filter(b=>b.title && !PICKEM_RE.test(b.title));
+    const books = (p.allBooks || p.books || []).filter(b=>b.title && !PICKEM_RE.test(b.title));
     const byLine = new Map(); books.forEach(b=>{ if(!byLine.has(b.line)) byLine.set(b.line, []); byLine.get(b.line).push(b); });
     for(const [line, bs] of byLine){
       const two = bs.filter(b=>b.over!=null && b.under!=null);
       for(const b of bs) for(const side of ["over","under"]){
-        const price = b[side]; if(price==null) continue;
+        const price = b[side]; if(price==null || !MY_BOOKS.has(b.title)) continue;
         const others = two.filter(x=>x!==b); if(others.length < 2) continue;
         let w = 0, s = 0, hs = 0;
         others.forEach(x=>{ const k = bookWeight(x.title), f = fairOver(x.over, x.under); w += k; s += k*(side==="over" ? f.lo : 1-f.hi); hs += holdOf(x.over, x.under); });
@@ -2945,6 +2984,7 @@ function marketMean(pj, line, fairOverP){
 let BT = null;
 function backtest(){
   if(BT) return BT;
+  if(!DATA) return {};
   const MK = {WR:["rec_yds","rec"], TE:["rec_yds","rec"], RB:["rush_yds","carries"], QB:["pass_yds","pass_att"]}, res = {};
   for(const pl of DATA.players){
     const mks = MK[pl.pos]; if(!mks) continue;
@@ -3175,7 +3215,7 @@ function renderLadder(prop){
   const last = P.pl.logs.slice(-10).map(m.get);
   const rows = lines.map(l=>{ const e = altEstimate(l, prop); if(!e) return "";
     const hit = last.filter(v=>v>l).length;
-    const po = e.po, pu = 1-po, at = (prop.books||[]).filter(b=>b.line===l && !PICKEM_RE.test(b.title||""));
+    const po = e.po, pu = 1-po, at = (prop.books||[]).filter(b=>b.line===l && MY_BOOKS.has(b.title));
     const bo = at.filter(b=>b.over!=null).sort((a,b)=>dec(b.over)-dec(a.over))[0], bu = at.filter(b=>b.under!=null).sort((a,b)=>dec(b.under)-dec(a.under))[0];
     const evO = bo ? po*dec(bo.over)-1 : null, evU = bu ? pu*dec(bu.under)-1 : null;
     return `<button class="lr${l===P.line?" on":""}${l===main?" main":""}" data-ll="${l}"><span class="ll">${fmt(l)}<small>${l===main?"main · ":""}<i class="${hit/last.length>=.6?"g":hit/last.length<=.4?"r":""}">${hit}/${last.length}</i></small></span>
@@ -3320,7 +3360,8 @@ function whyTags(p, n=3){
   return good.map(f=>`<span class="tag g">${esc(f.txt)}</span>`).join("") + bad.map(f=>`<span class="tag r">${esc(f.txt)}</span>`).join("");
 }
 function topPlays(list){
-  const pool = list.filter(p=>p.ok).sort((a,b)=>b.score-a.score), seen = new Set(), gc = {};
+  const now = Date.now();   // games already underway can't be bet at the saved price, so they don't make Top plays
+  const pool = list.filter(p=>p.ok && !(p.kick && Date.parse(p.kick) <= now)).sort((a,b)=>b.score-a.score), seen = new Set(), gc = {};
   const pick = f => { const out = [];
     for(const p of pool){ const id = p.pid||p.name;
       if(out.length >= 8) break; if(seen.has(id) || (gc[p.game]||0) >= 3 || !f(p)) continue;
@@ -3338,7 +3379,8 @@ function oppOf(p){ const [a,h] = (p.game||"").split(" @ "); return p.team===a ? 
 const DATA_BASE = "https://raw.githubusercontent.com/johnf217/propboard/main/";
 async function getJSON(url){
   let r = null;
-  try { r = await fetch(DATA_BASE + url, {cache:"no-cache"}); } catch(e) { r = null; }
+  try { const ac = new AbortController(), t = setTimeout(()=>ac.abort(), 7000);   // slow GitHub: use Netlify's copy instead
+        r = await fetch(DATA_BASE + url, {cache:"no-cache", signal:ac.signal}); clearTimeout(t); } catch(e) { r = null; }
   if(!r || !r.ok || r.headers.get("X-PB-Saved")){
     try { const loc = await fetch(url, {cache:"no-cache"}); if(loc.ok && !loc.headers.get("X-PB-Saved")) r = loc; else if(!r || !r.ok) r = loc; } catch(e) {}
   }
@@ -3356,6 +3398,7 @@ async function load(){
   if(PROPS){
     PROPS.props.forEach(p=>{
       p.key = (p.pid||p.name)+"|"+p.market;
+      applyBooks(p);
       p.pl = byId.get(p.pid);
       p.opp = oppOf(p);
       p.pos = p.pos || p.pl?.pos;
@@ -3399,6 +3442,7 @@ function go(tab, dir){
     S.tab = tab; saveState();
     ["board","games","slip","record","players","sims","player"].forEach(v=>$("v-"+v).hidden = v!==tab);
     [...$("tabs").children].forEach(b=>b.setAttribute("aria-current", b.dataset.tab===tab));
+    if(!DATA) return;                       // still loading: load() opens this tab itself once the data is in
     if(tab==="board") renderBoard(true);
     if(tab==="games") renderGames(false);
     if(tab==="slip") renderSlip();
@@ -3441,6 +3485,7 @@ $("backBtn").onclick = () => transition("back", ()=>{
   $("v-player").hidden = true;
   const tab = P.from;
   $("v-"+tab).hidden = false;
+  if(!DATA) return;
   if(tab==="board") renderBoard(false);
   if(tab==="games") renderGames(false);
   if(tab==="slip") renderSlip();
@@ -3475,6 +3520,19 @@ function onMarket(e){
 $("mkChips").onclick = onMarket; $("mkChips2").onclick = onMarket;
 
 
+
+/* my books: which sportsbooks the picks, prices and EV use */
+function renderBookChips(){
+  const el = $("bookChips"); if(!el) return;
+  el.innerHTML = MAJOR_BOOKS.map(t=>`<button class="chip${MY_BOOKS.has(t)?" on":""}" data-book="${esc(t)}" aria-pressed="${MY_BOOKS.has(t)}">${esc(t)}</button>`).join("");
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-book]"); if(!b) return;
+  const t = b.dataset.book;
+  if(MY_BOOKS.has(t)){ if(MY_BOOKS.size === 1){ toast("Keep at least one book"); return; } MY_BOOKS.delete(t); } else MY_BOOKS.add(t);
+  store.set("pb2_books", [...MY_BOOKS]); renderBookChips(); BOOKS_DIRTY = true;
+});
+let BOOKS_DIRTY = false;
 /* ---------- board ---------- */
 function sortVal(p){
   if(!p.ok) return -1e15;
@@ -3490,9 +3548,9 @@ function passQuick(p){ return passSide(p) && S.filters.every(k=>FILTER_FN[k] ? F
 const visible = p => S.showAll || p.ok;
 function boardProps(){ return PROPS.props.filter(p=>visible(p) && (!S.market || p.market===S.market) && passQuick(p) && passSlot(p) && passQ(p)).sort((a,b)=>sortVal(b)-sortVal(a)); }
 function thinNote(){
-  const n = PROPS.props.filter(p=>!p.ok && (!S.market || p.market===S.market)).length;
+  const n = PROPS.props.filter(p=>!p.ok && (!S.market || p.market===S.market)).length, nm = PROPS.props.filter(p=>p.notMine && (!S.market || p.market===S.market)).length;
   if(!n) return "";
-  return `<div class="thin">${S.showAll ? "Showing everything, including thin props." : `${n} thin prop${n>1?"s":""} hidden.`} <button data-thin="1">${S.showAll ? "Hide them" : "Show"}</button></div>`;
+  return `<div class="thin">${S.showAll ? "Showing everything, including thin props." : `${n} thin prop${n>1?"s":""} hidden${nm ? `, ${nm} of them not at your books` : ""}.`} <button data-thin="1">${S.showAll ? "Hide them" : "Show"}</button></div>`;
 }
 function pickFor(p, side){
   const b = side==="over" ? p.bestOver : p.bestUnder;
@@ -3561,7 +3619,7 @@ function pickCol(p){
   const side = p.lean || "over", pk = p.pick || pickFor(p, side);
   const sd = p.market==="atd" ? (side==="over" ? "Yes" : "No") : (side==="over" ? "O" : "U");
   const ln = p.market==="atd" ? "" : " " + fmt(pk ? pk.line : p.line);
-  return `<span class="pk"><b class="sd ${side}">${sd}${ln}${mvArrow(mvOf(p))}</b><small>${pk ? am(pk.price) : "—"}</small></span>`;
+  return `<span class="pk"><b class="sd ${side}">${sd}${ln}</b><small>${pk ? am(pk.price) : "—"}${mvArrow(mvOf(p))}</small></span>`;
 }
 function rowHTML(p){
   const star = p.pid && WATCH.has(p.pid) ? `<i class="star" aria-label="On watchlist">★</i>` : "";
@@ -3636,7 +3694,8 @@ function renderGames(animate){
   if(S.gview==="def"){ renderDefense(); return; }
   if(S.gview==="odds"){ renderOdds(); return; }
   if(!PROPS){ $("gamesList").innerHTML = `<div class="empty">No games loaded yet.</div>`; return; }
-  const games = [...PROPS.games].sort((a,b)=>a.kick.localeCompare(b.kick));
+  const now = Date.now(), began = g => Date.parse(g.kick) <= now ? 1 : 0;
+  const games = [...PROPS.games].sort((a,b)=>began(a)-began(b) || a.kick.localeCompare(b.kick));   // started games drop to the bottom
   $("gamesSub").textContent = `${games.length} games`;
   $("v-games").classList.toggle("anim", animate && !RM);
   S.open = new Set([...S.open].filter(l=>games.some(g=>g.label===l)));
@@ -3983,7 +4042,7 @@ function askSims(q){
 }
 function bookFor(L){   // best book price for a single player leg at its exact line
   const p = propIdx.get(L.pid+"|"+L.market); if(!p) return null;
-  const at = (p.books||[]).filter(b=>b.line===L.line && !PICKEM_RE.test(b.title||"") && b[L.side]!=null);
+  const at = (p.books||[]).filter(b=>b.line===L.line && MY_BOOKS.has(b.title) && b[L.side]!=null);
   const b = at.sort((x,y)=>dec(y[L.side])-dec(x[L.side]))[0];
   return b ? {price:b[L.side], title:b.title} : null;
 }
@@ -3999,7 +4058,7 @@ function answerHTML(res, q){
   if(res.movers) return `<div class="ans"><div class="ans-h"><span class="live"></span>If ${esc(res.cond.txt)}</div>
     <p class="ans-c">Happens in ${res.cond.nC.toLocaleString()} of ${res.cond.n.toLocaleString()} sims (${Math.round(res.cond.p*100)}%). Here's how the props in that game move:</p>
     ${res.movers.length ? `<div class="mov">${res.movers.map(r=>{ const up = r.now >= r.base, nm = r.L.market==="atd" ? "scores" : `over ${fmt(r.L.line)} ${MARKETS[r.L.market].short}`;
-      return `<div class="mv"><span>${teamMark(r.p.team)}<span class="mvn"><b>${esc(shortName(r.p.name))}</b><small>${nm}</small></span></span><span class="mvp"><s>${Math.round(r.base*100)}%</s><i class="${up?"g":"r"}">${up?"▲":"▼"}</i><b class="${up?"g":"r"}">${Math.round(r.now*100)}%</b></span></div>`; }).join("")}</div>` : `<p class="m">No props in that game to compare.</p>`}
+      return `<div class="mvr"><span>${teamMark(r.p.team)}<span class="mvn"><b>${esc(shortName(r.p.name))}</b><small>${nm}</small></span></span><span class="mvp"><s>${Math.round(r.base*100)}%</s><i class="${up?"g":"r"}">${up?"▲":"▼"}</i><b class="${up?"g":"r"}">${Math.round(r.now*100)}%</b></span></div>`; }).join("")}</div>` : `<p class="m">No props in that game to compare.</p>`}
     ${res.cond.nC < 60 ? `<p class="m">Only ${res.cond.nC} sims match, so treat these as rough.</p>` : ""}</div>`;
   if(res.conditional){ const p = res.joint, d = p - res.base, st = res.stat, L = res.legs[0];
     const bk = res.legs.length===1 && L.L ? bookFor(L.L) : null;
@@ -4098,6 +4157,7 @@ function gameLineEdges(label, min=.03){
       if(!mkt.has(k)) mkt.set(k, []); mkt.get(k).push(a/(a+b)); }
     for(const side of sides){
       const pr = r[side]; if(pr==null) continue;
+      if(!MY_BOOKS.has(r.title)) continue;              // consensus uses every book; you bet at yours
       const k = kind+"|"+r.pt+"|"+side, cur = best.get(k);
       if(!cur || dec(pr) > dec(cur.price)) best.set(k, {label, kind, pt:r.pt, side, price:pr, title:r.title, alt:r.alt});
     } }
@@ -4213,7 +4273,7 @@ document.addEventListener("click", e => {
   const sg = e.target.closest("[data-sg]"); if(sg){ SIMV.open = SIMV.open===sg.dataset.sg ? null : sg.dataset.sg; renderSims(false); return; }
   const ad = e.target.closest("[data-ansadd]"); if(ad){ const [pid, mk, side, line] = ad.dataset.ansadd.split("~"), p = propIdx.get(pid+"|"+mk);
     if(!p){ toast("No book line for that one"); return; }
-    const b = (p.books||[]).filter(x=>x.line===+line && x[side]!=null && !PICKEM_RE.test(x.title||"")).sort((x,y)=>dec(y[side])-dec(x[side]))[0];
+    const b = (p.books||[]).filter(x=>x.line===+line && x[side]!=null && MY_BOOKS.has(x.title)).sort((x,y)=>dec(y[side])-dec(x[side]))[0];
     b ? toggleLeg(p.key, side, +line, b[side], b.title) : toggleLeg(p.key, side); renderSims(false); }
 });
 
@@ -4531,11 +4591,11 @@ function renderBooks(prop){
   const bo = prop.bestOver, bu = prop.bestUnder;
   $("books").hidden = false;
   $("books").innerHTML = `<h3>Books</h3><div class="books"><div class="bh"><span>Book</span><span style="text-align:center">Line</span><span style="text-align:center">Over</span><span style="text-align:center">Under</span></div>` +
-    prop.books.map(b=>{
+    [...prop.books].sort((a,b)=>(MY_BOOKS.has(b.title)-MY_BOOKS.has(a.title)) || MAJOR_BOOKS.indexOf(a.title)-MAJOR_BOOKS.indexOf(b.title)).map(b=>{
       const onO = SLIP.some(l=>l.key===prop.key && l.side==="over" && l.title===b.title && l.line===b.line);
       const onU = SLIP.some(l=>l.key===prop.key && l.side==="under" && l.title===b.title && l.line===b.line);
       const bestO = bo && bo.title===b.title && bo.line===b.line, bestU = bu && bu.title===b.title && bu.line===b.line;
-      return `<div class="br"><span>${esc(b.title)}</span>
+      return `<div class="br${MY_BOOKS.has(b.title)?" mine":" other"}"><span>${esc(b.title)}${MY_BOOKS.has(b.title)?' <i class="mytag">Yours</i>':""}</span>
         <button class="ln${b.line===P.line?" on":""}" data-l="${b.line}" aria-label="Chart this line">${fmt(b.line)}</button>
         ${b.over!=null?`<button class="px${bestO?" best":""}${onO?" on":""}" data-bk="${esc(b.title)}" data-bl="${b.line}" data-bp="${b.over}" data-bs="over">${am(b.over)}</button>`:"<span></span>"}
         ${b.under!=null?`<button class="px${bestU?" best":""}${onU?" on":""}" data-bk="${esc(b.title)}" data-bl="${b.line}" data-bp="${b.under}" data-bs="under">${am(b.under)}</button>`:"<span></span>"}
@@ -4583,8 +4643,9 @@ document.addEventListener("click", e => {
   const pl = e.target.closest("[data-player]");
   if(pl){ openPlayer(byId.get(pl.dataset.player)); }
 });
-function openSheet(id="sheet"){ closeSheet(); $("scrim").classList.add("open"); $(id).classList.add("open"); if(id==="fsheet") syncSheet(); }
-function closeSheet(){ $("scrim").classList.remove("open"); document.querySelectorAll(".sheet.open").forEach(x=>x.classList.remove("open")); }
+function openSheet(id="sheet"){ closeSheet(); $("scrim").classList.add("open"); $(id).classList.add("open"); if(id==="fsheet"){ syncSheet(); renderBookChips(); } }
+function closeSheet(){ $("scrim").classList.remove("open"); document.querySelectorAll(".sheet.open").forEach(x=>x.classList.remove("open"));
+  if(BOOKS_DIRTY){ BOOKS_DIRTY = false; toast("Books saved. Repricing every prop…"); setTimeout(()=>location.reload(), 600); } }
 $("infoBtn").onclick = () => openSheet("sheet"); $("scrim").onclick = closeSheet; $("sheet").onclick = closeSheet;
 $("filterBtn").onclick = () => openSheet("fsheet"); $("fDone").onclick = closeSheet;
 $("boardList").addEventListener("click", e => { const b=e.target.closest("#bwSeg [data-v]"); if(!b||b.dataset.v===S.bw) return;
