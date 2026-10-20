@@ -21,7 +21,8 @@ QB passing yards and completions are the sum of his receivers' catches, so stack
 
 Backtest: python backtest_sims.py (replays past weeks; see that file).
 Reads: player_logs.json, props.json, context.json (spread/total; optional), injuries.json (optional).
-Writes: sims.json + sims_box.json (the 1,000 stored box scores, loaded only when needed)  -  per-prop chances from all 10,000 sims, plus 1,000 stored box scores per game
+Writes: sims.json + sims_box.json + sim_lines.json (projected box scores, kept after kickoff for sims vs actual)
+        (the 1,000 stored box scores, loaded only when needed)  -  per-prop chances from all 10,000 sims, plus 1,000 stored box scores per game
                       so the app can price any parlay or "what if" question on the phone.
 Needs: pip install numpy
 """
@@ -84,9 +85,25 @@ def main():
     # parlays and questions; sims.json keeps each player's game and team so everything else works without it
     box = {"updated": out["updated"], "players": {pid: {"s": v["s"]} for pid, v in out["players"].items()}}
     light = dict(out, players={pid: {"g": v["g"], "t": v["t"]} for pid, v in out["players"].items()})
+    light.pop("lines", None)
+    save_lines(out["lines"], out["updated"])
     json.dump(light, open("sims.json", "w"), separators=(",", ":"))
     json.dump(box, open("sims_box.json", "w"), separators=(",", ":"))
     print(f"wrote sims.json: {len(out['games'])} games, {len(out['props'])} props, {len(out['players'])} players")
+
+def save_lines(new, updated, path="sim_lines.json", keep_weeks=20):
+    """sim_lines.json: the projected box score for every game. A game's projection is locked at kickoff and kept,
+    so the app can show sims vs actual after the game. Upcoming games are replaced on every run."""
+    now = datetime.now(timezone.utc)
+    started = lambda g: bool(g.get("kick")) and datetime.fromisoformat(g["kick"].replace("Z", "+00:00")) <= now
+    old = (load(path, {}) or {}).get("games", {})
+    games = {k: g for k, g in old.items() if started(g)}                     # locked
+    for label, g in new.items():
+        if not started(g): games[f'{label}|{(g.get("kick") or "")[:10]}'] = g
+    cutoff = now.timestamp() - keep_weeks * 7 * 86400
+    games = {k: g for k, g in games.items() if not g.get("kick") or datetime.fromisoformat(g["kick"].replace("Z", "+00:00")).timestamp() > cutoff}
+    json.dump({"updated": updated, "games": games}, open(path, "w"), separators=(",", ":"))
+    print(f"wrote {path}: {len(games)} games ({sum(1 for g in games.values() if not started(g))} upcoming)")
 
 def score_game(total, spread_home, home, away, n=None):
     """N final scores scored like football (TDs, FGs, extra points, overtime), resampled so 3s and 7s come up as
@@ -125,6 +142,7 @@ def simulate(data, props, ctx, inj, raw=None, quiet=False):
     for p in players:
         if p.get("team"): by_team[p["team"]].append(p)
     season = max(g["s"] for p in players for g in p["logs"])
+    last_wk = max(g["s"] * 100 + g["w"] for p in players for g in p["logs"])   # newest game in the logs (actuals come after it)
     prop_pids = {q.get("pid") for q in props["props"]}
     pass_prop = {q.get("pid") for q in props["props"] if q.get("market") in ("pass_yds", "pass_td", "pass_att")}  # books only post these for the starter
 
@@ -192,7 +210,7 @@ def simulate(data, props, ctx, inj, raw=None, quiet=False):
                 "avail": 0.0 if (inj.get(p["id"], {}).get("st") in OUT) else .8 if inj.get(p["id"], {}).get("st") == "Questionable" else 1.0}
 
     out = {"updated": datetime.now(timezone.utc).isoformat(timespec="seconds"), "n": N, "ns": NS,
-           "games": {}, "players": {}, "props": {}}
+           "games": {}, "players": {}, "props": {}, "lines": {}}
 
     for gm in props.get("games", []):
         label = gm.get("label", "")
@@ -288,6 +306,23 @@ def simulate(data, props, ctx, inj, raw=None, quiet=False):
             if line is None: continue
             out["props"][f'{pid}|{q["market"]}'] = {"po": round(float((v > line).mean()), 4),
                 "mean": round(float(v.mean()), 2), "q": [round(float(x), 1) for x in np.percentile(v, np.arange(0, 101, 5))]}
+        # projected box score: each player's typical line if he plays (25th / 50th / 75th percentile and average)
+        lines = {"label": label, "kick": gm.get("kick"), "home": home, "away": away,
+                 "spread_home": spread_home, "total": total, "med": out["games"][label]["med"], "af": last_wk, "players": {}}
+        for pid, (m, st, team) in res.items():
+            if m["pos"] == "QB" and not st["py"].any(): continue          # backup QBs don't play in the sims
+            avm = st["_av"]
+            if not avm.any(): continue
+            use = (st["tgt"][avm] + st["ca"][avm]).mean()
+            if pid not in prop_pids and m["pos"] != "QB" and use < 1.5: continue
+            row = {"n": m["p"].get("name", ""), "pos": m["pos"], "t": team, "av": round(float(avm.mean()), 3), "s": {}}
+            for k in STATS.get(m["pos"], STATS["WR"]) + (["tgt"] if m["pos"] != "QB" else []):
+                if k not in st or k == "td": continue
+                v = st[k][avm]
+                row["s"][k] = [round(float(np.percentile(v, 25))), round(float(np.median(v))), round(float(np.percentile(v, 75))), round(float(v.mean()), 1)]
+            v = st["td"][avm]; row["td"] = [round(float((v > 0).mean()), 3), round(float(v.mean()), 2)]
+            lines["players"][pid] = row
+        out["lines"][label] = lines
         for pid, (m, st, team) in res.items():
             if pid not in prop_pids: continue
             keep = STATS.get(m["pos"], STATS["WR"])

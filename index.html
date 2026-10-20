@@ -1382,6 +1382,47 @@ body.scrolled .top .title.bt{margin-bottom:8px}
 .idf b{color:var(--text)} .idf i{font-style:normal}
 .addc{flex:none;min-height:40px;padding:0 16px;border-radius:999px;background:#fff;color:var(--ink);font-weight:700;font-size:13.5px}
 .ideanote{margin:2px 2px 0;font-size:12.5px;line-height:1.45}
+
+/* ---------- projected box score ---------- */
+.boxv{position:fixed;inset:0;z-index:80;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:0 16px calc(32px + env(safe-area-inset-bottom,0px))}
+.boxv[hidden]{display:none}
+.boxv-bar{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 -16px;padding:calc(8px + env(safe-area-inset-top,0px)) 16px 8px;background:var(--bg);border-bottom:1px solid var(--line)}
+.boxv-back{font-size:16px;font-weight:700;color:var(--text);min-height:44px;padding:0 6px}
+.boxv-act{display:flex;gap:8px}
+.boxv-act .chip{min-height:40px}
+.bxh{margin:18px 0 6px}
+.bxh small{display:block;color:var(--muted);font-size:13px;font-weight:600;letter-spacing:.02em}
+.bxh h2{font-size:24px;line-height:1.15;margin:4px 0 0}
+.bxsc{display:flex;align-items:center;justify-content:center;gap:18px;margin:14px 0 4px;padding:14px;border-radius:var(--r-tile,16px);background:var(--surface)}
+.bxsc div{text-align:center}.bxsc b{display:block;font-size:30px;font-variant-numeric:tabular-nums;line-height:1}.bxsc span{font-size:13px;font-weight:700;color:var(--muted)}
+.bxsc i{color:var(--faint);font-style:normal}
+.bxnote{color:var(--muted);font-size:12.5px;line-height:1.45;margin:6px 0 0}
+.bxteam{margin:22px 0 0;padding:10px 12px;border-radius:12px;background:var(--surface);box-shadow:inset 4px 0 0 var(--tc,#3A4E70);font-weight:800;font-size:17px;display:flex;justify-content:space-between;align-items:baseline}
+.bxteam small{font-weight:600;color:var(--muted);font-size:13px}
+.bxt{width:100%;border-collapse:collapse;margin:10px 0 0;font-size:14px;font-variant-numeric:tabular-nums}
+.bxt caption{text-align:left;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:6px 0 4px}
+.bxt th{font-size:11.5px;font-weight:700;color:var(--muted);text-align:right;padding:4px 0 6px 6px;border-bottom:1px solid var(--line)}
+.bxt th:first-child,.bxt td:first-child{text-align:left;padding-left:0}
+.bxt td{text-align:right;padding:8px 0 8px 6px;border-bottom:1px solid var(--line);vertical-align:top;white-space:nowrap}
+.bxt td:first-child{white-space:normal;font-weight:700;width:42%}
+.bxt td b{font-weight:700}
+.bxt td small{display:block;font-size:11px;color:var(--muted);font-weight:500;margin-top:1px}
+.bxt td em{font-style:normal;font-size:11px;font-weight:600;color:var(--muted);margin-left:4px}
+.bxt .g{color:var(--over)}.bxt .r{color:var(--under)}
+.bxq{display:inline-block;font-size:10.5px;font-weight:700;color:var(--post);margin-left:4px}
+.bxpast{margin-top:8px}
+.sg-box{margin-top:0;color:var(--go,#2BD99F)}
+.bxpast .row{cursor:pointer}
+@media print{
+  body>*:not(#boxView){display:none!important}
+  html,body{background:#fff!important}
+  .boxv{position:static;overflow:visible;background:#fff!important;color:#000!important;padding:0}
+  .boxv *{color:#000!important;background:transparent!important;box-shadow:none!important}
+  .boxv-bar{display:none}
+  .bxteam{border-bottom:2px solid #000;border-radius:0}
+  .bxt th,.bxt td{border-color:#bbb!important}
+  .bxt tr{break-inside:avoid}
+}
 </style>
 </head>
 <body>
@@ -1541,6 +1582,13 @@ body.scrolled .top .title.bt{margin-bottom:8px}
   <div id="qChips" role="group" aria-label="Filters"></div>
   <div class="fbtns"><button class="linkbtn" id="fClear" hidden>Clear all</button></div>
   <div class="fbtns"><button class="linkbtn" id="infoBtn">How the score works</button><button class="done press" id="fDone">Done</button></div>
+</div>
+<div id="boxView" class="boxv" role="dialog" aria-modal="true" aria-labelledby="boxTitle" hidden>
+  <div class="boxv-bar">
+    <button class="boxv-back press" id="boxClose" aria-label="Close">‹ Back</button>
+    <div class="boxv-act"><button class="chip press" id="boxShare">Share</button><button class="chip press" id="boxPrint">Print / PDF</button></div>
+  </div>
+  <div id="boxBody"></div>
 </div>
 <div class="sheet" id="shareSheet" role="dialog" aria-modal="true" aria-label="Share image">
   <div class="grab"></div>
@@ -2231,7 +2279,7 @@ function renderStale(){
   if(ca!=null && ca > 30*36e5) msgs.push(`weather, game lines and injuries are ${ageTxt(ca)} old`);
   const el = $("stale");
   el.hidden = !msgs.length;
-  el.hidden = true;
+  if(msgs.length) el.innerHTML = `<b>${esc(msgs.join("; "))}.</b> An update may be stuck. <a href="https://github.com/johnf217/Propboard/actions/workflows/props.yml" target="_blank" rel="noopener" style="color:var(--text);text-decoration:underline">Open GitHub Actions</a> and tap Run workflow.`;
   const old = msgs.length > 0;
   $("updated").classList.toggle("old", old);
   if(old && PROPS){ const t = msgs[0]; $("updated").textContent = `${PROPS.props.length} props · ${t.charAt(0).toLowerCase() + t.slice(1)}`;
@@ -2346,7 +2394,7 @@ async function sharePlay(){
 }
 $("shareBtn").onclick = sharePlay;
 /* ---------- home-screen app: offline support, pull to refresh, update notice ---------- */
-const BUILD = "2026.10.18-2";
+const BUILD = "2026.10.20-2";
 let SAVED_DATA = false, NEW_HTML = null, hiddenAt = 0, lastCheck = 0;
 if("serviceWorker" in navigator && (location.protocol==="https:" || ["localhost","127.0.0.1"].includes(location.hostname))){
   navigator.serviceWorker.register("sw.js").catch(()=>{});
@@ -3301,6 +3349,7 @@ function wxLine(label){
   if((c.precip||0) >= 1.5 || ((c.pop||0) >= 70 && (c.precip||0) >= .5)) b.push("rain");
   return b.join(", ");
 }
+const CAL = {model:.35, atdSims:.25, simsGap:.08};   // see the calibration note inside evaluate()
 function evaluate(p){
   const pl = p.pl, mk = p.market, vol = VOL[pl.pos], get = MARKETS[mk].get;
   p.avail = availability(pl);
@@ -3376,10 +3425,18 @@ function evaluate(p){
     const wf = PJ ? null : weatherFx(ctx, mk);
     if(wf){ const d = wf.d*sgn; z += d; add("weather", d, wf.txt); }
     z = clamp(z, -3.2, 3.2);
+    // Calibration (fit to graded picks, Oct 2026): the raw model ran ~7 points too confident, and its disagreement with the market
+    // carried only about a third of the signal it claimed (anytime TDs: none). So start from the market's no-vig chance and move
+    // only part of the way toward the model. Anytime TDs lean on the sims instead, also only part of the way.
+    const anchor = (p.fair!=null && pk.line===p.line) ? clamp(prior,.03,.97) : clamp(pImpl-.02,.03,.97), la = logit(anchor);
+    const zRaw = z, sm0 = typeof simSide==="function" ? simSide(p, side, pk.line) : null;
+    if(mk==="atd") z = sm0!=null ? la + CAL.atdSims*(logit(clamp(sm0,.02,.98)) - la) : la;
+    else z = la + CAL.model*(z - la);
     const pm = sig(z), edge = pm - pImpl, ev = pm*(dec(pk.price)-1) - (1-pm);
+    if(mk!=="atd" && sm0!=null && sm0 <= pm - CAL.simsGap){ add("simsdis", -.07, `Sims see only ${Math.round(sm0*100)}%`); }
     if(Math.abs(edge) >= .02) add("price", edge*3, edge>0 ? `${Math.round(edge*100)} pts of value at ${am(pk.price)}` : `Priced ${Math.round(-edge*100)} pts too short`);
     const conf = fx.filter(f=>f.d>=.06).length - fx.filter(f=>f.d<=-.06).length;
-    const score = clamp(Math.round(50 + 110*edge + 45*(pm-.5) + 2.5*clamp(conf,-3,5)), 1, 99);
+    const score = clamp(Math.round(50 + 650*edge + 40*(pm-.5) + clamp(conf,-3,5)), 1, 99);
     let flag = null;
     if(injOut) flag = "injury";
     else if(roleBad) flag = "role";
@@ -4254,6 +4311,7 @@ function gameCardHTML([label, g], i){
     <div class="sg-mk"><div><small>Spread</small><b>${fav} −${fmt(sl)}</b><em>covers ${Math.round(favCover*100)}%</em></div><div><small>Total</small><b>${fmt(g.total)}</b><em>over ${Math.round(g.over*100)}%</em></div></div>
     ${open ? `<div class="sg-edges">${(()=>{ const ge = gameLineEdges(label).slice(0,5); return ge.length ? `<h4>Game line edges</h4><div class="list flat">${ge.map(x=>glRowHTML(x)).join("")}</div>` : GL?.games?.[label] ? `<p class="m">No spread, total or team total has an edge right now. These markets are sharp, so most weeks only a handful show up.</p>` : ""; })()}
       ${edges.length ? `<h4>Best prop edges</h4><div class="list flat">${edges.map(edgeRowHTML).join("")}</div>` : `<p class="m">No props in this game beat their price by 3+ points in the sims.</p>`}${ladderHTML(g)}</div>` : `<button class="sg-more" data-sg="${esc(label)}">Edges and score odds ›</button>`}
+    <button class="sg-more sg-box" data-box="${esc(label)}">Projected box score ›</button>
   </div>`;
 }
 /* game lines: price every book's spread, total and team total (main and alternate) against the simulated scores */
@@ -4353,6 +4411,7 @@ function simSuggestions(){
 function renderSims(animate){
   const el = $("simsBody");
   if(SIMS && BOX === "idle") ensureBox().then(()=>{ if(S.tab==="sims" && $("v-player").hidden && !SIMV.busy) renderSims(false); });
+  if(!SLINES) ensureLines().then(()=>{ const p = $("bxPast"); if(p && S.tab==="sims") p.outerHTML = pastBoxesHTML(); });
   if(!SIMS || !Object.keys(SIMS.games||{}).length){
     $("simsSub").textContent = "";
     el.innerHTML = `<div class="empty"><b>No sims yet.</b><br>Add build_sims.py to the Update game context workflow. Once it runs, every game this week is played 10,000 times and shows up here.</div>` + dataStatusHTML();
@@ -4377,6 +4436,7 @@ function renderSims(animate){
     <div class="sec-t"><h2>Best sim edges</h2><small>sim chance vs price</small></div>
     ${edges.length ? `<div class="colh secolh"><span class="cn">Player</span><span class="cp">Price</span><span class="ck">Sims</span></div><div class="list flat">${edges.map(edgeRowHTML).join("")}</div>` : `<div class="empty">No prices beat the sims by 3+ points right now.</div>`}
     ${(()=>{ if(!GL) return ""; const ge = allGameLineEdges().slice(0,8); return `<div class="sec-t"><h2>Game line edges</h2><small>spreads, totals, team totals</small></div>` + (ge.length ? `<div class="colh secolh"><span class="cn">Bet</span><span class="cp">Price</span><span class="ck">Sims</span></div><div class="list flat">${ge.map(x=>glRowHTML(x, true)).join("")}</div>` : `<div class="empty">No game-line edges right now. Spreads and totals are the sharpest markets, so expect only a few a week, usually an alt line or team total where one book is off.</div>`); })()}
+    ${pastBoxesHTML()}
     ${howTo("Every game is played 10,000 times as full box scores. Scores are anchored to the Vegas spread and total and scored like real football (touchdowns, field goals, extra points, overtime), so games land on 3s and 7s as often as they really do — that's what makes alt spreads and team totals priceable; each team's pass and run volume bends with the score (trailing teams throw more); targets and carries follow recent shares with injured players removed; yards and touchdowns come from each player's own rates adjusted for the defense. Because every prop comes from the same simulated games, parlays get real joint chances instead of multiplying legs. The sims are being tracked against the main model in Record before they help set scores.", "How the sims work")}
     ${dataStatusHTML()}`;
   if(animate && !RM) el.querySelectorAll(".sg-sc b").forEach(b=>{ b.dataset.v = 0; countTo(b, +b.dataset.n); });
@@ -4416,6 +4476,133 @@ document.addEventListener("click", e => {
     const b = (p.books||[]).filter(x=>x.line===+line && x[side]!=null && MY_BOOKS.has(x.title)).sort((x,y)=>dec(y[side])-dec(x[side]))[0];
     b ? toggleLeg(p.key, side, +line, b[side], b.title) : toggleLeg(p.key, side); renderSims(false); }
 });
+
+
+/* ---------- projected box score: each player's typical line in the sims (sim_lines.json) ---------- */
+let SLINES = null, SLINES_P = null, BOXK = null;
+function ensureLines(){
+  if(SLINES) return Promise.resolve(SLINES);
+  if(!SLINES_P) SLINES_P = getJSON("sim_lines.json").then(d=>(SLINES = d && d.games ? d : {games:{}})).catch(()=>(SLINES = {games:{}}));
+  return SLINES_P;
+}
+const bxStarted = G => !!G?.kick && Date.parse(G.kick) <= Date.now();
+function linesKeyFor(label){   // newest projection for this game
+  const ks = Object.keys(SLINES?.games||{}).filter(k=>SLINES.games[k].label===label);
+  return ks.sort((a,b)=>(SLINES.games[b].kick||"").localeCompare(SLINES.games[a].kick||""))[0] || null;
+}
+function bxActual(pid, G, team){   // his real box score for this game, once the Tuesday logs have it
+  if(!bxStarted(G)) return null;
+  const pl = byId.get(pid), opp = team===G.home ? G.away : G.home;
+  if(!pl) return null;
+  const g = pl.logs.find(g=>g.s*100+g.w > (G.af||0) && g.o===opp);
+  return g ? {...g, td:(g.rtd||0)+(g.retd||0), tgt:g.tgt||0} : null;
+}
+function bxHasActuals(G){ return Object.entries(G.players||{}).some(([pid,r])=>bxActual(pid, G, r.t)); }
+const BX_SEC = [
+  {h:"Passing", k:"py", mk:"pass_yds", keep:r=>r.s.py && r.s.pa?.[3] >= 5, sort:r=>-(r.s.pa?.[3]||0),
+   cols:[["ATT","pa"],["YDS","py",1],["TD","ptd","avg"]]},
+  {h:"Rushing", k:"ry", mk:"rush_yds", keep:r=>r.s.ca && r.s.ca[3] >= 1.5, sort:r=>-(r.s.ca[3]||0),
+   cols:[["CAR","ca"],["YDS","ry",1]]},
+  {h:"Receiving", k:"rey", mk:"rec_yds", keep:r=>r.s.tgt && r.s.tgt[3] >= 1.5, sort:r=>-(r.s.tgt[3]||0),
+   cols:[["TGT","tgt"],["REC","rec"],["YDS","rey",1]]}];
+function bxCell(r, c, act){
+  const v = r.s[c[1]]; if(!v) return `<td>—</td>`;
+  const proj = c[2]==="avg" ? v[3].toFixed(1) : String(v[1]);
+  if(act){ const a = act[c[1]] ?? 0, cls = c[2]===1 ? (a >= v[2] ? "g" : a <= v[0] ? "r" : "") : "";
+    return `<td><b class="${cls}">${a}</b><small>sim ${proj}</small></td>`; }
+  return `<td><b>${proj}</b>${c[2]===1 ? `<small>${v[0]}–${v[2]}</small>` : ""}</td>`;
+}
+function bxTeamHTML(G, team){
+  const rows = Object.entries(G.players||{}).filter(([,r])=>r.t===team).map(([pid,r])=>({pid, ...r}));
+  const past = bxStarted(G), pts = team===G.home ? G.med[1] : G.med[0];
+  let h = `<div class="bxteam" style="--tc:${TEAM_COLOR[team]||"#3A4E70"}"><span>${esc(team)}</span><small>median ${Math.round(pts)} pts</small></div>`;
+  for(const sec of BX_SEC){
+    const rs = rows.filter(sec.keep).sort((a,b)=>sec.sort(a)-sec.sort(b));
+    if(!rs.length) continue;
+    const showLine = !past;
+    h += `<table class="bxt"><caption>${sec.h}</caption><thead><tr><th>Player</th>${sec.cols.map(c=>`<th>${c[0]}</th>`).join("")}${showLine?"<th>LINE</th>":""}</tr></thead><tbody>`;
+    for(const r of rs){
+      const act = past ? bxActual(r.pid, G, team) : null;
+      if(past && !act && bxHasActuals(G)) continue;                         // didn't play
+      const P = propIdx.get(r.pid+"|"+sec.mk), q = r.av < .97 ? `<span class="bxq">plays in ${Math.round(r.av*100)}%</span>` : "";
+      const ln = P?.line!=null ? `<td><b class="${r.s[sec.k][1] > P.line ? "g" : r.s[sec.k][1] < P.line ? "r" : ""}">${fmt(P.line)}</b></td>` : `<td class="m">—</td>`;
+      h += `<tr><td>${esc(shortName(r.n))}${q}</td>${sec.cols.map(c=>bxCell(r, c, act)).join("")}${showLine?ln:""}</tr>`;
+    }
+    h += `</tbody></table>`;
+  }
+  const tds = rows.filter(r=>r.td && r.td[0] >= .08).sort((a,b)=>b.td[0]-a.td[0]);
+  if(tds.length){
+    h += `<table class="bxt"><caption>Touchdowns</caption><thead><tr><th>Player</th><th>Scores</th><th>${past?"Actual":"Avg TDs"}</th></tr></thead><tbody>`;
+    for(const r of tds){ const act = past ? bxActual(r.pid, G, team) : null;
+      if(past && !act && bxHasActuals(G)) continue;
+      h += `<tr><td>${esc(shortName(r.n))}</td><td><b>${Math.round(r.td[0]*100)}%</b></td><td>${past ? (act ? `<b class="${act.td>0?"g":""}">${act.td}</b>` : "—") : r.td[1].toFixed(2)}</td></tr>`; }
+    h += `</tbody></table>`;
+  }
+  return h;
+}
+function boxViewHTML(G){
+  const past = bxStarted(G), have = past && bxHasActuals(G);
+  const when = G.kick ? new Date(G.kick).toLocaleString("en-US", {weekday:"short", month:"short", day:"numeric", hour:"numeric", minute:"2-digit"}) : "";
+  const fav = G.spread_home <= 0 ? G.home : G.away;
+  return `<div class="bxh"><small>${esc(when)}${G.total ? ` · ${fav} −${fmt(Math.abs(G.spread_home))} · total ${fmt(G.total)}` : ""}</small>
+      <h2 id="boxTitle">${esc(G.away)} @ ${esc(G.home)}: ${have ? "sims vs actual" : "projected box score"}</h2></div>
+    <div class="bxsc"><div><span>${esc(G.away)}</span><b>${Math.round(G.med[0])}</b></div><i>–</i><div><span>${esc(G.home)}</span><b>${Math.round(G.med[1])}</b></div></div>
+    <p class="bxnote">${have
+      ? "Big number is what happened; small is what the sims expected. Yards in green beat the sims' likely range, red fell short of it."
+      : past ? "Game has started. Real stats show up here after Tuesday's player-log update."
+      : "Each number is the middle result of the simulated games if he plays: he beats it half the time. Small numbers under yards are the likely range (middle half of sims). LINE is your books' prop line, green when the sims project over it, red when under."}
+      Player numbers don't add up to team totals because each is that player's own middle result.</p>
+    ${bxTeamHTML(G, G.away)}${bxTeamHTML(G, G.home)}`;
+}
+function boxText(G){
+  const past = bxStarted(G), L = [`${G.away} @ ${G.home}${G.kick ? " — " + new Date(G.kick).toLocaleString("en-US",{weekday:"short", month:"short", day:"numeric", hour:"numeric", minute:"2-digit"}) : ""}`,
+    `Sims median score: ${G.away} ${Math.round(G.med[0])}, ${G.home} ${Math.round(G.med[1])}`];
+  for(const team of [G.away, G.home]){
+    const rows = Object.values(G.players||{}).filter(r=>r.t===team); L.push("", team);
+    const qb = rows.filter(BX_SEC[0].keep).sort((a,b)=>BX_SEC[0].sort(a)-BX_SEC[0].sort(b));
+    qb.forEach(r=>L.push(`  ${shortName(r.n)}: ${r.s.pa[1]} att, ${r.s.py[1]} pass yds, ${r.s.ptd[3].toFixed(1)} TD`));
+    const ru = rows.filter(BX_SEC[1].keep).sort((a,b)=>BX_SEC[1].sort(a)-BX_SEC[1].sort(b));
+    if(ru.length) L.push("  Rushing: " + ru.map(r=>`${shortName(r.n)} ${r.s.ca[1]}-${r.s.ry[1]}`).join(", "));
+    const re = rows.filter(BX_SEC[2].keep).sort((a,b)=>BX_SEC[2].sort(a)-BX_SEC[2].sort(b));
+    if(re.length) L.push("  Receiving: " + re.map(r=>`${shortName(r.n)} ${r.s.rec[1]}-${r.s.rey[1]}`).join(", "));
+    const td = rows.filter(r=>r.td && r.td[0] >= .2).sort((a,b)=>b.td[0]-a.td[0]);
+    if(td.length) L.push("  TD chance: " + td.map(r=>`${shortName(r.n)} ${Math.round(r.td[0]*100)}%`).join(", "));
+  }
+  L.push("", past ? "Prop Board sims (projection locked at kickoff)" : "Prop Board sims: middle result of 10,000 simulated games");
+  return L.join("\n");
+}
+async function openBox(key){
+  const v = $("boxView"); BOXK = key;
+  $("boxBody").innerHTML = `<div class="empty" style="margin-top:24px">Loading the projected box score…</div>`;
+  v.hidden = false; v.scrollTop = 0; document.body.style.overflow = "hidden";
+  await ensureLines();
+  const G = SLINES?.games?.[key];
+  $("boxBody").innerHTML = G ? boxViewHTML(G)
+    : `<div class="empty" style="margin-top:24px"><b>No projected box score for this game yet.</b><br>It's written by build_sims.py the next time Update game context runs.</div>`;
+}
+function closeBox(){ $("boxView").hidden = true; document.body.style.overflow = ""; BOXK = null; }
+document.addEventListener("click", async e => {
+  const bx = e.target.closest("[data-box]");
+  if(bx){ e.stopPropagation(); await ensureLines(); const k = linesKeyFor(bx.dataset.box); openBox(k || ""); return; }
+  const bk = e.target.closest("[data-boxk]"); if(bk){ openBox(bk.dataset.boxk); return; }
+  if(e.target.closest("#boxClose")){ closeBox(); return; }
+  if(e.target.closest("#boxPrint")){ window.print(); return; }
+  if(e.target.closest("#boxShare")){
+    const G = SLINES?.games?.[BOXK]; if(!G) return; const text = boxText(G);
+    try{ if(navigator.share){ await navigator.share({title:`${G.away} @ ${G.home} sims`, text}); return; } }catch(err){ if(err?.name==="AbortError") return; }
+    try{ await navigator.clipboard.writeText(text); toast("Box score copied"); }catch{ toast("Couldn't share from here"); }
+  }
+}, true);
+document.addEventListener("keydown", e => { if(e.key==="Escape" && !$("boxView").hidden) closeBox(); });
+function pastBoxesHTML(){   // finished games with a locked projection, newest first
+  if(!SLINES) return `<div id="bxPast"></div>`;
+  const ks = Object.keys(SLINES.games).filter(k=>bxStarted(SLINES.games[k]))
+    .sort((a,b)=>(SLINES.games[b].kick||"").localeCompare(SLINES.games[a].kick||"")).slice(0,16);
+  if(!ks.length) return `<div id="bxPast"></div>`;
+  return `<div id="bxPast"><div class="sec-t"><h2>Sims vs actual</h2><small>past games</small></div><div class="list flat bxpast">${ks.map(k=>{ const G = SLINES.games[k], have = bxHasActuals(G);
+    const day = new Date(G.kick).toLocaleDateString("en-US",{month:"short", day:"numeric"});
+    return `<button class="row press" data-boxk="${esc(k)}" style="display:flex;justify-content:space-between;width:100%;padding:14px 4px;border-bottom:1px solid var(--line);font-weight:700"><span>${esc(G.away)} @ ${esc(G.home)}</span><small class="m">${day} · ${have ? "compare ›" : "stats Tuesday"}</small></button>`; }).join("")}</div></div>`;
+}
 
 /* record: the sims vs the main model on the same picks (shadow test before sims help set scores) */
 let BKT = null;

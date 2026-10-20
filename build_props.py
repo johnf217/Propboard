@@ -54,6 +54,16 @@ def main():
     client = PropLine(os.environ["PROPLINE_API_KEY"])
     now = dt.datetime.now(dt.timezone.utc)
 
+    # backup runs set MIN_AGE_HOURS so they only act when the regular run was skipped or never finished
+    min_age = float(os.environ.get("MIN_AGE_HOURS") or 0)
+    if min_age:
+        try:
+            last = dt.datetime.fromisoformat(json.load(open("props.json"))["updated"])
+            if (now - last).total_seconds() < min_age * 3600:
+                print(f"props.json is only {(now - last).total_seconds() / 3600:.1f} hours old; backup run not needed"); return
+        except Exception:
+            pass
+
     # link to nflverse ids
     lookup = {}
     try:

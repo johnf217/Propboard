@@ -14,7 +14,7 @@ GRAB = """() => {
     ed: Math.round(p.edge*1000)/1000, top: top.has(p.key) ? 1 : 0, kick: p.kick,
     cl: p.line, cf: p.fair==null ? null : Math.round((p.lean==="over" ? p.fair : 1-p.fair)*1000)/1000,
     af: p.pl.logs.length ? p.pl.logs.at(-1).s*100 + p.pl.logs.at(-1).w : 0,
-    sp: typeof simSide==="function" && simSide(p)!=null ? Math.round(simSide(p)*1000)/1000 : null }));
+    cal: 2, sp: typeof simSide==="function" && simSide(p)!=null ? Math.round(simSide(p)*1000)/1000 : null }));
 }"""
 
 def ts(s):
