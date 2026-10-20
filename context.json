@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-20T14:54:53+00:00",
+ "updated": "2026-10-20T16:55:33+00:00",
  "games": {
   "NE @ CHI": {
    "spread_home": -3.0,
@@ -33,7 +33,7 @@
   "NYG @ HOU": {
    "spread_home": -9.5,
    "total": 43.0,
-   "tt_home": 27.0,
+   "tt_home": 26.5,
    "tt_away": 16.5,
    "dome": true
   },
@@ -88,7 +88,7 @@
    "spread_home": 4.5,
    "total": 43.5,
    "tt_home": 19.5,
-   "tt_away": 23.5,
+   "tt_away": 24.5,
    "dome": true
   },
   "LA @ LV": {
@@ -113,7 +113,7 @@
    "temp": 52,
    "wind": 7,
    "gust": 16,
-   "pop": 32,
+   "pop": 21,
    "precip": 0.0
   },
   "DAL @ PHI": {
