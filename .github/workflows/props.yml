@@ -7,6 +7,9 @@ on:
     - cron: "37 14 * * 0"   # Sundays, 10:37 AM Eastern (9:37 after Nov 1)
     - cron: "43 15 * * 0"   # Sundays, 11:43 AM Eastern: injury news and inactives (10:43 after Nov 1)
     - cron: "23 16 * * 0"   # Sundays, 12:23 PM Eastern, last look before 1 PM kickoffs (11:23 after Nov 1)
+    # Backups: GitHub sometimes skips or badly delays scheduled runs. These two only act if lines are over 3 hours old.
+    - cron: "53 15 * * *"   # every day, 11:53 AM Eastern (10:53 after Nov 1)
+    - cron: "11 0 * * *"    # every day, 8:11 PM Eastern (7:11 after Nov 1)
   workflow_dispatch:
 permissions:
   contents: write
@@ -21,6 +24,7 @@ jobs:
       - run: python build_props.py
         env:
           PROPLINE_API_KEY: ${{ secrets.PROPLINE_API_KEY }}
+          MIN_AGE_HOURS: ${{ (github.event.schedule == '53 15 * * *' || github.event.schedule == '11 0 * * *') && '3' || '0' }}
       - run: |
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"

@@ -14,30 +14,45 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - id: chk
+        name: Skip if the lines weren't refreshed
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_run" ] && [ "${{ github.event.workflow_run.conclusion }}" = "success" ]; then
+            python3 -c "import json,datetime as d; u=d.datetime.fromisoformat(json.load(open('props.json'))['updated']); import sys; sys.exit(0 if (d.datetime.now(d.timezone.utc)-u).total_seconds()<1800 else 1)" \
+              && echo go=true >> $GITHUB_OUTPUT || echo go=false >> $GITHUB_OUTPUT
+          else echo go=true >> $GITHUB_OUTPUT; fi
       - uses: actions/setup-python@v5
+        if: steps.chk.outputs.go == 'true'
         with:
           python-version: "3.12"
       - run: pip install propline
+        if: steps.chk.outputs.go == 'true'
       - run: python build_context.py
+        if: steps.chk.outputs.go == 'true'
         continue-on-error: true
         env:
           PROPLINE_API_KEY: ${{ secrets.PROPLINE_API_KEY }}
       - run: python build_injuries.py
+        if: steps.chk.outputs.go == 'true'
         continue-on-error: true
       - run: python build_lines.py
+        if: steps.chk.outputs.go == 'true'
         continue-on-error: true
       - name: Simulate games
+        if: steps.chk.outputs.go == 'true'
         continue-on-error: true
         run: |
           pip install numpy
           python build_sims.py
       - name: Save model picks
+        if: steps.chk.outputs.go == 'true'
         continue-on-error: true
         run: |
           pip install playwright
           python -m playwright install --with-deps chromium
           python snapshot_picks.py
       - name: Commit
+        if: steps.chk.outputs.go == 'true'
         run: |
           git config user.name "github-actions"
           git config user.email "actions@users.noreply.github.com"
@@ -47,5 +62,6 @@ jobs:
           git add lines.json || true
           git add sims.json || true
           git add sims_box.json || true
+          git add sim_lines.json || true
           git add game_lines.json || true
           git diff --staged --quiet || (git commit -m "Update context, injuries, sims and picks" && git pull --rebase && git push)

@@ -2,6 +2,8 @@ name: Update player logs
 on:
   schedule:
     - cron: "23 11 * * 2"  # Tuesdays, 7:23 AM Eastern (odd minute so GitHub starts it on time)
+    - cron: "41 15 * * 2"  # Tuesdays, 11:41 AM Eastern: backup in case GitHub skipped the first one
+    - cron: "41 11 * * 3"  # Wednesdays, 7:41 AM Eastern: second backup (also picks up stat corrections)
   workflow_dispatch:        # adds a manual "Run workflow" button
 permissions:
   contents: write
