@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-20T16:55:33+00:00",
+ "updated": "2026-10-20T18:06:41+00:00",
  "games": {
   "NE @ CHI": {
    "spread_home": -3.0,
@@ -23,9 +23,9 @@
    "spread_home": -2.5,
    "total": 51.0,
    "tt_home": 27.5,
-   "tt_away": 23.5,
+   "tt_away": 24.0,
    "temp": 65,
-   "wind": 6,
+   "wind": 5,
    "gust": 10,
    "pop": 0,
    "precip": 0.0
@@ -42,8 +42,8 @@
    "total": 44.5,
    "tt_home": 23.5,
    "tt_away": 20.5,
-   "temp": 68,
-   "wind": 6,
+   "temp": 67,
+   "wind": 7,
    "gust": 9,
    "pop": 0,
    "precip": 0.0
@@ -61,7 +61,7 @@
    "tt_home": 18.5,
    "tt_away": 19.5,
    "temp": 75,
-   "wind": 2,
+   "wind": 1,
    "gust": 4,
    "pop": 0,
    "precip": 0.0
@@ -79,7 +79,7 @@
    "tt_home": 22.5,
    "tt_away": 16.5,
    "temp": 65,
-   "wind": 9,
+   "wind": 8,
    "gust": 11,
    "pop": 0,
    "precip": 0.0
@@ -88,7 +88,7 @@
    "spread_home": 4.5,
    "total": 43.5,
    "tt_home": 19.5,
-   "tt_away": 24.5,
+   "tt_away": 23.5,
    "dome": true
   },
   "LA @ LV": {
@@ -110,8 +110,8 @@
    "total": 42.5,
    "tt_home": 21.5,
    "tt_away": 20.5,
-   "temp": 52,
-   "wind": 7,
+   "temp": 53,
+   "wind": 6,
    "gust": 16,
    "pop": 21,
    "precip": 0.0
