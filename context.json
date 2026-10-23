@@ -1,17 +1,6 @@
 {
- "updated": "2026-10-23T00:13:38+00:00",
+ "updated": "2026-10-23T04:41:44+00:00",
  "games": {
-  "NE @ CHI": {
-   "spread_home": -3.0,
-   "total": 50.5,
-   "tt_home": 26.5,
-   "tt_away": 23.5,
-   "temp": 57,
-   "wind": 6,
-   "gust": 11,
-   "pop": 0,
-   "precip": 0.0
-  },
   "PIT @ NO": {
    "spread_home": 3.5,
    "total": 44.5,
@@ -26,7 +15,7 @@
    "tt_away": 23.5,
    "temp": 65,
    "wind": 3,
-   "gust": 5,
+   "gust": 6,
    "pop": 0,
    "precip": 0.0
   },
@@ -43,7 +32,7 @@
    "tt_home": 23.5,
    "tt_away": 20.5,
    "temp": 67,
-   "wind": 8,
+   "wind": 7,
    "gust": 10,
    "pop": 0,
    "precip": 0.0
@@ -60,9 +49,9 @@
    "total": 37.5,
    "tt_home": 17.5,
    "tt_away": 19.5,
-   "temp": 75,
+   "temp": 74,
    "wind": 2,
-   "gust": 3,
+   "gust": 4,
    "pop": 0,
    "precip": 0.0
   },
@@ -79,8 +68,8 @@
    "tt_home": 22.5,
    "tt_away": 16.5,
    "temp": 66,
-   "wind": 3,
-   "gust": 6,
+   "wind": 5,
+   "gust": 7,
    "pop": 0,
    "precip": 0.0
   },
@@ -109,11 +98,11 @@
    "spread_home": -2.5,
    "total": 42.5,
    "tt_home": 22.5,
-   "tt_away": 20.0,
-   "temp": 51,
+   "tt_away": 19.5,
+   "temp": 52,
    "wind": 6,
-   "gust": 11,
-   "pop": 32,
+   "gust": 13,
+   "pop": 44,
    "precip": 0.0
   },
   "DAL @ PHI": {
@@ -123,8 +112,19 @@
    "tt_away": 24.5,
    "temp": 60,
    "wind": 4,
-   "gust": 14,
+   "gust": 16,
    "pop": 0,
+   "precip": 0.0
+  },
+  "CAR @ GB": {
+   "spread_home": -3.25,
+   "total": 46.5,
+   "tt_home": 24.5,
+   "tt_away": 21.5,
+   "temp": 53,
+   "wind": 5,
+   "gust": 10,
+   "pop": 14,
    "precip": 0.0
   }
  }
