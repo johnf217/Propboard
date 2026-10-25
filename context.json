@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-25T18:33:05+00:00",
+ "updated": "2026-10-25T18:34:45+00:00",
  "games": {
   "DEN @ ARI": {
    "spread_home": 4.5,
@@ -119,7 +119,12 @@
    "spread_home": -3.0,
    "total": 53.25,
    "tt_home": 41.5,
-   "tt_away": 35.5
+   "tt_away": 35.5,
+   "temp": 59,
+   "wind": 3,
+   "gust": 4,
+   "pop": 35,
+   "precip": 0.0
   },
   "MIN @ DET": {
    "spread_home": -2.75,
