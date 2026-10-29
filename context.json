@@ -1,12 +1,12 @@
 {
- "updated": "2026-10-29T01:17:35+00:00",
+ "updated": "2026-10-29T05:40:35+00:00",
  "games": {
   "CAR @ GB": {
    "spread_home": -3.5,
    "total": 47.5,
    "tt_home": 25.5,
    "tt_away": 21.5,
-   "temp": 45,
+   "temp": 46,
    "wind": 5,
    "gust": 18,
    "pop": 0,
@@ -27,18 +27,18 @@
    "temp": 77,
    "wind": 9,
    "gust": 14,
-   "pop": 68,
+   "pop": 62,
    "precip": 24.3
   },
   "IND @ JAX": {
    "spread_home": -10.0,
    "total": 46.5,
-   "tt_home": 27.5,
+   "tt_home": 28.5,
    "tt_away": 17.5,
    "temp": 77,
    "wind": 11,
    "gust": 18,
-   "pop": 55,
+   "pop": 51,
    "precip": 0.7
   },
   "TEN @ CIN": {
@@ -60,7 +60,7 @@
    "temp": 62,
    "wind": 6,
    "gust": 9,
-   "pop": 1,
+   "pop": 0,
    "precip": 0.0
   },
   "CLE @ PIT": {
@@ -71,14 +71,14 @@
    "temp": 63,
    "wind": 4,
    "gust": 9,
-   "pop": 5,
+   "pop": 3,
    "precip": 0.0
   },
   "BAL @ BUF": {
    "spread_home": -3.0,
    "total": 54.0,
    "tt_home": 28.5,
-   "tt_away": 25.0,
+   "tt_away": 25.25,
    "temp": 63,
    "wind": 7,
    "gust": 14,
@@ -107,7 +107,7 @@
    "temp": 83,
    "wind": 10,
    "gust": 12,
-   "pop": 65,
+   "pop": 67,
    "precip": 0.0
   },
   "KC @ DEN": {
@@ -118,7 +118,7 @@
    "temp": 64,
    "wind": 8,
    "gust": 14,
-   "pop": 3,
+   "pop": 5,
    "precip": 0.0
   },
   "PHI @ WAS": {
@@ -140,7 +140,7 @@
    "temp": 50,
    "wind": 3,
    "gust": 2,
-   "pop": 10,
+   "pop": 8,
    "precip": 0.0
   }
  }
