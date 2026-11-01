@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-01T18:32:59+00:00",
+ "updated": "2026-11-01T19:11:40+00:00",
  "games": {
   "LAC @ LA": {
    "spread_home": -6.5,
@@ -15,8 +15,8 @@
    "tt_away": 24.5,
    "temp": 77,
    "wind": 6,
-   "gust": 24,
-   "pop": 48,
+   "gust": 22,
+   "pop": 65,
    "precip": 1.8
   },
   "KC @ DEN": {
@@ -24,20 +24,20 @@
    "total": 41.5,
    "tt_home": 20.5,
    "tt_away": 20.5,
-   "temp": 64,
+   "temp": 63,
    "wind": 7,
-   "gust": 12,
+   "gust": 11,
    "pop": 11,
    "precip": 0.0
   },
   "PHI @ WAS": {
-   "spread_home": -6.0,
+   "spread_home": -5.5,
    "total": 40.5,
    "tt_home": 23.5,
    "tt_away": 16.5,
-   "temp": 49,
-   "wind": 4,
-   "gust": 6,
+   "temp": 50,
+   "wind": 5,
+   "gust": 10,
    "pop": 1,
    "precip": 0.0
   },
@@ -55,8 +55,8 @@
   "JAX @ BAL": {
    "spread_home": -2.5,
    "total": 48.5,
-   "tt_home": 26.0,
-   "tt_away": 23.0,
+   "tt_home": 25.5,
+   "tt_away": 22.5,
    "temp": 64,
    "wind": 4,
    "gust": 18,
@@ -111,7 +111,7 @@
    "precip": 0.0
   },
   "LA @ WAS": {
-   "spread_home": 5.0,
+   "spread_home": 5.5,
    "total": 48.5,
    "tt_home": 20.5,
    "tt_away": 26.5,
@@ -128,7 +128,7 @@
    "tt_away": 28.5,
    "temp": 86,
    "wind": 1,
-   "gust": 11,
+   "gust": 5,
    "pop": 8,
    "precip": 0.0
   },
