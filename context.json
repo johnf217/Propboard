@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-06T01:50:30+00:00",
+ "updated": "2026-11-06T06:32:15+00:00",
  "games": {
   "CIN @ ATL": {
    "spread_home": 3.0,
@@ -11,11 +11,11 @@
   "NYJ @ KC": {
    "spread_home": -10.0,
    "total": 47.5,
-   "tt_home": 28.5,
+   "tt_home": 29.5,
    "tt_away": 17.5,
    "temp": 66,
    "wind": 9,
-   "gust": 11,
+   "gust": 12,
    "pop": 0,
    "precip": 0.0
   },
@@ -31,9 +31,9 @@
    "total": 38.5,
    "tt_home": 17.5,
    "tt_away": 20.5,
-   "temp": 59,
+   "temp": 61,
    "wind": 10,
-   "gust": 21,
+   "gust": 16,
    "pop": 0,
    "precip": 0.0
   },
@@ -43,8 +43,8 @@
    "tt_home": 20.5,
    "tt_away": 23.5,
    "temp": 64,
-   "wind": 5,
-   "gust": 7,
+   "wind": 6,
+   "gust": 8,
    "pop": 0,
    "precip": 0.0
   },
@@ -53,9 +53,9 @@
    "total": 48.5,
    "tt_home": 20.5,
    "tt_away": 26.5,
-   "temp": 61,
-   "wind": 10,
-   "gust": 18,
+   "temp": 62,
+   "wind": 9,
+   "gust": 17,
    "pop": 0,
    "precip": 0.0
   },
@@ -65,10 +65,10 @@
    "tt_home": 20.5,
    "tt_away": 28.5,
    "temp": 83,
-   "wind": 11,
-   "gust": 10,
-   "pop": 5,
-   "precip": 0.2
+   "wind": 10,
+   "gust": 8,
+   "pop": 9,
+   "precip": 0.0
   },
   "DAL @ IND": {
    "spread_home": 5.5,
@@ -90,19 +90,19 @@
    "tt_home": 24.5,
    "tt_away": 14.5,
    "temp": 54,
-   "wind": 11,
-   "gust": 15,
+   "wind": 13,
+   "gust": 20,
    "pop": 12,
-   "precip": 0.1
+   "precip": 0.0
   },
   "LV @ SF": {
    "spread_home": -9.5,
    "total": 51.5,
    "tt_home": 30.5,
    "tt_away": 20.5,
-   "temp": 71,
-   "wind": 7,
-   "gust": 9,
+   "temp": 72,
+   "wind": 6,
+   "gust": 8,
    "pop": 0,
    "precip": 0.0
   },
@@ -111,10 +111,10 @@
    "total": 44.5,
    "tt_home": 23.5,
    "tt_away": 20.5,
-   "temp": 50,
-   "wind": 11,
-   "gust": 29,
-   "pop": 2,
+   "temp": 51,
+   "wind": 10,
+   "gust": 26,
+   "pop": 1,
    "precip": 0.0
   },
   "TB @ CHI": {
@@ -122,9 +122,9 @@
    "total": 47.5,
    "tt_home": 26.5,
    "tt_away": 20.5,
-   "temp": 54,
+   "temp": 53,
    "wind": 7,
-   "gust": 25,
+   "gust": 20,
    "pop": 0,
    "precip": 0.0
   },
@@ -140,11 +140,11 @@
    "total": 44.5,
    "tt_home": 22.5,
    "tt_away": 21.5,
-   "temp": 43,
-   "wind": 8,
-   "gust": 11,
-   "pop": 13,
-   "precip": 0.0
+   "temp": 52,
+   "wind": 7,
+   "gust": 15,
+   "pop": 16,
+   "precip": 8.1
   }
  }
 }
