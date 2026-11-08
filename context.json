@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-08T20:00:03+00:00",
+ "updated": "2026-11-08T20:38:58+00:00",
  "games": {
   "HOU @ LAC": {
    "spread_home": 5.5,
@@ -13,14 +13,14 @@
    "total": 39.5,
    "tt_home": 24.5,
    "tt_away": 14.5,
-   "temp": 56,
+   "temp": 55,
    "wind": 8,
    "gust": 21,
    "pop": 4,
    "precip": 0.0
   },
   "LV @ SF": {
-   "spread_home": -9.5,
+   "spread_home": -9.0,
    "total": 51.5,
    "tt_home": 30.5,
    "tt_away": 20.5,
@@ -36,18 +36,18 @@
    "tt_home": 23.5,
    "tt_away": 20.5,
    "temp": 48,
-   "wind": 7,
-   "gust": 22,
+   "wind": 6,
+   "gust": 20,
    "pop": 0,
    "precip": 0.0
   },
   "TB @ CHI": {
    "spread_home": -6.0,
    "total": 47.5,
-   "tt_home": 26.5,
+   "tt_home": 26.75,
    "tt_away": 20.5,
    "temp": 46,
-   "wind": 7,
+   "wind": 8,
    "gust": 18,
    "pop": 0,
    "precip": 0.0
