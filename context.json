@@ -1,22 +1,22 @@
 {
- "updated": "2026-11-11T06:04:14+00:00",
+ "updated": "2026-11-11T22:20:25+00:00",
  "games": {
   "WAS @ NYG": {
    "spread_home": -2.5,
-   "total": 41.5,
-   "tt_home": 21.5,
+   "total": 41.0,
+   "tt_home": 20.5,
    "tt_away": 19.5,
-   "temp": 51,
-   "wind": 9,
-   "gust": 13,
-   "pop": 67,
-   "precip": 0.0
+   "temp": 49,
+   "wind": 12,
+   "gust": 33,
+   "pop": 63,
+   "precip": 2.1
   },
   "NE @ DET": {
    "spread_home": -2.5,
-   "total": 50.75,
+   "total": 50.5,
    "tt_home": 26.5,
-   "tt_away": 24.25,
+   "tt_away": 23.5,
    "dome": true
   },
   "MIA @ IND": {
@@ -28,24 +28,24 @@
   },
   "HOU @ CLE": {
    "spread_home": 4.5,
-   "total": 39.5,
-   "tt_home": 16.5,
-   "tt_away": 22.5,
+   "total": 40.5,
+   "tt_home": 17.5,
+   "tt_away": 23.0,
    "temp": 45,
-   "wind": 8,
-   "gust": 9,
-   "pop": 10,
-   "precip": 0.3
+   "wind": 10,
+   "gust": 11,
+   "pop": 20,
+   "precip": 0.4
   },
   "JAX @ TEN": {
    "spread_home": 10.5,
    "total": 46.5,
    "tt_home": 16.5,
    "tt_away": 28.5,
-   "temp": 52,
-   "wind": 7,
-   "gust": 10,
-   "pop": 0,
+   "temp": 53,
+   "wind": 5,
+   "gust": 7,
+   "pop": 1,
    "precip": 0.0
   },
   "BUF @ NYJ": {
@@ -53,9 +53,9 @@
    "total": 50.5,
    "tt_home": 20.5,
    "tt_away": 30.5,
-   "temp": 52,
-   "wind": 11,
-   "gust": 14,
+   "temp": 49,
+   "wind": 13,
+   "gust": 16,
    "pop": 0,
    "precip": 0.0
   },
@@ -67,19 +67,19 @@
    "dome": true
   },
   "MIN @ GB": {
-   "spread_home": -3.5,
-   "total": 41.5,
+   "spread_home": -3.0,
+   "total": 42.0,
    "tt_home": 22.5,
-   "tt_away": 18.75,
-   "temp": 44,
-   "wind": 7,
-   "gust": 8,
-   "pop": 1,
+   "tt_away": 19.5,
+   "temp": 42,
+   "wind": 6,
+   "gust": 7,
+   "pop": 0,
    "precip": 0.0
   },
   "KC @ ATL": {
    "spread_home": 3.5,
-   "total": 45.0,
+   "total": 46.5,
    "tt_home": 20.5,
    "tt_away": 24.5,
    "dome": true
@@ -94,7 +94,7 @@
   "LA @ ARI": {
    "spread_home": 9.5,
    "total": 39.5,
-   "tt_home": 14.25,
+   "tt_home": 14.5,
    "tt_away": 24.5,
    "dome": true
   },
@@ -121,10 +121,10 @@
    "total": 38.5,
    "tt_home": 21.5,
    "tt_away": 16.5,
-   "temp": 47,
-   "wind": 3,
-   "gust": 9,
-   "pop": 1,
+   "temp": 45,
+   "wind": 4,
+   "gust": 12,
+   "pop": 0,
    "precip": 0.0
   }
  }
