@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-11T01:30:03+00:00",
+ "updated": "2026-11-11T06:04:14+00:00",
  "games": {
   "WAS @ NYG": {
    "spread_home": -2.5,
@@ -7,23 +7,23 @@
    "tt_home": 21.5,
    "tt_away": 19.5,
    "temp": 51,
-   "wind": 10,
-   "gust": 17,
-   "pop": 63,
+   "wind": 9,
+   "gust": 13,
+   "pop": 67,
    "precip": 0.0
   },
   "NE @ DET": {
    "spread_home": -2.5,
-   "total": 51.0,
+   "total": 50.75,
    "tt_home": 26.5,
-   "tt_away": 24.0,
+   "tt_away": 24.25,
    "dome": true
   },
   "MIA @ IND": {
    "spread_home": -3.5,
    "total": 38.5,
    "tt_home": 20.5,
-   "tt_away": 17.5,
+   "tt_away": 16.5,
    "dome": true
   },
   "HOU @ CLE": {
@@ -31,11 +31,11 @@
    "total": 39.5,
    "tt_home": 16.5,
    "tt_away": 22.5,
-   "temp": 47,
+   "temp": 45,
    "wind": 8,
    "gust": 9,
-   "pop": 8,
-   "precip": 0.0
+   "pop": 10,
+   "precip": 0.3
   },
   "JAX @ TEN": {
    "spread_home": 10.5,
@@ -53,10 +53,10 @@
    "total": 50.5,
    "tt_home": 20.5,
    "tt_away": 30.5,
-   "temp": 51,
-   "wind": 6,
-   "gust": 9,
-   "pop": 1,
+   "temp": 52,
+   "wind": 11,
+   "gust": 14,
+   "pop": 0,
    "precip": 0.0
   },
   "CAR @ NO": {
@@ -94,7 +94,7 @@
   "LA @ ARI": {
    "spread_home": 9.5,
    "total": 39.5,
-   "tt_home": 13.75,
+   "tt_home": 14.25,
    "tt_away": 24.5,
    "dome": true
   },
@@ -113,7 +113,7 @@
    "temp": 39,
    "wind": 3,
    "gust": 5,
-   "pop": 2,
+   "pop": 0,
    "precip": 0.0
   },
   "LAC @ BAL": {
@@ -124,7 +124,7 @@
    "temp": 47,
    "wind": 3,
    "gust": 9,
-   "pop": 3,
+   "pop": 1,
    "precip": 0.0
   }
  }
