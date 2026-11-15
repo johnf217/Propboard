@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-15T19:27:48+00:00",
+ "updated": "2026-11-15T19:56:29+00:00",
  "games": {
   "SEA @ LV": {
    "spread_home": 6.5,
@@ -12,12 +12,12 @@
    "spread_home": 9.5,
    "total": 38.5,
    "tt_home": 13.5,
-   "tt_away": 24.5,
+   "tt_away": 24.25,
    "dome": true
   },
   "SF @ DAL": {
    "spread_home": 4.0,
-   "total": 55.5,
+   "total": 56.0,
    "tt_home": 25.5,
    "tt_away": 30.5,
    "dome": true
