@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-15T20:33:02+00:00",
+ "updated": "2026-11-15T20:36:53+00:00",
  "games": {
   "SEA @ LV": {
    "spread_home": 6.5,
@@ -27,9 +27,9 @@
    "total": 49.5,
    "tt_home": 26.5,
    "tt_away": 22.5,
-   "temp": 39,
+   "temp": 42,
    "wind": 5,
-   "gust": 11,
+   "gust": 12,
    "pop": 0,
    "precip": 0.0
   },
