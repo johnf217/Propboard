@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-18T03:10:23+00:00",
+ "updated": "2026-11-18T07:16:53+00:00",
  "games": {
   "IND @ HOU": {
    "spread_home": -12.5,
@@ -24,11 +24,11 @@
    "spread_home": -16.5,
    "total": 45.5,
    "tt_home": 30.5,
-   "tt_away": 14.25
+   "tt_away": 14.5
   },
   "NO @ CHI": {
    "spread_home": -11.5,
-   "total": 49.0,
+   "total": 48.5,
    "tt_home": 30.5,
    "tt_away": 18.5
   },
@@ -41,7 +41,7 @@
   },
   "TEN @ DAL": {
    "spread_home": -8.0,
-   "total": 54.5,
+   "total": 55.0,
    "tt_home": 31.5,
    "tt_away": 22.5,
    "dome": true
@@ -75,18 +75,13 @@
    "spread_home": -3.0,
    "total": 45.5,
    "tt_home": 24.5,
-   "tt_away": 21.5
+   "tt_away": 21.0
   },
   "CIN @ WAS": {
    "spread_home": 6.5,
    "total": 53.5,
    "tt_home": 23.5,
-   "tt_away": 30.5,
-   "temp": 48,
-   "wind": 11,
-   "gust": 27,
-   "pop": 2,
-   "precip": 0.0
+   "tt_away": 30.5
   }
  }
 }
