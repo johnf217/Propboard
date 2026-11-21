@@ -1,38 +1,23 @@
 {
- "updated": "2026-11-21T02:52:11+00:00",
+ "updated": "2026-11-21T06:58:14+00:00",
  "games": {
   "ARI @ KC": {
-   "spread_home": -16.5,
+   "spread_home": -16.0,
    "total": 40.5,
    "tt_home": 28.5,
-   "tt_away": 12.5,
-   "temp": 45,
-   "wind": 15,
-   "gust": 26,
-   "pop": 9,
-   "precip": 0.0
+   "tt_away": 12.5
   },
   "BAL @ CAR": {
    "spread_home": -2.5,
    "total": 43.5,
    "tt_home": 23.5,
-   "tt_away": 20.5,
-   "temp": 60,
-   "wind": 9,
-   "gust": 18,
-   "pop": 51,
-   "precip": 0.0
+   "tt_away": 20.5
   },
   "MIA @ BUF": {
    "spread_home": -16.5,
    "total": 44.5,
    "tt_home": 30.5,
-   "tt_away": 13.5,
-   "temp": 66,
-   "wind": 12,
-   "gust": 21,
-   "pop": 2,
-   "precip": 0.0
+   "tt_away": 13.5
   },
   "NO @ CHI": {
    "spread_home": -11.5,
@@ -84,16 +69,16 @@
    "tt_away": 26.5,
    "temp": 59,
    "wind": 6,
-   "gust": 18,
+   "gust": 14,
    "pop": 86,
-   "precip": 0.8
+   "precip": 0.6
   },
   "LV @ DEN": {
    "spread_home": -10.5,
    "total": 40.5,
    "tt_home": 25.5,
    "tt_away": 14.5,
-   "temp": 43,
+   "temp": 42,
    "wind": 5,
    "gust": 7,
    "pop": 0,
@@ -115,9 +100,9 @@
    "total": 53.5,
    "tt_home": 23.5,
    "tt_away": 30.5,
-   "temp": 54,
+   "temp": 53,
    "wind": 8,
-   "gust": 19,
+   "gust": 23,
    "pop": 0,
    "precip": 0.0
   },
@@ -147,22 +132,22 @@
    "total": 50.5,
    "tt_home": 26.5,
    "tt_away": 23.5,
-   "temp": 33,
-   "wind": 8,
-   "gust": 20,
+   "temp": 35,
+   "wind": 14,
+   "gust": 30,
    "pop": 33,
-   "precip": 1.9
+   "precip": 1.2
   },
   "DEN @ PIT": {
-   "spread_home": 2.0,
+   "spread_home": 1.75,
    "total": 40.5,
    "tt_home": 19.5,
    "tt_away": 20.5,
-   "temp": 42,
-   "wind": 6,
-   "gust": 21,
+   "temp": 40,
+   "wind": 12,
+   "gust": 28,
    "pop": 11,
-   "precip": 0.0
+   "precip": 0.2
   }
  }
 }
