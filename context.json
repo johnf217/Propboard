@@ -1,13 +1,6 @@
 {
- "updated": "2026-11-25T22:44:31+00:00",
+ "updated": "2026-11-26T03:48:07+00:00",
  "games": {
-  "GB @ LA": {
-   "spread_home": -2.5,
-   "total": 43.5,
-   "tt_home": 22.5,
-   "tt_away": 20.5,
-   "dome": true
-  },
   "CHI @ DET": {
    "spread_home": 1.5,
    "total": 55.5,
@@ -26,48 +19,48 @@
    "spread_home": -2.5,
    "total": 46.5,
    "tt_home": 24.5,
-   "tt_away": 22.5,
+   "tt_away": 21.5,
    "temp": 38,
-   "wind": 19,
+   "wind": 21,
    "gust": 49,
    "pop": 100,
-   "precip": 13.3
+   "precip": 5.7
   },
   "DEN @ PIT": {
    "spread_home": 3.5,
    "total": 36.5,
    "tt_home": 16.5,
    "tt_away": 20.5,
-   "temp": 38,
-   "wind": 12,
-   "gust": 29,
-   "pop": 93,
-   "precip": 0.2
+   "temp": 40,
+   "wind": 14,
+   "gust": 36,
+   "pop": 86,
+   "precip": 1.1
   },
   "NO @ CIN": {
    "spread_home": -10.0,
    "total": 49.5,
    "tt_home": 30.5,
    "tt_away": 19.5,
-   "temp": 52,
+   "temp": 53,
    "wind": 12,
-   "gust": 37,
-   "pop": 84,
-   "precip": 3.4
+   "gust": 38,
+   "pop": 86,
+   "precip": 1.3
   },
   "TEN @ JAX": {
    "spread_home": -14.5,
-   "total": 48.5,
+   "total": 49.5,
    "tt_home": 31.5,
    "tt_away": 16.5,
-   "temp": 67,
-   "wind": 4,
-   "gust": 9,
-   "pop": 4,
+   "temp": 65,
+   "wind": 3,
+   "gust": 8,
+   "pop": 1,
    "precip": 0.0
   },
   "NYG @ IND": {
-   "spread_home": 6.5,
+   "spread_home": 6.0,
    "total": 41.5,
    "tt_home": 17.25,
    "tt_away": 23.5,
@@ -79,9 +72,9 @@
    "tt_home": 17.5,
    "tt_away": 22.5,
    "temp": 78,
-   "wind": 9,
-   "gust": 13,
-   "pop": 17,
+   "wind": 8,
+   "gust": 9,
+   "pop": 15,
    "precip": 0.0
   },
   "BAL @ HOU": {
@@ -117,10 +110,10 @@
    "total": 44.5,
    "tt_home": 23.5,
    "tt_away": 20.5,
-   "temp": 65,
-   "wind": 10,
-   "gust": 24,
-   "pop": 59,
+   "temp": 64,
+   "wind": 9,
+   "gust": 21,
+   "pop": 68,
    "precip": 0.0
   },
   "LV @ CLE": {
@@ -130,19 +123,19 @@
    "tt_away": 17.5,
    "temp": 49,
    "wind": 11,
-   "gust": 30,
-   "pop": 89,
-   "precip": 5.4
+   "gust": 31,
+   "pop": 90,
+   "precip": 6.5
   },
   "CAR @ TB": {
    "spread_home": -3.0,
    "total": 43.5,
    "tt_home": 23.5,
    "tt_away": 20.5,
-   "temp": 69,
-   "wind": 8,
-   "gust": 15,
-   "pop": 28,
+   "temp": 68,
+   "wind": 5,
+   "gust": 12,
+   "pop": 22,
    "precip": 0.0
   }
  }
